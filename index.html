@@ -34,6 +34,7 @@
 			--playing-bg: rgba(128, 128, 128, 0.15);
 			--base-sans-serif: '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', Arial, sans-serif;
 			--base-serif: Georgia, serif;
+			--shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.22), 0 0 0 1px hsla(0,0%,100%,0.08) inset;
 			
 			/* Reader Specific */
 			--reader-font-family: var(--base-serif);
@@ -106,7 +107,7 @@
 		.btn-func { background-color: var(--calc-btn-func); color: var(--calc-btn-func-text); }
 
 		/* Dialog Overlays */
-		dialog { margin: auto; padding: 25px; border-radius: 12px; border: none; color: var(--text-color); box-shadow: 0 4px 20px rgba(0,0,0,0.3); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible; }
+		dialog { margin: auto; padding: 25px; border-radius: 12px; border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible; }
 		dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(1.5px); }
 		dialog[open] { animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 		dialog:focus-visible { outline: none; }
@@ -204,7 +205,7 @@
 		.verse.flash { animation: verseFlash 0.35s ease-out; }
 
 		/* FABs Unified Dimensions & Shadows */
-		.fab, .fab-resume { box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.3); height: 56px; transition: transform 0.2s, bottom 0.3s, background 0.2s; }
+		.fab, .fab-resume { box-shadow: var(--shadow); height: 56px; transition: transform 0.2s, bottom 0.3s, background 0.2s; }
 		.fab { position: fixed; z-index: 50; width: 56px; }
 		.fab:active { transform: scale(0.9); }
 		.fab-panic { background: #ff3b30; color: white; bottom: 20px; right: 20px; }
@@ -215,7 +216,7 @@
 		/* Selection FABs (Smooth transition toggle without keyframe flash) */
 		.selection-fabs { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - 56px*5) - 40px)/4), 20px); z-index: 40; pointer-events: none; opacity: 0; transform: translateY(12px); transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.3s; }
 		.selection-fabs.visible { pointer-events: auto; opacity: 1; transform: translateY(0); }
-        body:not(.panic-active) .selection-fabs { right: 20px; justify-content: center; }
+		body:not(.panic-active) .selection-fabs { right: 20px; justify-content: center; }
 		.fab-action { background: var(--surface-color); color: var(--primary-color); position: relative; }
 
 		/* Resume Wrapper Layout (Smooth transition toggle without keyframe flash) */
@@ -250,7 +251,7 @@
 		#app-bible:has(.bottom-bar.visible) .resume-wrapper { bottom: 70px; }
 
 		/* Toast (Pure CSS Animation Triggered via Class Replacement) */
-		.toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 24px; z-index: 9999; font-weight: 500; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); white-space: nowrap; opacity: 0; pointer-events: none; }
+		.toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px); padding: 12px 24px; border-radius: 24px; z-index: 9999; font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
 		@keyframes toastAnim { 0%, 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; pointer-events: none; } 15%, 85% { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; } }
 		.toast.animate { animation: toastAnim 2s ease forwards; }
 
@@ -1779,7 +1780,7 @@ function highlightPlayingVerse() {
 	if (el) {
 		el.classList.add('playing');
 		if (isPaused) el.classList.add('paused');
-        el.scrollIntoView({ behavior: 'smooth', block: (el.offsetHeight < window.innerHeight ? 'center' : 'start') });
+		el.scrollIntoView({ behavior: 'smooth', block: (el.offsetHeight < window.innerHeight ? 'center' : 'start') });
 	}
 }
 
