@@ -106,7 +106,7 @@
 		.btn-func { background-color: var(--calc-btn-func); color: var(--calc-btn-func-text); }
 
 		/* Dialog Overlays */
-		dialog { margin: auto; padding: 25px; border-radius: 12px; border: none; color: var(--text-color); box-shadow: 0 4px 20px rgba(0,0,0,0.3); max-width: 90%; width: 400px; max-height: 90vh; max-height: 90dvh; overflow-y: auto; }
+		dialog { margin: auto; padding: 25px; border-radius: 12px; border: none; color: var(--text-color); box-shadow: 0 4px 20px rgba(0,0,0,0.3); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible; }
 		dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(1.5px); }
 		dialog[open] { animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 		dialog:focus-visible { outline: none; }
@@ -171,7 +171,7 @@
 		.details-wrapper > div { overflow: hidden; }
 		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; }
 		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
-		.grid-item { padding: 15px 5px; text-align: center; font-size: 0.9em; }
+		.grid-item { padding: 15px 8px; text-align: center; font-size: 0.9em; }
 		
 		/* Bookmarks */
 		.bookmark-list { display: flex; flex-direction: column; gap: 10px; }
@@ -182,7 +182,7 @@
 
 		/* Reader View */
 		#view-reader { padding: 18px; padding-bottom: 180px; line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
-		.verse { margin-bottom: 10px; cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.2s, filter 0.2s, box-shadow 0.2s; }
+		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.2s, filter 0.2s, box-shadow 0.2s; }
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: super; margin-inline-end: 4px; transition: color 0.2s; }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
 		
@@ -204,7 +204,7 @@
 		.verse.flash { animation: verseFlash 0.35s ease-out; }
 
 		/* FABs Unified Dimensions & Shadows */
-		.fab, .fab-resume { box-shadow: 0 4px 12px rgba(0,0,0,0.3); height: 56px; transition: transform 0.2s, bottom 0.3s, background 0.2s; }
+		.fab, .fab-resume { box-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.3); height: 56px; transition: transform 0.2s, bottom 0.3s, background 0.2s; }
 		.fab { position: fixed; z-index: 50; width: 56px; }
 		.fab:active { transform: scale(0.9); }
 		.fab-panic { background: #ff3b30; color: white; bottom: 20px; right: 20px; }
@@ -215,6 +215,7 @@
 		/* Selection FABs (Smooth transition toggle without keyframe flash) */
 		.selection-fabs { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - 56px*5) - 40px)/4), 20px); z-index: 40; pointer-events: none; opacity: 0; transform: translateY(12px); transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.3s; }
 		.selection-fabs.visible { pointer-events: auto; opacity: 1; transform: translateY(0); }
+        body:not(.panic-active) .selection-fabs { right: 20px; justify-content: center; }
 		.fab-action { background: var(--surface-color); color: var(--primary-color); position: relative; }
 
 		/* Resume Wrapper Layout (Smooth transition toggle without keyframe flash) */
@@ -252,6 +253,7 @@
 		.toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.8); color: white; padding: 12px 24px; border-radius: 24px; z-index: 9999; font-weight: 500; font-size: 0.95rem; box-shadow: 0 4px 12px rgba(0,0,0,0.3); white-space: nowrap; opacity: 0; pointer-events: none; }
 		@keyframes toastAnim { 0%, 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; pointer-events: none; } 15%, 85% { transform: translateX(-50%) translateY(0); opacity: 1; pointer-events: auto; } }
 		.toast.animate { animation: toastAnim 2s ease forwards; }
+
 	</style>
 </head>
 <body>
@@ -1576,7 +1578,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 	});
 
 	if (scrollToVerse && targetVerseNum) {
-		setTimeout(() => { let targetEl = $(`v${targetVerseNum}`); if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: 'center' }); }, 100);
+		setTimeout(() => { let targetEl = $(`v${targetVerseNum}`); if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }); }, 100);
 	} else { readerView.scrollTop = 0; }
 	
 	pushNavState('reader');
@@ -1777,7 +1779,7 @@ function highlightPlayingVerse() {
 	if (el) {
 		el.classList.add('playing');
 		if (isPaused) el.classList.add('paused');
-		el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        el.scrollIntoView({ behavior: 'smooth', block: (el.offsetHeight < window.innerHeight ? 'center' : 'start') });
 	}
 }
 
