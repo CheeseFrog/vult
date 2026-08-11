@@ -60,7 +60,7 @@
 		button, input, select, textarea { font-family: inherit; font-size: inherit; }
 		
 		/* Base App Font is fixed to iOS standards, isolating the reader settings */
-		body { font-family: var(--base-sans-serif); background-color: var(--calc-bg); overflow: hidden; font-size: 16px; color: var(--text-color); }
+		html, body { font-family: var(--base-sans-serif); background-color: var(--calc-bg); overflow: hidden; font-size: 16px; color: var(--text-color); touch-action: manipulation; }
 		
 		/* Utility Classes */
 		.text-muted { color: var(--text-muted); }
@@ -99,7 +99,7 @@
 		.calc-help { position: absolute; top: 20px; left: 20px; color: var(--calc-btn-num); font-size: 1.5rem; cursor: pointer; }
 		body:has(#helpModal[open]) #calcHelpBtn { color: var(--primary-color); }
 		.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-		.calc-btn { aspect-ratio: 1; font-size: 2rem; transition: filter 0.2s; touch-action: manipulation; }
+		.calc-btn { aspect-ratio: 1; font-size: 2rem; transition: filter 0.2s; box-shadow: var(--shadow); }
 		.calc-btn:active { filter: brightness(1.4); }
 		.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 50px; justify-content: flex-start; padding-left: 30px; }
 		.btn-num { background-color: var(--calc-btn-num); color: var(--calc-text); }
@@ -205,27 +205,31 @@
 		.verse.flash { animation: verseFlash 0.35s ease-out; }
 
 		/* FABs Unified Dimensions & Shadows */
-		.fab, .fab-resume { box-shadow: var(--shadow); height: 56px; transition: transform 0.2s, bottom 0.3s, background 0.2s; }
-		.fab { position: fixed; z-index: 50; width: 56px; }
+		.fab, .fab-resume { box-shadow: var(--shadow); height: 56px; transition: transform 0.2s, background 0.2s; }
+		.fab { position: absolute; z-index: 50; width: 56px; }
 		.fab:active { transform: scale(0.9); }
 		.fab-panic { background: #ff3b30; color: white; bottom: 20px; right: 20px; }
 		.panic-symbol { font-size: 28px; line-height: 1; font-weight: 400; }
 		.fab-resume { background: var(--surface-color); color: var(--primary-color); border-radius: 28px; gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
 		.fab-resume:active { transform: scale(0.95); background: var(--surface-color-active); }
+		.resume-wrapper, .selection-fabs { position: absolute; z-index: 40; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(12px); bottom: 20px; }
 		
 		/* Selection FABs (Smooth transition toggle without keyframe flash) */
-		.selection-fabs { position: fixed; bottom: 20px; left: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - 56px*5) - 40px)/4), 20px); z-index: 40; pointer-events: none; opacity: 0; transform: translateY(12px); transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.3s; }
-		.selection-fabs.visible { pointer-events: auto; opacity: 1; transform: translateY(0); }
-		body:not(.panic-active) .selection-fabs { right: 20px; justify-content: center; }
+		.selection-fabs { left: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - 56px*5) - 40px)/4), 20px); }
+		body:not(.panic-active) .selection-fabs { justify-content: center; }
 		.fab-action { background: var(--surface-color); color: var(--primary-color); position: relative; }
 
 		/* Resume Wrapper Layout (Smooth transition toggle without keyframe flash) */
-		.resume-wrapper { position: fixed; bottom: 0; left: 0; right: 85px; height: 96px; z-index: 40; mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%); -webkit-mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%); pointer-events: none; opacity: 0; transform: translateY(12px); transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), bottom 0.3s; }
-		.resume-wrapper.visible { pointer-events: auto; opacity: 1; transform: translateY(0); }
+		.resume-wrapper { left: 0; right: 85px; mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%); }
 		.resume-scroll { display: flex; gap: 10px; height: 100%; overflow-x: auto; align-items: center; scrollbar-width: none; padding-left: 20px; padding-right: 40px; }
-		body:not(.panic-active) .resume-wrapper { right: 0; mask-image: none; -webkit-mask-image: none; }
+		body:not(.panic-active) .resume-wrapper { right: 0; mask-image: none; }
 		body:not(.panic-active) .resume-scroll { padding-right: 20px; }
 		
+		/* Simplified Pointer Events Control for Hidden/Visible FAB Groups */
+		#fabContainer { pointer-events: none; background: linear-gradient(to top, var(--bg-color) -10px, transparent 80px); }
+		#fabContainer .visible, #panicBtn { pointer-events: auto; }
+		#fabContainer .visible { opacity: 1; transform: translateY(0); }
+
 		/* Orientation shorthand logic for Resume FABs (Shorthand in Portrait, Longhand in Landscape) */
 		.text-long { display: none; }
 		.text-short { display: inline; }
@@ -235,7 +239,7 @@
 		}
 
 		/* Bottom Bar */
-		.bottom-bar { position: fixed; bottom: 0; left: 0; right: 0; height: 70px; background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; transform: translateY(100%); transition: transform 0.3s; z-index: 39; box-shadow: 0 -25px 35px var(--bg-color); }
+		.bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: 70px; background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; transform: translateY(100%); transition: transform 0.3s; z-index: 39; pointer-events: auto; }
 		.bottom-bar.visible { transform: translateY(0); }
 		.bb-btn { background: none; color: var(--text-color); padding: 10px; }
 		.bb-btn .material-symbols-rounded { font-size: 32px; }
@@ -246,9 +250,10 @@
 		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; font-size: 32px; }
 		.bb-btn.play-btn.is-paused { --progress-color: var(--text-muted); color: var(--text-muted); }
 
-		/* Shift up components when bottom bar appears */
-		#app-bible:has(.bottom-bar.visible) .fab-panic, #app-bible:has(.bottom-bar.visible) .selection-fabs { bottom: 90px; }
-		#app-bible:has(.bottom-bar.visible) .resume-wrapper { bottom: 70px; }
+		/* Bottom Layout Grouping */
+		.bottom-components { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; pointer-events: none; }
+		.fab-container { position: absolute; bottom: 0; left: 0; right: 0; height: 110px; pointer-events: none; transition: transform 0.3s; }
+		#app-bible:has(.bottom-bar.visible) .fab-container { transform: translateY(-70px); }
 
 		/* Toast (Pure CSS Animation Triggered via Class Replacement) */
 		.toast { position: fixed; top: 30px; left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px); padding: 12px 24px; border-radius: 24px; z-index: 9999; font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
@@ -514,47 +519,51 @@
 		<div class="view" id="view-reader">
 			<div id="readerContent"></div>
 		</div>
-
-		<!-- SCROLLING RESUME PILLS (Bottom Left - Home & Chapters view) -->
-		<div class="resume-wrapper" id="resumeWrapper">
-			<div class="resume-scroll" id="resumeScroll">
-				<!-- Dynamically populated buttons -->
+		
+		<div id="bottomComponents" class="bottom-components">
+			<div id="fabContainer" class="fab-container">
+				<!-- SCROLLING RESUME PILLS (Bottom Left - Home & Chapters view) -->
+				<div class="resume-wrapper" id="resumeWrapper">
+					<div class="resume-scroll" id="resumeScroll">
+						<!-- Dynamically populated buttons -->
+					</div>
+				</div>
+		
+				<!-- SELECTION FABS (Bottom Left - Reader view) -->
+				<div class="selection-fabs" id="selectionFabs">
+					<button class="fab fab-action" id="bookmarkFabBtn" onclick="toggleBookmarks()">
+						<span class="material-symbols-rounded" id="bookmarkFabIcon">bookmark</span>
+					</button>
+					<button class="fab fab-action" onclick="copySelected()">
+						<span class="material-symbols-rounded">content_copy</span>
+					</button>
+					<button class="fab fab-action" onclick="shareSelected()">
+						<span class="material-symbols-rounded">share</span>
+					</button>
+					<button class="fab fab-action" onclick="openStudyModal()">
+						<span class="material-symbols-rounded">travel_explore</span>
+					</button>
+				</div>
+				
+				<!-- PANIC FAB -->
+				<button class="fab fab-panic" id="panicBtn" onclick="triggerPanic()">
+					<span class="panic-symbol">±</span>
+				</button>
+			</div> 
+			
+			<!-- BOTTOM BAR -->
+			<div class="bottom-bar" id="bottomBar">
+				<button class="bb-btn" onclick="prevChapter()">
+					<span class="material-symbols-rounded">skip_previous</span>
+				</button>
+				<button class="bb-btn play-btn" id="playBtn">
+					<span class="material-symbols-rounded" id="playIcon">play_arrow</span>
+				</button>
+				<button class="bb-btn" onclick="nextChapter()">
+					<span class="material-symbols-rounded">skip_next</span>
+				</button>
 			</div>
 		</div>
-
-		<!-- SELECTION FABS (Bottom Left - Reader view) -->
-		<div class="selection-fabs" id="selectionFabs">
-			<button class="fab fab-action" id="bookmarkFabBtn" onclick="toggleBookmarks()">
-				<span class="material-symbols-rounded" id="bookmarkFabIcon">bookmark</span>
-			</button>
-			<button class="fab fab-action" onclick="copySelected()">
-				<span class="material-symbols-rounded">content_copy</span>
-			</button>
-			<button class="fab fab-action" onclick="shareSelected()">
-				<span class="material-symbols-rounded">share</span>
-			</button>
-			<button class="fab fab-action" onclick="openStudyModal()">
-				<span class="material-symbols-rounded">travel_explore</span>
-			</button>
-		</div>
-
-		<!-- BOTTOM BAR -->
-		<div class="bottom-bar" id="bottomBar">
-			<button class="bb-btn" onclick="prevChapter()">
-				<span class="material-symbols-rounded">skip_previous</span>
-			</button>
-			<button class="bb-btn play-btn" id="playBtn">
-				<span class="material-symbols-rounded" id="playIcon">play_arrow</span>
-			</button>
-			<button class="bb-btn" onclick="nextChapter()">
-				<span class="material-symbols-rounded">skip_next</span>
-			</button>
-		</div>
-
-		<!-- PANIC FAB -->
-		<button class="fab fab-panic" id="panicBtn" onclick="triggerPanic()">
-			<span class="panic-symbol">±</span>
-		</button>
 	</div>
 
 <script>
@@ -1812,6 +1821,7 @@ function nextChapter(autoPlay = false) {
 		const testament = currentIsNT ? activeData.NT : activeData.OT;
 		if (currentBookIndex < testament.length - 1) { let nextBook = testament[currentBookIndex + 1]; openChapter(nextBook.name, currentIsNT, 1, false, null, true); } 
 		else if (!currentIsNT && activeData.NT.length > 0) { let ntBook = activeData.NT[0]; openChapter(ntBook.name, true, 1, false, null, true); }
+		else if (currentIsNT && currentBookIndex < testament.length) { showToast("End of the Bible reached."); return }
 	}
 	if (autoPlay && synth) setTimeout(() => togglePlay(), 500);
 }
