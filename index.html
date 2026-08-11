@@ -205,14 +205,14 @@
 		.verse.flash { animation: verseFlash 0.35s ease-out; }
 
 		/* FABs Unified Dimensions & Shadows */
-		.fab, .fab-resume { box-shadow: var(--shadow); height: 56px; transition: transform 0.2s, background 0.2s; }
+		.fab, .fab-resume { box-shadow: var(--shadow); height: 56px; transition: transform 0.2s, background 0.2s; margin-bottom: 20px;}
 		.fab { position: absolute; z-index: 50; width: 56px; }
 		.fab:active { transform: scale(0.9); }
-		.fab-panic { background: #ff3b30; color: white; bottom: 20px; right: 20px; }
+		.fab-panic { background: #ff3b30; color: white; bottom: 0; right: 20px; }
 		.panic-symbol { font-size: 28px; line-height: 1; font-weight: 400; }
 		.fab-resume { background: var(--surface-color); color: var(--primary-color); border-radius: 28px; gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
 		.fab-resume:active { transform: scale(0.95); background: var(--surface-color-active); }
-		.resume-wrapper, .selection-fabs { position: absolute; z-index: 40; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(12px); bottom: 20px; }
+		.resume-wrapper, .selection-fabs { position: absolute; z-index: 40; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(12px); bottom: 0; }
 		
 		/* Selection FABs (Smooth transition toggle without keyframe flash) */
 		.selection-fabs { left: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - 56px*5) - 40px)/4), 20px); }
