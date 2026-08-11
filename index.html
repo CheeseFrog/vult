@@ -111,13 +111,16 @@
 		dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: blur(1.5px); }
 		dialog[open] { animation: fadeUp 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 		dialog:focus-visible { outline: none; }
-		dialog h3 { margin-bottom: 15px; font-weight: 600; text-align: center; }
+		dialog h3 { margin-bottom: 20px; margin-top: -5px; font-weight: 600; text-align: center; }
 		dialog p { margin-bottom: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
 		.modal-btn { margin-top: 20px; width: 100%; padding: 12px; background: var(--surface-color-active); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em; cursor: pointer; font-weight: 600; transition: background 0.2s; }
 		.modal-btn.primary { background: var(--primary-color); color: white; border: none; }
+		.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
+		.translation-select-wrapper:active, :is([onclick], button):active :is(.material-symbols-rounded, .text-primary) { filter: brightness(1.4); }
 
 		/* iOS Settings Lists */
 		.ios-list { background: var(--bg-color); border-radius: 10px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
+		.ios-list:last-of-type { margin-bottom: 0; }
 		.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; min-height: 52px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background 0.2s; position: relative; }
 		.ios-row:active { background: var(--surface-color-active); }
 		.ios-row:last-child { border-bottom: none; }
@@ -205,7 +208,7 @@
 		.verse.flash { animation: verseFlash 0.35s ease-out; }
 
 		/* FABs Unified Dimensions & Shadows */
-		.fab, .fab-resume { box-shadow: var(--shadow); height: 56px; transition: transform 0.2s, background 0.2s; margin-bottom: 20px;}
+		.fab, .fab-resume { box-shadow: var(--shadow); height: 56px; transition: transform 0.2s, background 0.2s; margin: 20px 0;}
 		.fab { position: absolute; z-index: 50; width: 56px; }
 		.fab:active { transform: scale(0.9); }
 		.fab-panic { background: #ff3b30; color: white; bottom: 0; right: 20px; }
@@ -220,7 +223,7 @@
 		.fab-action { background: var(--surface-color); color: var(--primary-color); position: relative; }
 
 		/* Resume Wrapper Layout (Smooth transition toggle without keyframe flash) */
-		.resume-wrapper { left: 0; right: 85px; mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%); }
+		.resume-wrapper { left: 0; right: 81px; mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%); }
 		.resume-scroll { display: flex; gap: 10px; height: 100%; overflow-x: auto; align-items: center; scrollbar-width: none; padding-left: 20px; padding-right: 40px; }
 		body:not(.panic-active) .resume-wrapper { right: 0; mask-image: none; }
 		body:not(.panic-active) .resume-scroll { padding-right: 20px; }
@@ -1438,7 +1441,7 @@ function updateResumeFabVisibility() {
 			icon.innerText = 'history';
 			
 			let text = document.createElement('span');
-			text.className = 'resume-text';
+			text.className = 'resume-text text-primary';
 
 			let longSpan = document.createElement('span');
 			longSpan.className = 'text-long';
