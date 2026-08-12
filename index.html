@@ -89,21 +89,21 @@
 		/* --- Calculator View (Centered) --- */
 		#app-bible { background-color: var(--bg-color); display: none; flex-direction: column; z-index: 10; }
 		#app-calculator-wrapper { background-color: var(--calc-bg); display: flex; justify-content: center; align-items: center; z-index: 10; }
-		#app-calculator { display: flex; flex-direction: column; justify-content: flex-end; padding: 20px; width: 100%; max-width: 450px; height: 100%; max-height: 800px; margin: auto; position: relative; }
-		.calc-display-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding-bottom: 20px; width: 100%; overflow: hidden; }
-
+		#app-calculator { display: flex; flex-direction: column; justify-content: flex-end; padding: 2dvh; width: 100%; max-width: min(100%, 65dvh); height: 100%; margin: auto; position: relative; }
+		.calc-display-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding-bottom: 2dvh; width: 100%; overflow: hidden; }
+		
 		/* Shared Calculator Display Styling */
 		.calc-displays { white-space: nowrap; text-align: right; width: 100%; overflow-x: auto; scrollbar-width: thin; }
-		#calcHistory { font-size: 1.5rem; font-weight: 300; color: var(--text-muted); margin-bottom: 5px; min-height: 2rem; }
-		#calcDisplay { font-size: 5rem; font-weight: 300; color: var(--calc-text); }
-		.calc-help { position: absolute; top: 20px; left: 20px; color: var(--calc-btn-num); font-size: 1.5rem; cursor: pointer; }
+		#calcHistory { font-size: 2.5dvh; font-weight: 300; color: var(--text-muted); margin-bottom: 1dvh; min-height: 3.5dvh; }
+		#calcDisplay { font-size: 9dvh; font-weight: 300; color: var(--calc-text); }
+		.calc-help { position: absolute; top: 2dvh; left: 2dvh; color: var(--calc-btn-num); font-size: 3dvh; cursor: pointer; }
 		body:has(#helpModal[open]) #calcHelpBtn { color: var(--primary-color); }
-		.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; }
-		.calc-btn { aspect-ratio: 1; font-size: 2rem; transition: filter 0.2s; box-shadow: var(--shadow); }
+		.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5dvh; }
+		.calc-btn { aspect-ratio: 1; font-size: 3.5dvh; transition: filter 0.2s; box-shadow: var(--shadow); }
 		.calc-btn:active { filter: brightness(1.4); }
-		.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 50px; justify-content: flex-start; padding-left: 30px; }
+		.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 10dvh; justify-content: flex-start; padding-left: 4dvh; }
 		.btn-num { background-color: var(--calc-btn-num); color: var(--calc-text); }
-		.btn-op { background-color: var(--calc-btn-op); color: var(--calc-text); font-size: 2.5rem; }
+		.btn-op { background-color: var(--calc-btn-op); color: var(--calc-text); font-size: 4.5dvh; }
 		.btn-func { background-color: var(--calc-btn-func); color: var(--calc-btn-func-text); }
 
 		/* Dialog Overlays */
@@ -116,10 +116,10 @@
 		.modal-btn { margin-top: 20px; width: 100%; padding: 12px; background: var(--surface-color-active); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em; cursor: pointer; font-weight: 600; transition: background 0.2s; }
 		.modal-btn.primary { background: var(--primary-color); color: white; border: none; }
 		.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
-		.translation-select-wrapper:active, :is([onclick], button):active :is(.material-symbols-rounded, .text-primary) { filter: brightness(1.4); }
+		.translation-select-wrapper:active, :is([onclick], button):active :is(.material-symbols-rounded, .text-primary) { color: color-mix(in srgb, var(--primary-color), white 45%); }
 
 		/* iOS Settings Lists */
-		.ios-list { background: var(--bg-color); border-radius: 10px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
+		.ios-list { border-radius: 10px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
 		.ios-list:last-of-type { margin-bottom: 0; }
 		.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; min-height: 52px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background 0.2s; position: relative; }
 		.ios-row:active { background: var(--surface-color-active); }
@@ -233,12 +233,15 @@
 		#fabContainer .visible, #panicBtn { pointer-events: auto; }
 		#fabContainer .visible { opacity: 1; transform: translateY(0); }
 
-		/* Orientation shorthand logic for Resume FABs (Shorthand in Portrait, Longhand in Landscape) */
+		/* Orientation shorthand logic for modals and Resume FABs (Shorthand in Portrait, Longhand in Landscape) */
+		.settings-list { overflow-y: auto; max-height: 70vh; }
 		.text-long { display: none; }
 		.text-short { display: inline; }
 		@media (orientation: landscape) {
 			.text-long { display: inline; }
 			.text-short { display: none; }
+			#studyModal .ios-list { overflow-y: auto; max-height: 30vh;}
+			.settings-list { max-height: 50vh; }
 		}
 
 		/* Bottom Bar */
@@ -349,7 +352,7 @@
 	<!-- SETTINGS MODAL -->
 	<dialog id="settingsModal">
 		<h3>Settings</h3>
-		<div id="settings-list" class="settings-list" style="max-height: 70vh; overflow-y: auto;">
+		<div id="settings-list" class="settings-list">
 			<div class="ios-list">
 				<div class="ios-row ios-select-row">
 					<div class="ios-row-label">Theme</div>
@@ -1095,12 +1098,12 @@ function updateDisplay() {
 	histEl.innerText = formatDisplay(historyValue);
 	histEl.scrollLeft = histEl.scrollWidth;
 
-	el.style.fontSize = '5rem';
+	el.style.fontSize = '9dvh';
 	const container = el.parentElement;
-	let currentSize = 5.0;
-	while (el.scrollWidth > container.clientWidth && currentSize > 2.0) {
-		currentSize -= 0.2;
-		el.style.fontSize = currentSize + 'rem';
+	let currentSize = 9.0;
+	while (el.scrollWidth > container.clientWidth && currentSize > 3.0) {
+		currentSize -= 0.5;
+		el.style.fontSize = currentSize + 'dvh';
 	}
 }
 
