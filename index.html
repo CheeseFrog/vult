@@ -244,7 +244,7 @@
 		#fabContainer .visible { opacity: 1; transform: translateY(0); }
 
 		/* Orientation shorthand logic for modals and Resume FABs (Shorthand in Portrait, Longhand in Landscape) */
-		.settings-list { overflow-y: auto; max-height: 70vh; }
+		.settings-list { overflow-y: auto; max-height: 70vh; margin: -12px -8px; padding: 12px 8px; mask-image: linear-gradient(transparent, black 12px, black calc(100% - 12px), transparent);}
 		.text-long { display: none; }
 		.text-short { display: inline; }
 		@media (orientation: landscape) {
@@ -404,20 +404,6 @@
 						</div>
 					</div>
 				</div>
-				
-				<div class="ios-row ios-select-row">
-					<div class="ios-row-label">Data Source</div>
-					<div class="ios-row-control">
-						<div class="ios-select-wrapper">
-							<span id="sourceDisplay" class="ios-select-display">GetBible</span>
-							<span class="material-symbols-rounded">chevron_right</span>
-						</div>
-					</div>
-					<select id="setSource" class="ios-select-overlay">
-						<option value="getbible">GetBible</option>
-						<option value="openbible">OpenBible</option>
-					</select>
-				</div>
 			</div>
 
 			<div class="ios-list" id="speechSettingsGroup">
@@ -465,8 +451,73 @@
 					</div>
 				</label>
 			</div>
+			
+			<div class="ios-list">
+				<!-- Clicking Advanced replaces the current modal visually -->
+				<div class="ios-row" onclick="closeModal('settingsModal'); openModal('advancedModal', 'modal-advanced')">
+					<div class="ios-row-label">More Settings</div>
+					<span class="material-symbols-rounded text-muted">chevron_right</span>
+				</div>
+			</div>
 		</div>
 		<button class="modal-btn primary" onclick="closeModal('settingsModal')">Done</button>
+	</dialog>
+
+	<!-- ADVANCED SETTINGS MODAL -->
+	<dialog id="advancedModal">
+		<h3>More Settings</h3>
+		<div class="settings-list">
+			<div class="ios-list">
+				<div class="ios-row ios-select-row">
+					<div class="ios-row-label">Data Source</div>
+					<div class="ios-row-control">
+						<div class="ios-select-wrapper">
+							<span id="sourceDisplay" class="ios-select-display">GetBible</span>
+							<span class="material-symbols-rounded">chevron_right</span>
+						</div>
+					</div>
+					<select id="setSource" class="ios-select-overlay">
+						<option value="getbible">GetBible</option>
+						<option value="openbible">OpenBible</option>
+					</select>
+				</div>
+			</div>
+			
+			<div class="ios-list">
+				<div class="ios-row" onclick="exportBookmarks()">
+					<div class="ios-row-label">Export Bookmarks</div>
+					<span class="material-symbols-rounded text-muted">upload</span>
+				</div>
+				<div class="ios-row" onclick="$('importBookmarksInput').click()">
+					<div class="ios-row-label">Import Bookmarks</div>
+					<span class="material-symbols-rounded text-muted">download</span>
+					<input type="file" id="importBookmarksInput" style="display: none;" accept=".json" onchange="importBookmarks(event)">
+				</div>
+			</div>
+			
+			<div class="ios-list">
+				<div class="ios-row" onclick="shareApp()">
+					<div class="ios-row-label">Share App</div>
+					<span class="material-symbols-rounded text-muted">share</span>
+				</div>
+				<div class="ios-row" onclick="window.location.href='mailto:au.yousef+dev@gmail.com'">
+					<div class="ios-row-label">Contact Developer</div>
+					<span class="material-symbols-rounded text-muted">mail</span>
+				</div>
+				<div class="ios-row" onclick="window.open('https://paypal.me/auyousef', '_blank')">
+					<div class="ios-row-label">Donate</div>
+					<span class="material-symbols-rounded text-muted">open_in_new</span>
+				</div>
+			</div>
+			
+			<div class="ios-list">
+				<div class="ios-row" onclick="resetApp()">
+					<div class="ios-row-label" style="color: #ff3b30;">Reset App</div>
+					<span class="material-symbols-rounded" style="color: #ff3b30;">delete_forever</span>
+				</div>
+			</div>
+		</div>
+		<button class="modal-btn primary" onclick="closeModal('advancedModal')">Done</button>
 	</dialog>
 
 	<!-- BIBLE APP (VULT) -->
@@ -821,6 +872,9 @@ async function handleInstallClick() {
 }
 
 function showToast(msg) {
+	// Close all modals when a toast is triggered
+	document.querySelectorAll('dialog').forEach(d => { if (d.open) d.close(); });
+	
 	let toast = $('toastMsg');
 	toast.innerText = msg;
 	toast.classList.remove('animate');
@@ -862,7 +916,7 @@ function pushNavState(viewName) {
 window.onpopstate = function (event) {
 	isPopState = true;
 	
-	const dialogs = ['settingsModal', 'helpModal', 'studyModal'];
+	const dialogs = ['settingsModal', 'advancedModal', 'helpModal', 'studyModal'];
 	for(let id of dialogs) {
 		let el = $(id);
 		if (el && el.open) { el.close(); isPopState = false; return; }
@@ -1995,6 +2049,80 @@ function populateVoices() {
 }
 
 if (synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = populateVoices;
+
+/* =========================================
+	ADVANCED & ABOUT LOGIC
+========================================= */
+function exportBookmarks() {
+	if (state.bookmarks.length === 0) {
+		showToast("No bookmarks to export.");
+		return;
+	}
+	const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.bookmarks));
+	const dlAnchorElem = document.createElement('a');
+	dlAnchorElem.setAttribute("href", dataStr);
+	dlAnchorElem.setAttribute("download", "vult_bookmarks.json");
+	dlAnchorElem.click();
+}
+
+function importBookmarks(event) {
+	const file = event.target.files[0];
+	if (!file) return;
+
+	const reader = new FileReader();
+	reader.onload = (e) => {
+		try {
+			const imported = JSON.parse(e.target.result);
+			if (Array.isArray(imported)) {
+				let added = 0;
+				// Merge bookmarks, ignoring duplicates based on location and translation
+				imported.forEach(bm => {
+					if (bm.ref && bm.trans && bm.book && bm.chapter && bm.verse) {
+						const exists = state.bookmarks.some(existing => 
+							existing.book === bm.book && existing.chapter === bm.chapter && 
+							existing.verse === bm.verse && existing.trans === bm.trans
+						);
+						if (!exists) {
+							state.bookmarks.push(bm);
+							added++;
+						}
+					}
+				});
+				saveState();
+				// Re-render bookmarks if we are currently on the home view
+				if ($('view-home').classList.contains('active')) renderBookmarksList(); 
+				showToast(`Imported ${added} new bookmarks.`);
+			} else {
+				showToast("Invalid bookmarks format.");
+			}
+		} catch (err) {
+			showToast("Error reading file.");
+		}
+		// Reset the input so the same file can be uploaded again if needed
+		event.target.value = "";
+	};
+	reader.readAsText(file);
+}
+
+function resetApp() {
+	if (confirm("Are you sure you want to completely reset the app? This will wipe your bookmarks, history, and settings.")) {
+		localStorage.removeItem('vult_state');
+		localStorage.removeItem('vult_hideHelp');
+		window.location.reload();
+	}
+}
+
+function shareApp() {
+	if (navigator.share) {
+		navigator.share({
+			title: 'Vult',
+			url: window.location.href
+		}).catch(err => { console.log("Share canceled or failed", err); });
+	} else {
+		navigator.clipboard.writeText(window.location.href);
+		showToast("App URL copied to clipboard");
+	}
+}
 
 /* =========================================
 	PANIC LOGIC
