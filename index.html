@@ -35,7 +35,7 @@
 			--base-sans-serif: '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', Arial, sans-serif;
 			--base-serif: Georgia, serif;
 			--shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.22), 0 0 0 1px hsla(0,0%,100%,0.08) inset;
-			--bottom-bar-height: 70px;
+			--bottom-bar-height: calc(var(--fab-size) + 12px);
 			--header-height: 56px;
 			--fab-size: 56px;
 			
@@ -152,14 +152,21 @@
 		/* --- Bible App Views --- */
 		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: 10px 0 180px; transition: filter 0.3s, opacity 0.3s; }
 		.view.active { display: flex; animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 5; height: var(--header-height); }
-		.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; }
+		
+		/* Header Transitions for Minified State */
+		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 5; height: var(--header-height); transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; }
+		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+		.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 		.header-right { justify-content: flex-end; }
 		.header-btn { background: none; color: var(--primary-color); font-size: 1.1rem; height: 100%; padding: 0 20px; }
-		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; }
 		body:has(#view-home.active) header h1 { font-variant: unicase; letter-spacing: 0.05em; }
 		.translation-select-wrapper { position: relative; display: flex; align-items: center; color: var(--primary-color); font-weight: 600; font-size: 1.2rem; }
 		#transSelectDisplay { max-width: 30vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+		/* Minified State Classes */
+		header.minified { height: 36px; }
+		header.minified h1 { font-size: 0.95rem; }
+		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
 
 		/* Loading Bar */
 		.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--border-color); display: none; overflow: hidden; z-index: 10; }
@@ -232,7 +239,7 @@
 		body:not(.panic-active) .resume-scroll { padding-right: 20px; }
 		
 		/* Simplified Pointer Events Control for Hidden/Visible FAB Groups */
-		#fabContainer { pointer-events: none; background: linear-gradient(to top, var(--bg-color) 0px, transparent calc(var(--fab-size) + 30px)); }
+		#fabContainer { pointer-events: none; background: linear-gradient(to top, var(--bg-color) -20px, transparent calc(var(--fab-size) + 30px)); }
 		#fabContainer .visible, #panicBtn { pointer-events: auto; }
 		#fabContainer .visible { opacity: 1; transform: translateY(0); }
 
@@ -250,13 +257,13 @@
 		/* Bottom Bar */
 		.bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; transform: translateY(100%); transition: transform 0.3s; z-index: 39; pointer-events: auto; }
 		.bottom-bar.visible { transform: translateY(0); }
-		.bb-btn { background: none; color: var(--text-color); padding: 10px; height: 100%;}
+		.bb-btn { background: none; color: var(--text-color); padding: 10px; height: 100%; aspect-ratio: 1;}
 		.bb-btn .material-symbols-rounded { font-size: 32px; }
 		
 		/* Radial Progress Ring around Play Button */
-		.bb-btn.play-btn { --progress-angle: 0deg; --progress-color: var(--primary-color); position: relative; height: var(--fab-size); aspect-ratio: 1; border-radius: 50%; padding: 0; color: var(--primary-color); background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)); transition: background 0.2s ease, color 0.2s ease; }
+		.bb-btn.play-btn { --progress-angle: 0deg; --progress-color: var(--primary-color); position: relative; height: var(--fab-size); border-radius: 50%; padding: 0; color: var(--primary-color); background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)); transition: background 0.2s ease, color 0.2s ease; }
 		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--header-bg); z-index: 1; }
-		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; font-size: 32px; }
+		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; }
 		.bb-btn.play-btn.is-paused { --progress-color: var(--text-muted); color: var(--text-muted); }
 
 		/* Bottom Layout Grouping */
@@ -898,6 +905,24 @@ function init() {
 		myShakeEvent.start();
 		window.addEventListener('shake', handleShakeEvent, false);
 	}
+
+	// Reader View Header Scroll Listener (Directional)
+	let lastScrollTop = 0;
+	$('view-reader').addEventListener('scroll', (e) => {
+		const currentScrollTop = e.target.scrollTop;
+		const header = document.querySelector('header');
+		
+		if (currentScrollTop > lastScrollTop && currentScrollTop > 50) {
+			// Scrolling down
+			header.classList.add('minified');
+		} else if (currentScrollTop < lastScrollTop) {
+			// Scrolling up
+			header.classList.remove('minified');
+		}
+		
+		// Prevent negative scrolling values (bounce effect on iOS) from breaking logic
+		lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+	});
 	
 	history.replaceState({ view: 'base' }, '');
 	
@@ -1607,6 +1632,7 @@ function hideAllViews() {
 	document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
 	$('bottomBar').classList.remove('visible');
 	$('resumeWrapper').classList.remove('visible');
+	document.querySelector('header').classList.remove('minified');
 	updateSelectionFabs();
 }
 
