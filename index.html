@@ -43,7 +43,7 @@
 			--reader-font-family: var(--base-serif);
 			--reader-font-size: 16px;
 			color-scheme: dark;
-			scrollbar-color: var(--border-color) var(--surface-color);
+			scrollbar-color: var(--text-muted) var(--surface-color);
 		}
 
 		[data-theme="light"] {
@@ -203,7 +203,7 @@
 		/* Reader View */
 		#view-reader { padding: 18px; padding-bottom: 180px; line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
 		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.2s, filter 0.2s, box-shadow 0.2s; }
-		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: super; margin-inline-end: 4px; transition: color 0.2s; }
+		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color 0.2s; }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
 		
 		/* Verse States */
@@ -1071,7 +1071,7 @@ function checkSpeechSupport() {
 
 function setupPlayButton() {
 	setupLongPress($('playBtn'), 
-		() => { cancelSpeech(); playingIndex = -1; if ('vibrate' in navigator) navigator.vibrate(50); },
+		() => { cancelSpeech(); playingIndex = -1; if ('vibrate' in navigator) navigator.vibrate(50); showToast("Playback stopped."); },
 		() => togglePlay()
 	);
 }
