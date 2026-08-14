@@ -102,7 +102,7 @@
 		.calc-help { position: absolute; top: 2dvh; left: 2dvh; color: var(--calc-btn-num); font-size: 3dvh; cursor: pointer; }
 		body:has(#helpModal[open]) #calcHelpBtn { color: var(--primary-color); }
 		.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5dvh; }
-		.calc-btn { aspect-ratio: 1; font-size: 3.5dvh; transition: filter 0.2s; box-shadow: var(--shadow); }
+		.calc-btn { aspect-ratio: 1; font-size: 4dvh; transition: filter 0.2s; box-shadow: var(--shadow); }
 		.calc-btn:active { filter: brightness(1.4); }
 		.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 10dvh; justify-content: flex-start; padding-left: 4dvh; }
 		.btn-num { background-color: var(--calc-btn-num); color: var(--calc-text); }
@@ -164,7 +164,7 @@
 		#transSelectDisplay { max-width: 30vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 		/* Minified State Classes */
-		header.minified { height: 36px; }
+		header.minified { height: 1.85rem; }
 		header.minified h1 { font-size: 0.95rem; }
 		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
 
@@ -965,12 +965,13 @@ function init() {
 	$('view-reader').addEventListener('scroll', (e) => {
 		const currentScrollTop = e.target.scrollTop;
 		const header = document.querySelector('header');
+		const endOfContent = e.target.scrollHeight - e.target.clientHeight;
 		
-		if (currentScrollTop > lastScrollTop && currentScrollTop > 50) {
-			// Scrolling down
+		if (currentScrollTop > lastScrollTop && currentScrollTop > 50 && currentScrollTop < endOfContent - 50) {
+			// Scrolling down and not at the end of content
 			header.classList.add('minified');
-		} else if (currentScrollTop < lastScrollTop) {
-			// Scrolling up
+		} else if (currentScrollTop < lastScrollTop || currentScrollTop >= endOfContent - 50) {
+			// Scrolling up and not at the end of content
 			header.classList.remove('minified');
 		}
 		
