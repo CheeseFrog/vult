@@ -156,11 +156,11 @@
 		.ios-toggle:checked::after { transform: translateX(1.25em); }
 
 		/* --- Bible App Views --- */
-		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: 10px 0 180px; transition: filter 0.3s, opacity 0.3s; }
+		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 10px) 0 180px; transition: filter 0.3s, opacity 0.3s; }
 		.view.active { display: flex; animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 		
 		/* Header Transitions for Minified State */
-		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: sticky; top: 0; z-index: 5; height: var(--header-height); transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; }
+		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: absolute; inset: 0; z-index: 5; height: var(--header-height); transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; }
 		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 		.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
 		.header-right { justify-content: flex-end; }
@@ -201,7 +201,7 @@
 		.bookmark-text { font-size: 0.85em; color: var(--text-muted); }
 
 		/* Reader View */
-		#view-reader { padding: 18px; padding-bottom: 180px; line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
+		#view-reader { padding-left: 18px; padding-right: 18px; line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
 		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.2s, filter 0.2s, box-shadow 0.2s; }
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color 0.2s; }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
@@ -267,8 +267,8 @@
 		.bb-btn .material-symbols-rounded { font-size: 32px; }
 		
 		/* Radial Progress Ring around Play Button */
-		.bb-btn.play-btn { --progress-angle: 0deg; --progress-color: var(--primary-color); position: relative; height: var(--fab-size); border-radius: 50%; padding: 0; color: var(--primary-color); background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)); transition: background 0.2s ease, color 0.2s ease; }
-		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 3px; border-radius: 50%; background: var(--header-bg); z-index: 1; }
+		.bb-btn.play-btn { --progress-angle: 0deg; --progress-color: var(--primary-color); position: relative; height: var(--fab-size); border-radius: 50%; padding: 0; color: var(--primary-color); transition: background 0.2s ease, color 0.2s ease; }
+		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)); mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.5px), black calc(100% - 3px)); transition: background 0.2s ease; }
 		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; }
 		.bb-btn.play-btn.is-paused { --progress-color: var(--text-muted); color: var(--text-muted); }
 
@@ -281,6 +281,8 @@
 		.toast { position: fixed; top: var(--header-height); left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px); padding: 12px 24px; border-radius: 24px; z-index: 9999; font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
 		@keyframes toastAnim { 0%, 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; pointer-events: none; } 15%, 85% { transform: translateX(-50%) translateY(-50%); opacity: 1; pointer-events: auto; } }
 		.toast.animate { animation: toastAnim 2s ease forwards; }
+
+		/* header, .bottom-bar {backdrop-filter: blur(20px) opacity(1);  background-color: color-mix(in srgb,var(--header-bg) 50%, rgba(0,0,0,0) 50%);} */
 
 	</style>
 </head>
@@ -2065,11 +2067,15 @@ function exportBookmarks() {
 		showToast("No bookmarks to export.");
 		return;
 	}
-	const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(state.bookmarks));
+	const blob = new Blob([JSON.stringify(state.bookmarks, null, 2)], { type: 'application/json' });
+	const url = URL.createObjectURL(blob);
 	const dlAnchorElem = document.createElement('a');
-	dlAnchorElem.setAttribute("href", dataStr);
-	dlAnchorElem.setAttribute("download", "vult_bookmarks.json");
+	const title = "vult_bookmarks_" + new Date().toISOString().slice(0, 10) + ".json";
+	dlAnchorElem.setAttribute("href", url);
+	dlAnchorElem.setAttribute("download", title);
 	dlAnchorElem.click();
+	showToast("Exported: " + title);
+	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
 
 function importBookmarks(event) {
