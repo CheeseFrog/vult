@@ -159,7 +159,7 @@
 		.ios-toggle:checked::after { transform: translateX(1.25em); }
 
 		/* --- Bible App Views --- */
-		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 10px) 0 180px; transition: filter 0.3s, opacity 0.3s; }
+		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 20px) 20px 180px; transition: filter 0.3s, opacity 0.3s; }
 		.view.active { display: flex; animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 		
 		/* Header Transitions for Minified State */
@@ -185,7 +185,7 @@
 		body.is-loading .view { opacity: 0.3 !important; pointer-events: none !important; filter: grayscale(100%) !important; }
 
 		/* Grids & Details */
-		details { padding: 10px 20px; }
+		details { padding: 5px 0 15px 0; }
 		details:has(div:empty) { opacity: 0; }
 		summary { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 15px; cursor: pointer; color: var(--text-color); list-style: none; position: relative; padding-right: 30px; outline: none; }
 		summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), top 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
@@ -204,7 +204,8 @@
 		.bookmark-text { font-size: 0.85em; color: var(--text-muted); }
 
 		/* Reader View */
-		#view-reader { padding-left: 18px; padding-right: 18px; line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
+		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
+		#readerContent { margin: -2px; }
 		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.2s, filter 0.2s, box-shadow 0.2s; }
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color 0.2s; }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
@@ -1706,9 +1707,7 @@ function scrollIntoVerse(verseNum) {
 		setTimeout(() => {
 			const isSmall = targetEl.offsetHeight < readerView.clientHeight;
 			const targetTop = targetEl.offsetTop - readerView.offsetTop;
-			const computedTop = isSmall 
-				? targetTop - (readerView.clientHeight / 2) + (targetEl.offsetHeight / 2)
-				: targetTop;
+			const computedTop = isSmall ? targetTop - (readerView.clientHeight / 3) + (targetEl.offsetHeight / 3) : targetTop;
 
 			readerView.scrollTo({
 				top: Math.max(0, computedTop),
@@ -1717,6 +1716,7 @@ function scrollIntoVerse(verseNum) {
 		}, 100);
 	}
 }
+
 
 function hideAllViews() {
 	document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
