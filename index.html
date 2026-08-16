@@ -94,6 +94,7 @@
 		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
+
 		/* Chapter Transition Animation */
 		.chapter-transition { animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
@@ -204,7 +205,7 @@
 
 		/* Reader View */
 		#view-reader { padding-left: 18px; padding-right: 18px; line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
-		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; }
+		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.2s, filter 0.2s, box-shadow 0.2s; }
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color 0.2s; }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
 		
@@ -807,10 +808,6 @@ let pendingHistory = [];
 let backPressCount = 0;
 let backPressTimer = null;
 
-// Scroll Lock for programmatic scrolling
-let isAutoScrolling = false;
-let autoScrollTimeout = null;
-
 /* =========================================
 	PWA DYNAMIC MANIFEST & INSTALL LOGIC
 ========================================= */
@@ -976,8 +973,6 @@ function init() {
 	// Reader View Header Scroll Listener (Directional)
 	let lastScrollTop = 0;
 	$('view-reader').addEventListener('scroll', (e) => {
-		// Exit early to prevent layout thrashing during smooth scroll
-		if (isAutoScrolling) return;
 		const currentScrollTop = e.target.scrollTop;
 		const header = document.querySelector('header');
 		const endOfContent = e.target.scrollHeight - e.target.clientHeight;
@@ -1699,22 +1694,26 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 }
 
 function scrollIntoVerse(verseNum) {
-		const targetEl = $(`v${verseNum}`);
-		if (targetEl) {
-			// Lock the scroll listener
-			isAutoScrolling = true;
-			clearTimeout(autoScrollTimeout);
+	const targetEl = $(`v${verseNum}`);
+	if (!targetEl) return;
+	// calculate absolute scroll distance to the target element
+	const targetRect = targetEl.getBoundingClientRect();
+	const currentScrollTop = document.querySelector('body').scrollTop || document.documentElement.scrollTop;
+	const targetScrollTop = currentScrollTop + targetRect.top;
 
-			requestAnimationFrame(() => { 
-				targetEl.scrollIntoView({ behavior: 'smooth', block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }); 
-			});
+	// check if absolute scroll distance is within viewport height, if so, use smooth scroll, otherwise instant scroll
+	const viewportHeight = window.innerHeight;
+	const scrollDistance = Math.abs(targetScrollTop - currentScrollTop);
+	const isWithinViewport = scrollDistance <= viewportHeight*1.5;
 
-			// Unlock after Chrome's smooth scroll animation completes (~800ms)
-			autoScrollTimeout = setTimeout(() => {
-				isAutoScrolling = false;
-			}, 800);
-		}
-	}
+
+	// // check if scroll distance is already within viewport height, if so, use smooth scroll, otherwise instant scroll
+	// const rect = targetEl.getBoundingClientRect();
+	// const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
+
+	setTimeout(() => { targetEl.scrollIntoView({ behavior: (isWithinViewport ? 'smooth' : 'instant'), block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }) }, 100);
+}
+
 
 function hideAllViews() {
 	document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
