@@ -15,10 +15,9 @@
 			/* iOS Calculator Colors */
 			--calc-bg: #000000;
 			--calc-text: #ffffff;
-			--calc-btn-num: #333333;
-			--calc-btn-op: #ff9f0a;
-			--calc-btn-func: #a5a5a5;
-			--calc-btn-func-text: #000000;
+			--calc-btn-num: #2f2f2f;
+			--calc-btn-op: #ff9200;
+			--calc-btn-func: #5a5a5a;
 
 			/* Bible App Variables (iOS Dark Mode Default) */
 			--bg-color: #000000;
@@ -107,17 +106,16 @@
 		
 		/* Shared Calculator Display Styling */
 		.calc-displays { white-space: nowrap; text-align: right; width: 100%; overflow-x: auto; scrollbar-width: thin; }
-		#calcHistory { font-size: 2.5dvh; font-weight: 300; color: var(--text-muted); margin-bottom: 1dvh; min-height: 3.5dvh; }
+		#calcHistory { font-size: 3.5dvh; font-weight: 300; color: var(--text-muted); margin-bottom: 1dvh; min-height: 3.5dvh; }
 		#calcDisplay { font-size: 9dvh; font-weight: 300; color: var(--calc-text); }
-		.calc-help { position: absolute; top: 2dvh; left: 2dvh; color: var(--calc-btn-num); font-size: 3dvh; cursor: pointer; }
+		.calc-help { position: absolute; top: 2dvh; left: 2dvh; color: var(--calc-btn-num); font-size: 3.5vh; cursor: pointer; }
 		body:has(#helpModal[open]) #calcHelpBtn { color: var(--primary-color); }
 		.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5dvh; }
-		.calc-btn { aspect-ratio: 1; font-size: 4dvh; transition: filter 0.2s; box-shadow: var(--shadow); }
+		.calc-btn { aspect-ratio: 1; font-size: 4dvh; color: var(--calc-text); background-color: var(--calc-btn-num); transition: filter 0.2s; box-shadow: var(--shadow); }
 		.calc-btn:active { filter: brightness(1.4); }
-		.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 10dvh; justify-content: flex-start; padding-left: 4dvh; }
-		.btn-num { background-color: var(--calc-btn-num); color: var(--calc-text); }
-		.btn-op { background-color: var(--calc-btn-op); color: var(--calc-text); font-size: 4.5dvh; }
-		.btn-func { background-color: var(--calc-btn-func); color: var(--calc-btn-func-text); }
+		.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 10dvh; justify-content: flex-start; padding-left:0; padding-right: 1.5dvh; }
+		.btn-op { background-color: var(--calc-btn-op); font-size: 6dvh; }
+		.btn-func { background-color: var(--calc-btn-func); }
 
 		/* Dialog Overlays */
 		dialog { margin: auto; padding: 25px; border-radius: 12px; border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible;}
@@ -233,7 +231,7 @@
 		.fab:active, .fab-resume:active, .play-btn:active { transform: scale(0.95); background: var(--surface-color-active); }
 		.fab { position: absolute; z-index: 50; width: var(--fab-size); }
 		.fab-panic { color: var(--fab-panic-color); bottom: 0; right: 20px; }
-		.panic-symbol { font-size: 28px; line-height: 1; font-weight: 400; }
+		.panic-symbol { font-size: 1.75rem; line-height: 1; font-weight: 400; }
 		.fab-resume { color: var(--primary-color); border-radius: 28px; gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
 		.resume-wrapper, .selection-fabs { position: absolute; z-index: 40; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(12px); bottom: 0; }
 		
@@ -321,7 +319,7 @@
 				<button class="calc-btn btn-num" onclick="calcInput('3')">3</button>
 				<button class="calc-btn btn-op" onclick="calcInput('+')">+</button>
 				
-				<button class="calc-btn btn-num zero" onclick="calcInput('0')">0</button>
+				<button class="calc-btn btn-num zero" onclick="calcInput('0')"><span style="display:flex; align-items:center; justify-content:center; width:50%; height:100%;">0</span></button>
 				<button class="calc-btn btn-num" onclick="calcInput('.')">.</button>
 				<button class="calc-btn btn-op" onclick="calcInput('=')">=</button>
 			</div>
@@ -1689,10 +1687,15 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 	});
 
 	if (scrollToVerse && targetVerseNum) {
-		setTimeout(() => { let targetEl = $(`v${targetVerseNum}`); if (targetEl) targetEl.scrollIntoView({ behavior: 'smooth', block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }); }, 100);
+		scrollIntoVerse(targetVerseNum);
 	} else { readerView.scrollTop = 0; }
 	
 	pushNavState('reader');
+}
+
+function scrollIntoVerse(verseNum) {
+	const targetEl = $(`v${verseNum}`);
+	if (targetEl) requestAnimationFrame(() => { targetEl.scrollIntoView({ behavior: 'smooth', block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }); });
 }
 
 function hideAllViews() {
@@ -1891,7 +1894,7 @@ function highlightPlayingVerse() {
 	if (el) {
 		el.classList.add('playing');
 		if (isPaused) el.classList.add('paused');
-		el.scrollIntoView({ behavior: 'smooth', block: (el.offsetHeight < window.innerHeight ? 'center' : 'start') });
+		scrollIntoVerse(playingIndex);
 	}
 }
 
