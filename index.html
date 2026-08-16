@@ -970,24 +970,24 @@ function init() {
 		window.addEventListener('shake', handleShakeEvent, false);
 	}
 
-	// // Reader View Header Scroll Listener (Directional)
-	// let lastScrollTop = 0;
-	// $('view-reader').addEventListener('scroll', (e) => {
-	// 	const currentScrollTop = e.target.scrollTop;
-	// 	const header = document.querySelector('header');
-	// 	const endOfContent = e.target.scrollHeight - e.target.clientHeight;
+	// Reader View Header Scroll Listener (Directional)
+	let lastScrollTop = 0;
+	$('view-reader').addEventListener('scroll', (e) => {
+		const currentScrollTop = e.target.scrollTop;
+		const header = document.querySelector('header');
+		const endOfContent = e.target.scrollHeight - e.target.clientHeight;
 		
-	// 	if (currentScrollTop > lastScrollTop && currentScrollTop > 50 && currentScrollTop < endOfContent - 50) {
-	// 		// Scrolling down and not at the end of content
-	// 		header.classList.add('minified');
-	// 	} else if (currentScrollTop < lastScrollTop || currentScrollTop >= endOfContent - 50) {
-	// 		// Scrolling up and not at the end of content
-	// 		header.classList.remove('minified');
-	// 	}
+		if (currentScrollTop > lastScrollTop && currentScrollTop > 50 && currentScrollTop < endOfContent - 50) {
+			// Scrolling down and not at the end of content
+			header.classList.add('minified');
+		} else if (currentScrollTop < lastScrollTop || currentScrollTop >= endOfContent - 50) {
+			// Scrolling up and not at the end of content
+			header.classList.remove('minified');
+		}
 		
-	// 	// Prevent negative scrolling values (bounce effect on iOS) from breaking logic
-	// 	lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
-	// });
+		// Prevent negative scrolling values (bounce effect on iOS) from breaking logic
+		lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+	});
 	
 	history.replaceState({ view: 'base' }, '');
 	
@@ -1693,11 +1693,30 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 	pushNavState('reader');
 }
 
+// function scrollIntoVerse(verseNum) {
+// 	const targetEl = $(`v${verseNum}`);
+// 	if (targetEl) setTimeout(() => { targetEl.scrollIntoView({ behavior: 'smooth', block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }) }, 100);
+// }
+
+
 function scrollIntoVerse(verseNum) {
 	const targetEl = $(`v${verseNum}`);
-	if (targetEl) setTimeout(() => { targetEl.scrollIntoView({ behavior: 'smooth', block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }) }, 100);
-}
+	const readerView = $('view-reader');
+	if (targetEl && readerView) {
+		setTimeout(() => {
+			const isSmall = targetEl.offsetHeight < readerView.clientHeight;
+			const targetTop = targetEl.offsetTop - readerView.offsetTop;
+			const computedTop = isSmall 
+				? targetTop - (readerView.clientHeight / 2) + (targetEl.offsetHeight / 2)
+				: targetTop;
 
+			readerView.scrollTo({
+				top: Math.max(0, computedTop),
+				behavior: 'smooth'
+			});
+		}, 100);
+	}
+}
 
 function hideAllViews() {
 	document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
