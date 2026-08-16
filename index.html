@@ -173,9 +173,9 @@
 		#transSelectDisplay { max-width: 30vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 		/* Minified State Classes */
-		/* header.minified { height: 1.85rem; }
+		header.minified { height: 1.85rem; }
 		header.minified h1 { font-size: 0.95rem; }
-		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; } */
+		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
 
 		/* Loading Bar */
 		.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--border-color); display: none; overflow: hidden; z-index: 10; }
@@ -970,24 +970,24 @@ function init() {
 		window.addEventListener('shake', handleShakeEvent, false);
 	}
 
-	// Reader View Header Scroll Listener (Directional)
-	let lastScrollTop = 0;
-	$('view-reader').addEventListener('scroll', (e) => {
-		const currentScrollTop = e.target.scrollTop;
-		const header = document.querySelector('header');
-		const endOfContent = e.target.scrollHeight - e.target.clientHeight;
+	// // Reader View Header Scroll Listener (Directional)
+	// let lastScrollTop = 0;
+	// $('view-reader').addEventListener('scroll', (e) => {
+	// 	const currentScrollTop = e.target.scrollTop;
+	// 	const header = document.querySelector('header');
+	// 	const endOfContent = e.target.scrollHeight - e.target.clientHeight;
 		
-		if (currentScrollTop > lastScrollTop && currentScrollTop > 50 && currentScrollTop < endOfContent - 50) {
-			// Scrolling down and not at the end of content
-			header.classList.add('minified');
-		} else if (currentScrollTop < lastScrollTop || currentScrollTop >= endOfContent - 50) {
-			// Scrolling up and not at the end of content
-			header.classList.remove('minified');
-		}
+	// 	if (currentScrollTop > lastScrollTop && currentScrollTop > 50 && currentScrollTop < endOfContent - 50) {
+	// 		// Scrolling down and not at the end of content
+	// 		header.classList.add('minified');
+	// 	} else if (currentScrollTop < lastScrollTop || currentScrollTop >= endOfContent - 50) {
+	// 		// Scrolling up and not at the end of content
+	// 		header.classList.remove('minified');
+	// 	}
 		
-		// Prevent negative scrolling values (bounce effect on iOS) from breaking logic
-		lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
-	});
+	// 	// Prevent negative scrolling values (bounce effect on iOS) from breaking logic
+	// 	lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+	// });
 	
 	history.replaceState({ view: 'base' }, '');
 	
