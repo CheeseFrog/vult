@@ -173,9 +173,9 @@
 		#transSelectDisplay { max-width: 30vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
 		/* Minified State Classes */
-		header.minified { height: 1.85rem; }
+		/* header.minified { height: 1.85rem; }
 		header.minified h1 { font-size: 0.95rem; }
-		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
+		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; } */
 
 		/* Loading Bar */
 		.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--border-color); display: none; overflow: hidden; z-index: 10; }
@@ -1695,23 +1695,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 
 function scrollIntoVerse(verseNum) {
 	const targetEl = $(`v${verseNum}`);
-	if (!targetEl) return;
-	// calculate absolute scroll distance to the target element
-	const targetRect = targetEl.getBoundingClientRect();
-	const currentScrollTop = document.querySelector('body').scrollTop || document.documentElement.scrollTop;
-	const targetScrollTop = currentScrollTop + targetRect.top;
-
-	// check if absolute scroll distance is within viewport height, if so, use smooth scroll, otherwise instant scroll
-	const viewportHeight = window.innerHeight;
-	const scrollDistance = Math.abs(targetScrollTop - currentScrollTop);
-	const isWithinViewport = scrollDistance <= viewportHeight*1.5;
-
-
-	// // check if scroll distance is already within viewport height, if so, use smooth scroll, otherwise instant scroll
-	// const rect = targetEl.getBoundingClientRect();
-	// const isInView = rect.top >= 0 && rect.bottom <= window.innerHeight;
-
-	setTimeout(() => { targetEl.scrollIntoView({ behavior: (isWithinViewport ? 'smooth' : 'instant'), block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }) }, 100);
+	if (targetEl) setTimeout(() => { targetEl.scrollIntoView({ behavior: 'smooth', block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }) }, 100);
 }
 
 
