@@ -96,7 +96,6 @@
 		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
 		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
-
 		/* Chapter Transition Animation */
 		.chapter-transition { animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
@@ -136,11 +135,17 @@
 		.ios-list { border-radius: 10px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
 		.ios-list:last-of-type { margin-bottom: 0; }
 		.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; min-height: 50px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background 0.25s; position: relative; }
-		.ios-row:active { background: var(--surface-color-active); }
-		.ios-row:last-child { border-bottom: none; }
+		.ios-row:active { background: var(--surface-color-active); } /*:not(:has(.ios-stepper))*/
+		.ios-row:last-child { border-bottom-color: transparent; }
 		.ios-row-label { font-size: 1rem; color: var(--text-color); flex: 1; }
 		.ios-row-control { display: flex; align-items: center; gap: 10px; }
 		.ios-row.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
+
+		.settings-list { overflow-y: auto; max-height: 70vh; margin: -12px -8px; padding: 12px 8px; mask-image: linear-gradient(transparent, black 12px, black calc(100% - 12px), transparent);}
+		@media (orientation: landscape) {
+			#studyModal .ios-list { overflow-y: auto; max-height: 30vh;}
+			.settings-list { max-height: 50vh; }
+		}
 		
 		/* Select Dropdowns */
 		.ios-select-row { position: relative; overflow: hidden; }
@@ -233,11 +238,11 @@
 		.fab, .fab-resume { background: var(--surface-color); box-shadow: var(--shadow); height: var(--fab-size); transition: transform 0.25s, background 0.25s; margin: 20px 0;}
 		.fab:active, .fab-resume:active, .play-btn:active { transform: scale(0.95); background: var(--surface-color-active); }
 		.fab { position: absolute; z-index: 50; width: var(--fab-size); }
-		.fab-panic { background-color: var(--fab-panic-color); bottom: 0; right: 20px; }
-		.panic-symbol { font-size: 1.75rem; line-height: 1; font-weight: 400; }
-		.fab-panic:not(:active) { color: white; }
+		.fab-panic { background-color: var(--fab-panic-color); color: white; right: 20px; }
+		.panic-symbol { font-size: 1.8rem; line-height: 1; font-weight: 400; }
+		.fab-panic:active { color: var(--fab-panic-color); }
 		.fab-resume { color: var(--primary-color); border-radius: 28px; gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
-		.resume-wrapper, .selection-fabs { position: absolute; z-index: 40; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(12px); bottom: 0; }
+		.resume-wrapper, .selection-fabs, #panicBtn { pointer-events: none; position: absolute; z-index: 40; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(12px); }
 		
 		/* Selection FABs (Smooth transition toggle without keyframe flash) */
 		.selection-fabs { left: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - var(--fab-size)*5) - 40px)/4), 20px); }
@@ -251,38 +256,38 @@
 		body:not(.panic-active) .resume-scroll { padding-right: 20px; }
 		
 		/* Simplified Pointer Events Control for Hidden/Visible FAB Groups */
-		#fabContainer { pointer-events: none; background: linear-gradient(to top, var(--bg-color) -40px, transparent calc(var(--fab-size) + 40px)); }
-		#fabContainer .visible, #panicBtn { pointer-events: auto; }
+		#fabContainer { pointer-events: none; } /*background: linear-gradient(to top, var(--bg-color) -40px, transparent calc(var(--fab-size) + 40px));*/
+		.bottom-bar { box-shadow: var(--bg-color) 0 calc(var(--bottom-bar-height)*-.5) var(--fab-size); }
+		#fabContainer .visible > *, #panicBtn { pointer-events: auto; }
 		#fabContainer .visible { opacity: 1; transform: translateY(0); }
 
 		/* Orientation shorthand logic for modals and Resume FABs (Shorthand in Portrait, Longhand in Landscape) */
-		.settings-list { overflow-y: auto; max-height: 70vh; margin: -12px -8px; padding: 12px 8px; mask-image: linear-gradient(transparent, black 12px, black calc(100% - 12px), transparent);}
 		.text-long { display: none; }
 		.text-short { display: inline; }
 		@media (orientation: landscape) {
 			.text-long { display: inline; }
 			.text-short { display: none; }
-			#studyModal .ios-list { overflow-y: auto; max-height: 30vh;}
-			.settings-list { max-height: 50vh; }
 		}
 
 		/* Bottom Bar */
-		.bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; transform: translateY(100%); transition: transform 0.25s; z-index: 39; pointer-events: auto; }
-		.bottom-bar.visible { transform: translateY(0); }
+		.bottom-bar { height: var(--bottom-bar-height); background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly; align-items: center; z-index: 39; pointer-events: auto; } /*position: absolute; bottom: 0; left: 0; right: 0; */
+		/* header.minified ~ .bottom-components .bottom-bar { height: var(--header-height); } */
+		.bottom-components:has(.bottom-bar.visible) { transform: translateY(0); }
+		.bottom-components {transform: translateY(var(--bottom-bar-height)); transition: transform 0.25s;}
 		.bb-btn { background: none; color: var(--text-color); padding: 10px; height: 100%; aspect-ratio: 1;}
 		.bb-btn .material-symbols-rounded { font-size: 32px; }
 		
 		/* Radial Progress Ring around Play Button */
 		.bb-btn.play-btn { --progress-angle: 0deg; --progress-color: var(--primary-color); position: relative; height: var(--fab-size); border-radius: 50%; padding: 0; color: var(--primary-color); transition: background 0.25s ease, color 0.25s ease; }
-		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)); 
-		mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.4px), black calc(100% - 3px)); transition: background 0.25s ease; } /*background-clip: border-area; border: 3px solid transparent;*/
+		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)) no-repeat; mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.8px), black calc(100% - 2.8px)); transition: background 0.25s ease; }
+		/* @supports(background-clip:border-area) { .bb-btn.play-btn::before { mask-image: none; background-clip: border-area; border: 3px solid transparent; mask-clip: border-box; } } */
 		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; }
 		.bb-btn.play-btn.is-paused { --progress-color: var(--text-muted); color: var(--text-muted); }
+		.bb-btn.play-btn[style="--progress-angle: 0deg;"] { color: var(--text-color); }
 
 		/* Bottom Layout Grouping */
 		.bottom-components { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; pointer-events: none; }
-		.fab-container { position: absolute; bottom: 0; left: 0; right: 0; height: 110px; pointer-events: none; transition: transform 0.25s; }
-		#app-bible:has(.bottom-bar.visible) .fab-container { transform: translateY(calc(var(--bottom-bar-height)*-1)); }
+		.fab-container { height: calc(var(--fab-size) + 40px); pointer-events: none; transition: transform 0.25s; z-index: 50; }
 
 		/* Toast (Pure CSS Animation Triggered via Class Replacement) */
 		.toast { position: fixed; top: var(--header-height); left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px) saturate(180%); padding: 12px 24px; border-radius: 24px; z-index: 9999; font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
@@ -811,6 +816,7 @@ let deferredPrompt = null;
 let userInteracted = false;
 let isPopState = false;
 let pendingHistory = [];
+let historyDepth = 0;
 let backPressCount = 0;
 let backPressTimer = null;
 
@@ -819,8 +825,8 @@ let backPressTimer = null;
 ========================================= */
 function isRunningStandalone() {
 	return (window.matchMedia('(display-mode: standalone)').matches) || 
-		   (window.navigator.standalone) || 
-		   document.referrer.includes('android-app://');
+			(window.navigator.standalone) || 
+			document.referrer.includes('android-app://');
 }
 
 function isIOSDevice() {
@@ -915,7 +921,7 @@ const clearPlayingVerseStyles = () => {
 const registerInteraction = () => {
 	if (userInteracted) return;
 	userInteracted = true;
-	pendingHistory.forEach(v => history.pushState({ view: v }, ''));
+	pendingHistory.forEach(v => { history.pushState({ view: v }, ''); historyDepth++; });
 	pendingHistory = [];
 };
 document.addEventListener('pointerdown', registerInteraction, { capture: true, once: true });
@@ -926,11 +932,12 @@ function pushNavState(viewName) {
 	if (isPopState) return; 
 	
 	if (!userInteracted) { pendingHistory.push(viewName); } 
-	else { history.pushState({ view: viewName }, ''); }
+	else { history.pushState({ view: viewName }, ''); historyDepth++; }
 }
 
 window.onpopstate = function (event) {
 	isPopState = true;
+	if (historyDepth > 0) historyDepth--;
 	
 	const dialogs = ['settingsModal', 'advancedModal', 'helpModal', 'studyModal'];
 	for(let id of dialogs) {
@@ -943,11 +950,11 @@ window.onpopstate = function (event) {
 		navBackBtn.onclick();
 	} else if (state.secretUnlocked) {
 		if (backPressCount === 0) {
-			backPressCount++; showToast("Go back again to exit"); history.pushState({ view: 'home' }, '');
+			backPressCount++; showToast("Go back again to exit"); history.pushState({ view: 'home' }, ''); historyDepth++;
 			backPressTimer = setTimeout(() => { backPressCount = 0; }, 2000);
 		} else {
 			clearTimeout(backPressTimer); backPressCount = 0;
-			if (state.panicEnabled) { triggerPanic(); } else { history.go(-2); }
+			if (state.panicEnabled) { triggerPanic(); } else { history.go(-2); historyDepth = Math.max(0, historyDepth - 2); }
 		}
 	}
 	
@@ -1482,8 +1489,8 @@ async function openBibleApp() {
 	state.secretUnlocked = true;
 	$('app-calculator-wrapper').style.display = 'none';
 	$('app-bible').style.display = 'flex';
-	$('panicBtn').style.display = state.panicEnabled ? 'flex' : 'none';
-	
+	$('panicBtn').classList.toggle("visible", state.panicEnabled);
+
 	document.body.classList.add('is-loading');
 	await populateTranslations();
 
@@ -1699,12 +1706,6 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 	pushNavState('reader');
 }
 
-// function scrollIntoVerse(verseNum) {
-// 	const targetEl = $(`v${verseNum}`);
-// 	if (targetEl) setTimeout(() => { targetEl.scrollIntoView({ behavior: 'smooth', block: (targetEl.offsetHeight < window.innerHeight ? 'center' : 'start') }) }, 100);
-// }
-
-
 function scrollIntoVerse(verseNum) {
 	const targetEl = $(`v${verseNum}`);
 	const readerView = $('view-reader');
@@ -1721,7 +1722,6 @@ function scrollIntoVerse(verseNum) {
 		}, 100);
 	}
 }
-
 
 function hideAllViews() {
 	document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
@@ -1975,7 +1975,7 @@ bindSetting('setVoice', 'voiceURI', 'voiceDisplay');
 
 // Bind Main Panic Mode
 bindSetting('setPanic', 'panicEnabled', null, (val) => {
-	$('panicBtn').style.display = val ? 'flex' : 'none'; 
+	$('panicBtn').classList.toggle("visible", val);
 	
 	const shakeRow = $('shakeRow');
 	const setShake = $('setShake');
@@ -2175,7 +2175,14 @@ function shareApp() {
 function triggerPanic() {
 	document.querySelectorAll('dialog').forEach(d => { if (d.open) d.close(); });
 	cancelSpeech(); playingIndex = -1; clearSelection();
-	if (state.panicEnabled) { state.secretUnlocked = false; showCalculator(); }
+	if (state.panicEnabled) { 
+		state.secretUnlocked = false; 
+		if (historyDepth > 0) {
+			history.go(-historyDepth);
+			historyDepth = 0;
+		}
+		showCalculator(); 
+	}
 }
 
 window.onload = init;
