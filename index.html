@@ -27,6 +27,7 @@
 			--text-muted: #8e8e93;
 			--primary-color: #0a84ff; /* iOS Blue */
 			--header-bg: #1c1c1e;
+			--header-bg-tp: #28282bB3;
 			/* --border-color: #38383a; */
 			--border-color: #54545680;
 			--highlight: rgba(10, 132, 255, 0.3);
@@ -57,6 +58,7 @@
 			--text-muted: #8e8e93;
 			--primary-color: #007aff; /* iOS Blue */
 			--header-bg: #f8f8f8;
+			--header-bg-tp: #fbfbf8B3;
 			/* --border-color: #c6c6c8; */
 			--border-color: #94949880;
 			--highlight: rgba(0, 122, 255, 0.3);
@@ -285,7 +287,8 @@
 		@keyframes toastAnim { 0%, 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; pointer-events: none; } 15%, 85% { transform: translateX(-50%) translateY(-50%); opacity: 1; pointer-events: auto; } }
 		.toast.animate { animation: toastAnim 2s ease forwards; }
 
-		/* header, .bottom-bar {backdrop-filter: blur(20px) opacity(1);  background-color: color-mix(in srgb,var(--header-bg) 50%, rgba(0,0,0,0) 50%);} */
+		header, .bottom-bar {backdrop-filter: blur(20px) opacity(1) saturate(180%);  background-color: color-mix(in srgb,var(--header-bg) 50%, rgba(0,0,0,0) 50%); background-color: var(--header-bg-tp); }
+		#fabContainer { background: none; }
 
 	</style>
 </head>
