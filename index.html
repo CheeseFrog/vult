@@ -72,7 +72,7 @@
 		button, input, select, textarea { font-family: inherit; font-size: inherit; }
 		
 		/* Base App Font is fixed to iOS standards, isolating the reader settings */
-		html, body { font-family: var(--base-sans-serif); background-color: var(--calc-bg); overflow: hidden; font-size: 16px; color: var(--text-color); touch-action: manipulation; overflow-anchor: none; overscroll-behavior: contain; }
+		html, body { font-family: var(--base-sans-serif); background-color: var(--bg-color); overflow: hidden; font-size: 16px; color: var(--text-color); touch-action: manipulation; overflow-anchor: none; overscroll-behavior: contain; }
 		
 		/* Utility Classes */
 		.text-muted { color: var(--text-muted); }
@@ -88,7 +88,7 @@
 		.calc-btn, .fab, .ios-toggle::after { border-radius: 50%; }
 		.modal-btn:active, .grid-item:active, .bookmark-item:active { background: var(--border-color); }
 		.grid-item, .bookmark-item, dialog { background: var(--surface-color); }
-		.grid-item, .bookmark-item { border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background 0.2s; }
+		.grid-item, .bookmark-item { border: 1px solid var(--border-color); border-radius: 8px; cursor: pointer; transition: background 0.25s; }
 		.ios-select-overlay, .translation-select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; appearance: none; -webkit-appearance: none; z-index: 10; }
 		.resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
 
@@ -102,7 +102,7 @@
 
 		/* --- Calculator View (Centered) --- */
 		#app-bible { background-color: var(--bg-color); display: none; flex-direction: column; z-index: 10; }
-		#app-calculator-wrapper { background-color: var(--calc-bg); display: flex; justify-content: center; align-items: center; z-index: 10; }
+		#app-calculator-wrapper { background-color: black; display: flex; justify-content: center; align-items: center; z-index: 10; }
 		#app-calculator { display: flex; flex-direction: column; justify-content: flex-end; padding: 2dvh; width: 100%; max-width: min(100%, 65dvh); height: 100%; margin: auto; position: relative; }
 		.calc-display-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding-bottom: 2dvh; width: 100%; overflow: hidden; }
 		
@@ -113,7 +113,7 @@
 		.calc-help { position: absolute; top: 2dvh; left: 2dvh; color: var(--calc-btn-num); font-size: 3.5vh; cursor: pointer; }
 		body:has(#helpModal[open]) #calcHelpBtn { color: var(--primary-color); }
 		.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5dvh; }
-		.calc-btn { aspect-ratio: 1; font-size: 4dvh; color: var(--calc-text); background-color: var(--calc-btn-num); transition: filter 0.2s; box-shadow: var(--shadow); }
+		.calc-btn { aspect-ratio: 1; font-size: 4dvh; color: var(--calc-text); background-color: var(--calc-btn-num); transition: filter 0.25s; box-shadow: var(--shadow); }
 		.calc-btn:active { filter: brightness(1.4); }
 		.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 10dvh; justify-content: flex-start; padding-left:0; padding-right: 1.5dvh; }
 		.btn-op { background-color: var(--calc-btn-op); font-size: 5dvh; }
@@ -122,12 +122,12 @@
 		/* Dialog Overlays */
 		dialog { margin: auto; padding: 25px; border-radius: 12px; border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible;}
 		dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); }
-		dialog[open]::backdrop { animation: fadeIn .3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
-		dialog[open] { animation: fadeUp .3s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+		dialog[open]::backdrop { animation: fadeIn .25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+		dialog[open] { animation: fadeUp .25s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 		dialog:focus-visible { outline: none; }
 		dialog h3 { margin-bottom: 20px; margin-top: -5px; font-weight: 600; text-align: center; }
 		dialog p { margin-bottom: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
-		.modal-btn { margin-top: 20px; width: 100%; padding: 12px; background: var(--surface-color-active); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em; cursor: pointer; font-weight: 600; transition: background 0.2s; }
+		.modal-btn { margin-top: 20px; width: 100%; padding: 12px; background: var(--surface-color-active); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em; cursor: pointer; font-weight: 600; transition: background 0.25s; }
 		.modal-btn.primary { background: var(--primary-color); color: white; border: none; }
 		.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
 		.translation-select-wrapper:active, :is([onclick], button):active :is(.material-symbols-rounded, .text-primary) { color: color-mix(in srgb, var(--primary-color), white 45%); }
@@ -135,7 +135,7 @@
 		/* iOS Settings Lists */
 		.ios-list { border-radius: 10px; overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
 		.ios-list:last-of-type { margin-bottom: 0; }
-		.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 16px; min-height: 52px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background 0.2s; position: relative; }
+		.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; min-height: 50px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background 0.25s; position: relative; }
 		.ios-row:active { background: var(--surface-color-active); }
 		.ios-row:last-child { border-bottom: none; }
 		.ios-row-label { font-size: 1rem; color: var(--text-color); flex: 1; }
@@ -155,19 +155,19 @@
 		.ios-stepper span { width: 2.63em; font-size: 0.95em; color: var(--text-color); pointer-events: none; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
 
 		/* Toggle Switch */
-		.ios-toggle { position: relative; width: 3em; height: 1.75em; font-size: 1rem; appearance: none; -webkit-appearance: none; background: var(--border-color); outline: none; border-radius: 1em; cursor: pointer; transition: background 0.3s; margin: 0; pointer-events: none; }
-		.ios-toggle::after { content: ''; position: absolute; top: 0.125em; left: 0.125em; width: 1.5em; height: 1.5em; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.3s; }
+		.ios-toggle { position: relative; width: 3em; height: 1.75em; font-size: 1rem; appearance: none; -webkit-appearance: none; background: var(--border-color); outline: none; border-radius: 1em; cursor: pointer; transition: background 0.25s; margin: 0; pointer-events: none; }
+		.ios-toggle::after { content: ''; position: absolute; top: 0.125em; left: 0.125em; width: 1.5em; height: 1.5em; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform 0.25s; }
 		.ios-toggle:checked { background: #34c759; }
 		.ios-toggle:checked::after { transform: translateX(1.25em); }
 
 		/* --- Bible App Views --- */
-		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 20px) 20px 180px; transition: filter 0.3s, opacity 0.3s; }
+		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 20px) 20px 180px; transition: filter 0.25s, opacity 0.25s; }
 		.view.active { display: flex; animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 		
 		/* Header Transitions for Minified State */
-		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: absolute; inset: 0; z-index: 5; height: var(--header-height); transition: height 0.3s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.3s; }
-		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
-		.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; transition: opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: absolute; inset: 0; z-index: 5; height: var(--header-height); transition: height 0.25s cubic-bezier(0.16, 1, 0.3, 1), background-color 0.25s; }
+		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+		.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 		.header-right { justify-content: flex-end; }
 		.header-btn { background: none; color: var(--primary-color); font-size: 1.1rem; height: 100%; padding: 0 20px; }
 		body:has(#view-home.active) header h1 { font-variant: unicase; letter-spacing: 0.05em; }
@@ -190,9 +190,9 @@
 		details { padding: 5px 0 15px 0; }
 		details:has(div:empty) { opacity: 0; }
 		summary { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 15px; cursor: pointer; color: var(--text-color); list-style: none; position: relative; padding-right: 30px; outline: none; }
-		summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform 0.3s cubic-bezier(0.16, 1, 0.3, 1), top 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+		summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1), top 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 		details.is-open summary::after { transform: rotate(45deg); top: calc(50% - 8px); }
-		.details-wrapper { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 0.3s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s cubic-bezier(0.16, 1, 0.3, 1); }
+		.details-wrapper { display: grid; grid-template-rows: 0fr; opacity: 0; transition: grid-template-rows 0.25s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
 		.details-wrapper > div { overflow: hidden; }
 		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; }
 		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
@@ -208,8 +208,8 @@
 		/* Reader View */
 		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
 		#readerContent { margin: -2px; }
-		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.2s, filter 0.2s, box-shadow 0.2s; }
-		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color 0.2s; }
+		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.25s, filter 0.25s, box-shadow 0.25s; }
+		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color 0.25s; }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
 		
 		/* Verse States */
@@ -230,11 +230,12 @@
 		.verse.flash { animation: verseFlash 0.35s ease-out; }
 
 		/* FABs Unified Dimensions & Shadows */
-		.fab, .fab-resume { background: var(--surface-color); box-shadow: var(--shadow); height: var(--fab-size); transition: transform 0.2s, background 0.2s; margin: 20px 0;}
+		.fab, .fab-resume { background: var(--surface-color); box-shadow: var(--shadow); height: var(--fab-size); transition: transform 0.25s, background 0.25s; margin: 20px 0;}
 		.fab:active, .fab-resume:active, .play-btn:active { transform: scale(0.95); background: var(--surface-color-active); }
 		.fab { position: absolute; z-index: 50; width: var(--fab-size); }
-		.fab-panic { color: var(--fab-panic-color); bottom: 0; right: 20px; }
+		.fab-panic { background-color: var(--fab-panic-color); bottom: 0; right: 20px; }
 		.panic-symbol { font-size: 1.75rem; line-height: 1; font-weight: 400; }
+		.fab-panic:not(:active) { color: white; }
 		.fab-resume { color: var(--primary-color); border-radius: 28px; gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
 		.resume-wrapper, .selection-fabs { position: absolute; z-index: 40; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(12px); bottom: 0; }
 		
@@ -266,29 +267,30 @@
 		}
 
 		/* Bottom Bar */
-		.bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; transform: translateY(100%); transition: transform 0.3s; z-index: 39; pointer-events: auto; }
+		.bottom-bar { position: absolute; bottom: 0; left: 0; right: 0; height: var(--bottom-bar-height); background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-around; align-items: center; transform: translateY(100%); transition: transform 0.25s; z-index: 39; pointer-events: auto; }
 		.bottom-bar.visible { transform: translateY(0); }
 		.bb-btn { background: none; color: var(--text-color); padding: 10px; height: 100%; aspect-ratio: 1;}
 		.bb-btn .material-symbols-rounded { font-size: 32px; }
 		
 		/* Radial Progress Ring around Play Button */
-		.bb-btn.play-btn { --progress-angle: 0deg; --progress-color: var(--primary-color); position: relative; height: var(--fab-size); border-radius: 50%; padding: 0; color: var(--primary-color); transition: background 0.2s ease, color 0.2s ease; }
-		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)); mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.5px), black calc(100% - 3px)); transition: background 0.2s ease; }
+		.bb-btn.play-btn { --progress-angle: 0deg; --progress-color: var(--primary-color); position: relative; height: var(--fab-size); border-radius: 50%; padding: 0; color: var(--primary-color); transition: background 0.25s ease, color 0.25s ease; }
+		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: 50%; background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)); 
+		mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.4px), black calc(100% - 3px)); transition: background 0.25s ease; } /*background-clip: border-area; border: 3px solid transparent;*/
 		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; }
 		.bb-btn.play-btn.is-paused { --progress-color: var(--text-muted); color: var(--text-muted); }
 
 		/* Bottom Layout Grouping */
 		.bottom-components { position: fixed; bottom: 0; left: 0; right: 0; z-index: 50; pointer-events: none; }
-		.fab-container { position: absolute; bottom: 0; left: 0; right: 0; height: 110px; pointer-events: none; transition: transform 0.3s; }
+		.fab-container { position: absolute; bottom: 0; left: 0; right: 0; height: 110px; pointer-events: none; transition: transform 0.25s; }
 		#app-bible:has(.bottom-bar.visible) .fab-container { transform: translateY(calc(var(--bottom-bar-height)*-1)); }
 
 		/* Toast (Pure CSS Animation Triggered via Class Replacement) */
-		.toast { position: fixed; top: var(--header-height); left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px); padding: 12px 24px; border-radius: 24px; z-index: 9999; font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
+		.toast { position: fixed; top: var(--header-height); left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px) saturate(180%); padding: 12px 24px; border-radius: 24px; z-index: 9999; font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
 		@keyframes toastAnim { 0%, 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; pointer-events: none; } 15%, 85% { transform: translateX(-50%) translateY(-50%); opacity: 1; pointer-events: auto; } }
 		.toast.animate { animation: toastAnim 2s ease forwards; }
 
-		header, .bottom-bar {backdrop-filter: blur(20px) opacity(1) saturate(180%);  background-color: color-mix(in srgb,var(--header-bg) 50%, rgba(0,0,0,0) 50%); background-color: var(--header-bg-tp); }
-		#fabContainer { background: none; }
+		/* header, .bottom-bar {backdrop-filter: blur(20px) opacity(1) saturate(180%);  background-color: color-mix(in srgb,var(--header-bg) 50%, rgba(0,0,0,0) 50%); background-color: var(--header-bg-tp); }
+		#fabContainer { background: none; } */
 
 	</style>
 </head>
