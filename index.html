@@ -5,6 +5,12 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 	<!-- <meta name="theme-color" content="#f8f8f8" media="(prefers-color-scheme: light)"> -->
 	<meta name="theme-color" content="#000000">
+	<!-- iOS PWA Capabilities -->
+	<meta name="apple-mobile-web-app-capable" content="yes">
+	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+	<meta name="apple-mobile-web-app-title" content="Calculator">
+	<link rel="apple-touch-icon" href="src/icon-180.png">
+
 	<title>Calculator</title>
 	<!-- Dynamic Web Manifest Link -->
 	<link rel="manifest" id="dynamicManifest">
@@ -966,6 +972,13 @@ window.onpopstate = function (event) {
 	INITIALIZATION & SHAKE/KEYBOARD SUPPORT
 ========================================= */
 function init() {
+	// Register Service Worker for offline cold-start PWA capability
+	if ('serviceWorker' in navigator) {
+		navigator.serviceWorker.register('./src/sw.js').catch(err => {
+			console.log('ServiceWorker registration failed: ', err);
+		});
+	}
+
 	loadState();
 	if (!state.source) { state.source = 'getbible'; saveState(); }
 	
