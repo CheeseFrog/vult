@@ -3,6 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+	<meta name="theme-color" content="#f8f8f8" media="(prefers-color-scheme: light)">
+	<meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
 	<title>Calculator</title>
 	<!-- Dynamic Web Manifest Link -->
 	<link rel="manifest" id="dynamicManifest">
@@ -39,8 +41,7 @@
 			--bottom-bar-height: calc(var(--fab-size) + 12px);
 			--header-height: 56px;
 			--fab-size: 56px;
-			--fab-panic-color: rgb(255 66 69);
-			/* #ff4c43; */
+			--fab-panic-color: rgb(255 66 69); /* #ff4c43; */
 			
 			/* Reader Specific */
 			--reader-font-family: var(--base-serif);
@@ -257,7 +258,6 @@
 		
 		/* Simplified Pointer Events Control for Hidden/Visible FAB Groups */
 		#fabContainer { pointer-events: none; } /*background: linear-gradient(to top, var(--bg-color) -40px, transparent calc(var(--fab-size) + 40px));*/
-		.bottom-bar { box-shadow: var(--bg-color) 0 calc(var(--bottom-bar-height)*-.5) var(--fab-size); }
 		#fabContainer .visible > *, #panicBtn { pointer-events: auto; }
 		#fabContainer .visible { opacity: 1; transform: translateY(0); }
 
@@ -272,6 +272,7 @@
 		/* Bottom Bar */
 		.bottom-bar { height: var(--bottom-bar-height); background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly; align-items: center; z-index: 39; pointer-events: auto; } /*position: absolute; bottom: 0; left: 0; right: 0; */
 		/* header.minified ~ .bottom-components .bottom-bar { height: var(--header-height); } */
+		.bottom-bar { box-shadow: var(--bg-color) 0 calc(var(--fab-size)*-.5) var(--fab-size) -15px; }
 		.bottom-components:has(.bottom-bar.visible) { transform: translateY(0); }
 		.bottom-components {transform: translateY(var(--bottom-bar-height)); transition: transform 0.25s;}
 		.bb-btn { background: none; color: var(--text-color); padding: 10px; height: 100%; aspect-ratio: 1;}
