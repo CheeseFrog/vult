@@ -94,7 +94,7 @@
 		.resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
 
 		/* Fade Up Animation for Views */
-		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.97); } to { opacity: 1; transform: translateY(0); } }
+		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0); } }
 		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 		/* Chapter Transition Animation */
@@ -186,7 +186,7 @@
 		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
 
 		/* Loading Bar */
-		.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--border-color); display: none; overflow: hidden; z-index: 10; }
+		.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--surface-color-active); display: none; overflow: hidden; z-index: 10; }
 		.loading-bar::before { content: ''; position: absolute; top: 0; left: -50%; width: 50%; height: 100%; background-color: var(--primary-color); animation: loadingBarAnim 1.5s infinite ease-in-out; }
 		@keyframes loadingBarAnim { 0% { left: -50%; width: 50%; } 50% { left: 25%; width: 80%; } 100% { left: 100%; width: 50%; } }
 		body.is-loading .loading-bar { display: block; }
@@ -243,7 +243,8 @@
 		.panic-symbol { font-size: 1.8rem; line-height: 1; font-weight: 400; }
 		.fab-panic:active { color: var(--fab-panic-color); }
 		.fab-resume { color: var(--primary-color); border-radius: 28px; gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
-		.resume-wrapper, .selection-fabs, #panicBtn { pointer-events: none; position: absolute; z-index: 40; opacity: 0; transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); transform: translateY(12px); }
+		.resume-wrapper, .selection-fabs, #panicBtn { position: absolute; z-index: 40; transition: background 0.25s, opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1), transform 0.25s cubic-bezier(0.16, 1, 0.3, 1); }
+		:is(.resume-wrapper, .selection-fabs, #panicBtn):not(.visible) { pointer-events: none;  opacity: 0; transform: translateY(12px); }
 		
 		/* Selection FABs (Smooth transition toggle without keyframe flash) */
 		.selection-fabs { left: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - var(--fab-size)*5) - 40px)/4), 20px); }
@@ -259,7 +260,6 @@
 		/* Simplified Pointer Events Control for Hidden/Visible FAB Groups */
 		#fabContainer { pointer-events: none; } /*background: linear-gradient(to top, var(--bg-color) -40px, transparent calc(var(--fab-size) + 40px));*/
 		#fabContainer .visible > *, #panicBtn { pointer-events: auto; }
-		#fabContainer .visible { opacity: 1; transform: translateY(0); }
 
 		/* Orientation shorthand logic for modals and Resume FABs (Shorthand in Portrait, Longhand in Landscape) */
 		.text-long { display: none; }
