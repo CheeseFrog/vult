@@ -3,8 +3,8 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<meta name="theme-color" content="#f8f8f8" media="(prefers-color-scheme: light)">
-	<meta name="theme-color" content="#1c1c1e" media="(prefers-color-scheme: dark)">
+	<!-- <meta name="theme-color" content="#f8f8f8" media="(prefers-color-scheme: light)"> -->
+	<meta name="theme-color" content="#000000">
 	<title>Calculator</title>
 	<!-- Dynamic Web Manifest Link -->
 	<link rel="manifest" id="dynamicManifest">
@@ -202,7 +202,7 @@
 		.details-wrapper > div { overflow: hidden; }
 		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; }
 		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
-		.grid-item { padding: 15px 8px; text-align: center; font-size: 0.9em; }
+		.grid-item { text-align: center; font-size: 0.9em; padding: 0 8px; line-height: 3rem; height: 3rem; }
 		
 		/* Bookmarks */
 		.bookmark-list { display: flex; flex-direction: column; gap: 10px; }
@@ -2065,6 +2065,7 @@ function applySettings() {
 		appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 	}
 	document.documentElement.setAttribute('data-theme', appliedTheme);
+	document.querySelector('meta[name="theme-color"]').setAttribute('content', appliedTheme === 'dark' ? '#1c1c1e' : '#f8f8f8');
 	document.documentElement.style.setProperty('--reader-font-family', state.fontFamily);
 	document.documentElement.style.setProperty('--reader-font-size', state.fontSize + 'px');
 	document.body.classList.toggle('panic-active', state.panicEnabled);
