@@ -974,7 +974,7 @@ window.onpopstate = function (event) {
 function init() {
 	// Register Service Worker for offline cold-start PWA capability
 	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register('./src/sw.js').catch(err => {
+		navigator.serviceWorker.register('./sw.js').catch(err => {
 			console.log('ServiceWorker registration failed: ', err);
 		});
 	}
