@@ -9,11 +9,10 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta name="apple-mobile-web-app-title" content="Calculator">
-	<link rel="apple-touch-icon" href="src/icon-180.png">
-
+	<link rel="apple-touch-icon" href="src/icon-512.png">
 	<title>Calculator</title>
-	<!-- Dynamic Web Manifest Link -->
-	<link rel="manifest" id="dynamicManifest">
+	<!-- Dynamic and Static Web Manifest Link -->
+	<link rel="manifest" id="dynamicManifest" href="./manifest.json">
 	<!-- Modern Material Symbols Rounded import -->
 	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
 	<!-- Shake.js Support (Loads local first from src/, falls back to CDN) -->
@@ -136,6 +135,8 @@
 		.modal-btn { margin-top: 20px; width: 100%; padding: 12px; background: var(--surface-color-active); color: var(--text-color); border: 1px solid var(--border-color); border-radius: 8px; font-size: 1em; cursor: pointer; font-weight: 600; transition: background 0.25s; }
 		.modal-btn.primary { background: var(--primary-color); color: white; border: none; }
 		.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
+		.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+		.modal-actions .modal-btn { margin-top: 0; flex: 1; }
 		.translation-select-wrapper:active, :is([onclick], button):active :is(.material-symbols-rounded, .text-primary) { color: color-mix(in srgb, var(--primary-color), white 45%); }
 
 		/* iOS Settings Lists */
@@ -220,6 +221,7 @@
 		/* Reader View */
 		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
 		#readerContent { margin: -2px; }
+		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.85em; margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; pointer-events: none; }
 		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.25s, filter 0.25s, box-shadow 0.25s; }
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color 0.25s; }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
@@ -479,16 +481,11 @@
 					</div>
 				</label>
 			</div>
-			
-			<div class="ios-list">
-				<!-- Clicking Advanced replaces the current modal visually -->
-				<div class="ios-row" onclick="closeModal('settingsModal'); openModal('advancedModal', 'modal-advanced')">
-					<div class="ios-row-label">More Settings</div>
-					<span class="material-symbols-rounded text-muted">chevron_right</span>
-				</div>
-			</div>
 		</div>
-		<button class="modal-btn primary" onclick="closeModal('settingsModal')">Done</button>
+		<div class="modal-actions">
+			<button class="modal-btn" onclick="closeModal('settingsModal'); openModal('advancedModal', 'modal-advanced')">More Settings</button>
+			<button class="modal-btn primary" onclick="closeModal('settingsModal')">Done</button>
+		</div>
 	</dialog>
 
 	<!-- ADVANCED SETTINGS MODAL -->
@@ -861,15 +858,22 @@ function updateDynamicManifest() {
 	ctx.font = 'bold 360px -apple-system, sans-serif';
 	ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
 	ctx.fillText('±', 256, 276); 
-	
 	const iconDataUri = canvas.toDataURL('image/png');
+
+	// generate 192 x 192 icon
+	const canvas192 = document.createElement('canvas');
+	canvas192.width = 192; canvas192.height = 192;
+	const ctx192 = canvas192.getContext('2d');
+	ctx192.drawImage(canvas, 0, 0, 192, 192);
+	const icon192DataUri = canvas192.toDataURL('image/png');
 
 	// Generate manifest payload
 	const manifestObj = {
 		name: appName, short_name: appName, start_url: window.location.href, display: "standalone",
 		background_color: "#000000", theme_color: "#000000", 
 		icons: [
-			{ src: iconDataUri, sizes: "512x512", type: "image/png" }
+			{ src: iconDataUri, sizes: "512x512", type: "image/png" },
+			{ src: icon192DataUri, sizes: "192x192", type: "image/png", purpose: "any maskable" }
 		]
 	};
 
@@ -974,7 +978,7 @@ window.onpopstate = function (event) {
 function init() {
 	// Register Service Worker for offline cold-start PWA capability
 	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register('./sw.js').catch(err => {
+		navigator.serviceWorker.register('./src/sw.js').catch(err => {
 			console.log('ServiceWorker registration failed: ', err);
 		});
 	}
@@ -1050,7 +1054,7 @@ document.addEventListener('keydown', (e) => {
 		e.preventDefault(); // Prevent "Quick Find" in Firefox
 		calcInput('÷');
 	} else if (key === '%') {
-		calcInput('%');
+		calcInput('÷');
 	} else if (key === 'Enter' || key === '=') {
 		e.preventDefault(); // Prevent accidental form submissions/refreshes
 		calcInput('=');
@@ -1693,6 +1697,18 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 	const verses = book.chapters[chapterNum];
 	let textDirection = (state.source === 'getbible' && translationMeta[state.translation] && translationMeta[state.translation].direction) ? translationMeta[state.translation].direction.toLowerCase() : 'ltr';
 	container.setAttribute('dir', textDirection);
+
+	// Reader Subtitle
+	let fullTransName = state.translation.toUpperCase();
+	const transOpt = $('transSelect').options[$('transSelect').selectedIndex];
+	if (transOpt) {
+		const parts = transOpt.innerText.split(' - ');
+		if (parts.length > 1) fullTransName = parts[1];
+	}
+	const subtitle = document.createElement('div');
+	subtitle.className = 'reader-subtitle';
+	subtitle.innerHTML = `<span>${fullTransName}</span>`; // <span>${book.name} ${chapterNum}</span> &middot; 
+	container.appendChild(subtitle);
 
 	verses.forEach((text, vNum) => {
 		if (!text) return;
