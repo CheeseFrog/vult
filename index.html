@@ -58,6 +58,7 @@
 			--playing-bg: rgba(128, 128, 128, 0.15);
 			--base-sans-serif: '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', Arial, sans-serif;
 			--base-serif: Georgia, serif;
+			--base-humanist: 'Segoe UI', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 			--shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.22), 0 0 0 1px hsla(0,0%,100%,0.08) inset;
 			--bottom-bar-height: calc(var(--fab-size) + 12px);
 			--header-height: 56px;
@@ -153,7 +154,7 @@
 		.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
 		.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 		.modal-actions .modal-btn { margin-top: 0; flex: 1; }
-		.translation-select-wrapper:active, :is([onclick], button):active :is(.material-symbols-rounded, .text-primary) { color: color-mix(in srgb, var(--primary-color), white 45%); }
+		.bookmark-item:active .bookmark-ref, .translation-select-wrapper:active, :is([onclick], button):active:not(.ios-row) :is(.material-symbols-rounded, .text-primary) { color: color-mix(in srgb, var(--primary-color), var(--text-color) 35%); }
 
 		/* iOS Settings Lists */
 		.ios-list { border-radius: var(--radius-md); overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
@@ -178,10 +179,10 @@
 		.ios-select-wrapper .material-symbols-rounded { font-size: 20px; margin-left: 4px; pointer-events: none; }
 		
 		/* Steppers */
-		.ios-stepper { display: flex; align-items: stretch; height: 2em; background: var(--bg-color); border-radius: 0.5em; overflow: hidden; border: 1px solid var(--border-color); z-index: 20; position: relative; font-size: 1rem; }
+		.ios-stepper { display: flex; align-items: stretch; height: 2em; border-radius: 0.5em; overflow: hidden; border: 1px solid var(--border-color); z-index: 20; position: relative; font-size: 1rem; }
 		.ios-stepper button { background: var(--surface-color); color: var(--primary-color); font-size: 1.2em; width: 1.875em; }
 		.ios-stepper button:active { background: var(--surface-color-active); }
-		.ios-stepper span { width: 2.63em; font-size: 0.95em; color: var(--text-color); pointer-events: none; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+		.ios-stepper span { width: 2.63em; font-size: 0.95em; color: var(--text-color); background: var(--bg-color); pointer-events: none; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
 
 		/* Toggle Switch */
 		.ios-toggle { position: relative; width: 3em; height: 1.75em; font-size: 1rem; appearance: none; -webkit-appearance: none; background: var(--border-color); outline: none; border-radius: 1em; cursor: pointer; transition: background var(--dur) var(--ease-out); margin: 0; pointer-events: none; }
@@ -237,7 +238,7 @@
 		/* Reader View */
 		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
 		#readerContent { margin: -2px; }
-		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.85em; margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
 		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), filter var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); }
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color var(--dur) var(--ease-out); }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
@@ -264,7 +265,7 @@
 		.fab:active, .fab-resume:active, .play-btn:active { transform: scale(0.95); background: var(--surface-color-active); }
 		.fab { position: absolute; z-index: var(--z-floating); width: var(--fab-size); }
 		.fab-panic { background-color: var(--fab-panic-color); color: white; right: 20px; }
-		.panic-symbol { font-size: 1.8rem; line-height: 1; font-weight: 400; }
+		.panic-symbol { font-size: 1.8rem; line-height: 1; }
 		.fab-panic:active { color: var(--fab-panic-color); }
 		.fab-resume { color: var(--primary-color); border-radius: var(--radius-lg); gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
 		.resume-wrapper, .selection-fabs, #panicBtn { position: absolute; z-index: var(--z-floating); transition: background var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
@@ -302,10 +303,10 @@
 		.bb-btn .material-symbols-rounded { font-size: 32px; }
 		
 		/* Radial Progress Ring around Play Button */
-		.bb-btn.play-btn { --progress-angle: 0deg; --progress-color: var(--primary-color); position: relative; height: var(--fab-size); border-radius: var(--radius-full); padding: 0; color: var(--primary-color); transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out); }
-		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: var(--radius-full); background: conic-gradient(var(--progress-color) var(--progress-angle), var(--border-color) var(--progress-angle)) no-repeat; mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.8px), black calc(100% - 2.8px)); transition: background var(--dur) var(--ease-out); }
+		.bb-btn.play-btn { --progress-angle: 0deg; position: relative; height: var(--fab-size); border-radius: var(--radius-full); padding: 0; color: var(--primary-color); transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out); }
+		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: var(--radius-full); background: conic-gradient(currentColor var(--progress-angle), var(--border-color) var(--progress-angle)) no-repeat; mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.8px), black calc(100% - 2.8px)); transition: background var(--dur) var(--ease-out); }
 		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; }
-		.bb-btn.play-btn.is-paused { --progress-color: var(--text-muted); color: var(--text-muted); }
+		.bb-btn.play-btn.is-paused { color: var(--text-muted); }
 		.bb-btn.play-btn[style="--progress-angle: 0deg;"] { color: var(--text-color); }
 
 		/* Bottom Layout Grouping */
@@ -431,6 +432,7 @@
 					<select id="setFontFam" class="ios-select-overlay">
 						<option value="var(--base-serif)">Serif</option>
 						<option value="var(--base-sans-serif)">Sans-serif</option>
+						<option value="var(--base-humanist)">Humanist</option>
 						<option value="monospace">Monospace</option>
 					</select>
 				</div>
@@ -475,7 +477,7 @@
 				<div class="ios-row" id="installRowContainer" onclick="handleInstallClick()">
 					<div class="ios-row-label">Install to Home Screen</div>
 					<div class="ios-row-control">
-						<span class="material-symbols-rounded text-primary">install_desktop</span>
+						<span class="material-symbols-rounded text-muted">install_desktop</span>
 					</div>
 				</div>
 				<label class="ios-row">
@@ -548,8 +550,8 @@
 			
 			<div class="ios-list">
 				<div class="ios-row" onclick="resetApp()">
-					<div class="ios-row-label" style="color: #ff3b30;">Reset App</div>
-					<span class="material-symbols-rounded" style="color: #ff3b30;">delete_forever</span>
+					<div class="ios-row-label" style="color: var(--fab-panic-color);">Reset App</div>
+					<span class="material-symbols-rounded" style="color: var(--fab-panic-color);">delete_forever</span>
 				</div>
 			</div>
 		</div>
