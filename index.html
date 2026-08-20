@@ -51,14 +51,12 @@
 			--primary-color: #0a84ff; /* iOS Blue */
 			--header-bg: #1c1c1e;
 			--header-bg-tp: #28282bB3;
-			/* --border-color: #38383a; */
-			--border-color: #54545680;
-			--highlight: rgba(10, 132, 255, 0.3);
+			--border-color: #54545680; /* --border-color: #38383a; */
+			--highlight: color-mix(in srgb, var(--primary-color) 30%, transparent);
 			--bookmarked-bg: rgba(255, 214, 10, 0.3); /* iOS Yellow */
 			--playing-bg: rgba(128, 128, 128, 0.15);
 			--base-sans-serif: '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', Arial, sans-serif;
 			--base-serif: Georgia, serif;
-			--base-humanist: 'Segoe UI', 'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
 			--shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.22), 0 0 0 1px hsla(0,0%,100%,0.08) inset;
 			--bottom-bar-height: calc(var(--fab-size) + 12px);
 			--header-height: 56px;
@@ -81,10 +79,8 @@
 			--text-muted: #8e8e93;
 			--primary-color: #007aff; /* iOS Blue */
 			--header-bg: #f8f8f8;
-			--header-bg-tp: #fbfbf8B3;
-			/* --border-color: #c6c6c8; */
-			--border-color: #94949880;
-			--highlight: rgba(0, 122, 255, 0.3);
+			--header-bg-tp: #fbfbf8B3;			
+			--border-color: #94949880; /* --border-color: #c6c6c8; */
 			--bookmarked-bg: rgba(255, 204, 0, 0.3); /* iOS Yellow */
 			--playing-bg: rgba(128, 128, 128, 0.15);
 			--fab-panic-color: rgb(255 56 60);
@@ -258,11 +254,12 @@
 		
 		/* Verse Flash Animation using Opacity */
 		@keyframes verseFlash { 0% { opacity: 1; } 40% { opacity: 0.3; } 100% { opacity: 1; } }
-		.verse.flash { animation: verseFlash var(--dur) var(--ease-out); }
+		.flash { animation: verseFlash var(--dur) var(--ease-out); }
 
 		/* FABs Unified Dimensions & Shadows */
 		.fab, .fab-resume { background: var(--surface-color); box-shadow: var(--shadow); height: var(--fab-size); transition: transform var(--dur) var(--ease-out), background var(--dur) var(--ease-out); margin: 20px 0;}
 		.fab:active, .fab-resume:active, .play-btn:active { transform: scale(0.95); background: var(--surface-color-active); }
+		.bb-btn:active { transform: scale(0.95); }
 		.fab { position: absolute; z-index: var(--z-floating); width: var(--fab-size); }
 		.fab-panic { background-color: var(--fab-panic-color); color: white; right: 20px; }
 		.panic-symbol { font-size: 1.8rem; line-height: 1; }
@@ -376,10 +373,10 @@
 		<button class="modal-btn primary" onclick="closeModal('helpModal')">Close</button>
 	</dialog>
 
-	<!-- EXTERNAL STUDY MODAL -->
+<!-- EXTERNAL STUDY MODAL -->
 	<dialog id="studyModal">
 		<h3>Further Study</h3>
-		<p>Open selected verses in a web browser for deeper commentary and cross-referencing.</p>
+		<p id="studyModalSubtitle" onclick="copyInnerText(this)"></p>
 		<div class="ios-list">
 			<div class="ios-row" onclick="openStudy('blb')">
 				<div class="ios-row-label">Blue Letter Bible</div>
@@ -432,7 +429,6 @@
 					<select id="setFontFam" class="ios-select-overlay">
 						<option value="var(--base-serif)">Serif</option>
 						<option value="var(--base-sans-serif)">Sans-serif</option>
-						<option value="var(--base-humanist)">Humanist</option>
 						<option value="monospace">Monospace</option>
 					</select>
 				</div>
@@ -1705,7 +1701,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 		setupLongPress(p, 
 			() => {
 				copySingleVerse(book.name, chapterNum, vNum, text); 
-				if ('vibrate' in navigator) navigator.vibrate(40);
+				if ('vibrate' in navigator) navigator.vibrate(50);
 				p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
 			},
 			() => toggleVerseSelection(p, vNum)
@@ -1782,6 +1778,13 @@ function copySingleVerse(book, chap, verseNum, text) {
 	navigator.clipboard.writeText(`${text} — ${book} ${chap}:${verseNum} (${state.translation.toUpperCase()})`);
 }
 
+function copyInnerText(el) {
+	navigator.clipboard.writeText(el.innerText);
+	if ('vibrate' in navigator) navigator.vibrate(50);
+	console.log(el);
+	el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
+}
+
 async function shareSelected() {
 	const fullText = getFullSelectedText();
 	if (navigator.share) {
@@ -1823,7 +1826,14 @@ function clearSelection() {
 	selectedVerses.clear(); document.querySelectorAll('.verse.selected').forEach(el => el.classList.remove('selected')); updateSelectionFabs();
 }
 
-function openStudyModal() { openModal('studyModal', 'modal-study'); }
+function openStudyModal() {
+		const data = getSelectedTextData();
+		const subtitleEl = $('studyModalSubtitle');
+		if (subtitleEl) {
+			subtitleEl.innerText = data.ref + ' (' + state.translation.toUpperCase() + ')';
+		}
+		openModal('studyModal', 'modal-study');
+	}
 
 function openStudy(site) {
 	const data = getSelectedTextData();
