@@ -664,6 +664,33 @@
 ========================================= */
 const $ = (id) => document.getElementById(id);
 
+const createEl = (tag, props, parent) => {
+	const el = document.createElement(tag);
+	for (let k in props) {
+		if (k === 'dataset') {
+			for (let d in props.dataset) el.dataset[d] = props.dataset[d];
+		} else {
+			el[k] = props[k];
+		}
+	}
+	if (parent) parent.appendChild(el);
+	return el;
+};
+
+const setTranslationState = (trans, newSource = state.source) => {
+	state.translation = trans;
+	state.source = newSource;
+	const sel = $('transSelect');
+	if (sel) sel.value = trans;
+	updateTransDisplay();
+	activeData = { OT: [], NT: [] };
+};
+
+const setAudioUI = (icon, addPausedClass) => {
+	$('playIcon').innerText = icon;
+	$('playBtn').classList.toggle('is-paused', addPausedClass);
+};
+
 const openModal = (id, navState) => { $(id).showModal(); pushNavState(navState); };
 const closeModal = (id) => $(id).close();
 
@@ -1233,14 +1260,13 @@ async function populateTranslations() {
 	
 	if (state.source === 'getbible') {
 		const createOptGroup = (label, items) => {
-			let group = document.createElement('optgroup');
-			group.label = label;
+			let group = createEl('optgroup', { label: label });
 			items.sort((a,b) => a.abbreviation.localeCompare(b.abbreviation)).forEach(t => {
-				let opt = document.createElement('option');
-				opt.value = t.abbreviation || t.value;
-				opt.innerText = `${(t.abbreviation || t.label).toUpperCase()} - ${t.translation || t.full}`;
-				opt.dataset.acronym = (t.abbreviation || t.label).toUpperCase();
-				group.appendChild(opt);
+				createEl('option', {
+					value: t.abbreviation || t.value,
+					innerText: `${(t.abbreviation || t.label).toUpperCase()} - ${t.translation || t.full}`,
+					dataset: { acronym: (t.abbreviation || t.label).toUpperCase() }
+				}, group);
 			});
 			return group;
 		};
@@ -1300,21 +1326,14 @@ async function populateTranslations() {
 			});
 
 		} catch (e) {
-			let group = document.createElement('optgroup');
-			group.label = "English";
-			let opt = document.createElement('option');
-			opt.value = 'kjv'; opt.innerText = 'KJV - King James Version'; opt.dataset.acronym = 'KJV';
-			group.appendChild(opt);
+			let group = createEl('optgroup', { label: 'English' });
+			createEl('option', { value: 'kjv', innerText: 'KJV - King James Version', dataset: { acronym: 'KJV' } }, group);
 			select.appendChild(group);
 		}
 	} else {
 		// OpenBible flat list without optgroups
 		OPENBIBLE_TRANS.sort((a, b) => a.label.localeCompare(b.label)).forEach(t => {
-			let opt = document.createElement('option');
-			opt.value = t.value;
-			opt.innerText = `${t.label.toUpperCase()} - ${t.full}`;
-			opt.dataset.acronym = t.label.toUpperCase();
-			select.appendChild(opt);
+			createEl('option', { value: t.value, innerText: `${t.label.toUpperCase()} - ${t.full}`, dataset: { acronym: t.label.toUpperCase() } }, select);
 		});
 	}
 	
@@ -1416,15 +1435,13 @@ async function loadBibleData() {
 async function switchTranslation(newTrans) {
 	if (state.translation === newTrans) return true;
 	const prevTrans = state.translation;
-	state.translation = newTrans;
-	$('transSelect').value = newTrans;
-	updateTransDisplay();
-	activeData = { OT: [], NT: [] };
+	
+	setTranslationState(newTrans);
 	
 	if (await loadBibleData()) { saveState(); return true; } 
 	else {
-		state.translation = prevTrans; $('transSelect').value = prevTrans; updateTransDisplay();
-		activeData = { OT: [], NT: [] }; await loadBibleData(); return false;
+		setTranslationState(prevTrans);
+		await loadBibleData(); return false;
 	}
 }
 
@@ -1437,10 +1454,7 @@ async function resolveAndSwitchTranslation(newTrans) {
 	const prevSource = state.source;
 
 	// 1. Try with the currently active source first
-	state.translation = newTrans;
-	$('transSelect').value = newTrans;
-	updateTransDisplay();
-	activeData = { OT: [], NT: [] };
+	setTranslationState(newTrans);
 
 	if (await loadBibleData()) {
 		saveState();
@@ -1455,21 +1469,14 @@ async function resolveAndSwitchTranslation(newTrans) {
 	let existsInAlt = Array.from($('transSelect').options).some(o => o.value === newTrans);
 	if (!existsInAlt) {
 		// Not found in alternative source either; revert fully
-		state.source = prevSource;
-		state.translation = prevTrans;
+		setTranslationState(prevTrans, prevSource);
 		await populateTranslations();
-		$('transSelect').value = prevTrans;
-		updateTransDisplay();
-		activeData = { OT: [], NT: [] };
 		await loadBibleData();
 		alert(`Error loading translation ${newTrans.toUpperCase()}.`);
 		return false;
 	}
 
-	state.translation = newTrans;
-	$('transSelect').value = newTrans;
-	updateTransDisplay();
-	activeData = { OT: [], NT: [] };
+	setTranslationState(newTrans, altSource);
 
 	if (await loadBibleData()) {
 		saveState();
@@ -1482,12 +1489,8 @@ async function resolveAndSwitchTranslation(newTrans) {
 	}
 
 	// 3. Fallback failure; restore original state
-	state.source = prevSource;
-	state.translation = prevTrans;
+	setTranslationState(prevTrans, prevSource);
 	await populateTranslations();
-	$('transSelect').value = prevTrans;
-	updateTransDisplay();
-	activeData = { OT: [], NT: [] };
 	await loadBibleData();
 	alert(`Error loading translation ${newTrans.toUpperCase()}.`);
 	return false;
@@ -1523,16 +1526,16 @@ async function openBibleApp() {
 }
 
 function createBookmarkElement(bm) {
-	let div = document.createElement('div');
-	div.className = 'bookmark-item';
-	div.innerHTML = `<div class="bookmark-ref">${bm.ref} (${bm.trans.toUpperCase()})</div><div class="bookmark-text">${bm.text}</div>`;
-	div.onclick = async () => {
-		if (await resolveAndSwitchTranslation(bm.trans)) {
-			let { isNT } = checkBookExists(bm.book);
-			openChapter(bm.book, isNT, bm.chapter, true, bm.verse);
+	return createEl('div', {
+		className: 'bookmark-item',
+		innerHTML: `<div class="bookmark-ref">${bm.ref} (${bm.trans.toUpperCase()})</div><div class="bookmark-text">${bm.text}</div>`,
+		onclick: async () => {
+			if (await resolveAndSwitchTranslation(bm.trans)) {
+				let { isNT } = checkBookExists(bm.book);
+				openChapter(bm.book, isNT, bm.chapter, true, bm.verse);
+			}
 		}
-	};
-	return div;
+	});
 }
 
 async function resumeLocation(index) {
@@ -1552,32 +1555,12 @@ function updateResumeFabVisibility() {
 		wrapper.classList.add('visible');
 		scroll.innerHTML = '';
 		state.recentLocations.forEach((loc, index) => {
-			let btn = document.createElement('button');
-			btn.className = 'fab-resume';
-			btn.onclick = () => resumeLocation(index);
-			
-			let icon = document.createElement('span');
-			icon.className = 'material-symbols-rounded';
-			icon.innerText = 'history';
-			
-			let text = document.createElement('span');
-			text.className = 'resume-text text-primary';
-
-			let longSpan = document.createElement('span');
-			longSpan.className = 'text-long';
-			longSpan.innerText = `${loc.book} ${loc.chap} (${loc.trans.toUpperCase()})`;
-			
+			let btn = createEl('button', { className: 'fab-resume', onclick: () => resumeLocation(index) }, scroll);
+			createEl('span', { className: 'material-symbols-rounded', innerText: 'history' }, btn);
+			let textSpan = createEl('span', { className: 'resume-text text-primary' }, btn);
+			createEl('span', { className: 'text-long', innerText: `${loc.book} ${loc.chap} (${loc.trans.toUpperCase()})` }, textSpan);
 			let shortBook = BOOK_SHORTHANDS[loc.book] || loc.book;
-			let shortSpan = document.createElement('span');
-			shortSpan.className = 'text-short';
-			shortSpan.innerText = `${shortBook} ${loc.chap} (${loc.trans.toUpperCase()})`;
-
-			text.appendChild(longSpan);
-			text.appendChild(shortSpan);
-			
-			btn.appendChild(icon);
-			btn.appendChild(text);
-			scroll.appendChild(btn);
+			createEl('span', { className: 'text-short', innerText: `${shortBook} ${loc.chap} (${loc.trans.toUpperCase()})` }, textSpan);
 		});
 	} else {
 		wrapper.classList.remove('visible');
@@ -1607,8 +1590,7 @@ function renderHome() {
 	const renderGrid = (data, grid, isNT) => {
 		data.forEach((b, i) => {
 			if (!b.chapters || !b.chapters.some(c => c && c.length > 0)) return; 
-			let div = document.createElement('div'); div.className = 'grid-item'; div.innerText = b.name; div.setAttribute('dir', 'auto');
-			div.onclick = () => openBook(i, isNT); grid.appendChild(div);
+			createEl('div', { className: 'grid-item', innerText: b.name, dir: 'auto', onclick: () => openBook(i, isNT) }, grid);
 		});
 	};
 
@@ -1636,8 +1618,7 @@ function openBook(index, isNT) {
 	const grid = $('chapterGrid'); grid.innerHTML = '';
 	for(let i=1; i<book.chapters.length; i++) {
 		if(!book.chapters[i] || book.chapters[i].length === 0) continue;
-		let div = document.createElement('div'); div.className = 'grid-item'; div.innerText = i;
-		div.onclick = () => openChapter(book.name, isNT, i, false); grid.appendChild(div);
+		createEl('div', { className: 'grid-item', innerText: i, onclick: () => openChapter(book.name, isNT, i, false) }, grid);
 	}
 	
 	const bkmDetails = $('bookBookmarksDetails'), bkmList = $('bookBookmarksList');
@@ -1700,15 +1681,11 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 		const parts = transOpt.innerText.split(' - ');
 		if (parts.length > 1) fullTransName = parts[1];
 	}
-	const subtitle = document.createElement('div');
-	subtitle.className = 'reader-subtitle';
-	subtitle.innerHTML = `${fullTransName}`; // <span>${book.name} ${chapterNum}</span> &middot; 
-	container.appendChild(subtitle);
+	createEl('div', { className: 'reader-subtitle', innerHTML: `${fullTransName}` }, container);
 
 	verses.forEach((text, vNum) => {
 		if (!text) return;
-		let p = document.createElement('p'); p.className = 'verse'; p.id = `v${vNum}`;
-		p.innerHTML = `<span class="verse-num">${vNum}</span>${text}`;
+		let p = createEl('p', { className: 'verse', id: `v${vNum}`, innerHTML: `<span class="verse-num">${vNum}</span>${text}` }, container);
 		
 		if (isVerseBookmarked(vNum)) p.classList.add('bookmarked');
 		
@@ -1720,8 +1697,6 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 			},
 			() => toggleVerseSelection(p, vNum)
 		);
-		
-		container.appendChild(p);
 	});
 
 	if (scrollToVerse && targetVerseNum) {
@@ -1917,8 +1892,7 @@ function playVerse(vNum) {
 	currentUtterance.onend = () => { if (isPlaying && !isPaused) playVerse(vNum + 1); };
 
 	isPlaying = true; isPaused = false; requestWakeLock(); 
-	$('playIcon').innerText = 'pause'; 
-	$('playBtn').classList.remove('is-paused');
+	setAudioUI('pause', false);
 	synth.speak(currentUtterance);
 }
 
@@ -1927,8 +1901,7 @@ function pauseSpeech() {
 	isPaused = true; 
 	synth.cancel(); // Completely cancel to avoid browser hanging bugs
 	releaseWakeLock();
-	$('playIcon').innerText = 'play_arrow';
-	$('playBtn').classList.add('is-paused');
+	setAudioUI('play_arrow', true);
 	highlightPlayingVerse();
 }
 
@@ -1950,10 +1923,9 @@ function highlightPlayingVerse() {
 
 function cancelSpeech() {
 	isPlaying = false; isPaused = false; currentUtterance = null; releaseWakeLock(); if (synth) synth.cancel();
-	$('playIcon').innerText = 'play_arrow';
+	setAudioUI('play_arrow', false);
 	const playBtn = $('playBtn');
 	if (playBtn) {
-		playBtn.classList.remove('is-paused');
 		playBtn.style.setProperty('--progress-angle', '0deg');
 	}
 	clearPlayingVerseStyles();
@@ -2105,10 +2077,10 @@ function populateVoices() {
 	voices = synth.getVoices();
 	const select = $('setVoice'); select.innerHTML = '';
 	
-	let defaultOpt = document.createElement('option'); defaultOpt.value = ''; defaultOpt.innerText = 'System Default'; select.appendChild(defaultOpt);
+	createEl('option', { value: '', innerText: 'System Default' }, select);
 
 	voices.forEach(v => {
-		let opt = document.createElement('option'); opt.value = v.voiceURI; opt.innerText = `${v.name} (${v.lang})`; select.appendChild(opt);
+		createEl('option', { value: v.voiceURI, innerText: `${v.name} (${v.lang})` }, select);
 	});
 	
 	if (state.voiceURI && select.querySelector(`option[value="${state.voiceURI}"]`)) select.value = state.voiceURI; else select.value = '';
@@ -2127,11 +2099,11 @@ function exportBookmarks() {
 	}
 	const blob = new Blob([JSON.stringify(state.bookmarks, null, 2)], { type: 'application/json' });
 	const url = URL.createObjectURL(blob);
-	const dlAnchorElem = document.createElement('a');
 	const title = "vult_bookmarks_" + new Date().toISOString().slice(0, 10) + ".json";
-	dlAnchorElem.setAttribute("href", url);
-	dlAnchorElem.setAttribute("download", title);
+	
+	const dlAnchorElem = createEl('a', { href: url, download: title });
 	dlAnchorElem.click();
+	
 	showToast("Exported: " + title);
 	setTimeout(() => URL.revokeObjectURL(url), 1000);
 }
