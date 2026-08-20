@@ -74,7 +74,7 @@
 			color-scheme: light;
 		}
 
-		* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; user-select: none; }
+		* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; user-select: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
 		button, input, select, textarea { font-family: inherit; font-size: inherit; }
 		
 		/* Base App Font is fixed to iOS standards, isolating the reader settings */
@@ -103,7 +103,7 @@
 		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 		/* Chapter Transition Animation */
-		.chapter-transition { animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+		.chapter-transition p { animation: fadeUp 0.35s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 
 		/* --- Calculator View (Centered) --- */
 		#app-bible { background-color: var(--bg-color); display: none; flex-direction: column; z-index: 10; }
@@ -221,7 +221,7 @@
 		/* Reader View */
 		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
 		#readerContent { margin: -2px; }
-		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.85em; margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; user-select: none; pointer-events: none; }
+		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.85em; margin-bottom: 20px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background 0.25s, filter 0.25s, box-shadow 0.25s; }
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color 0.25s; }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
@@ -483,7 +483,7 @@
 			</div>
 		</div>
 		<div class="modal-actions">
-			<button class="modal-btn" onclick="closeModal('settingsModal'); openModal('advancedModal', 'modal-advanced')">More Settings</button>
+			<button class="modal-btn" onclick="closeModal('settingsModal'); openModal('advancedModal', 'modal-advanced')">More</button>
 			<button class="modal-btn primary" onclick="closeModal('settingsModal')">Done</button>
 		</div>
 	</dialog>
@@ -865,6 +865,7 @@ function updateDynamicManifest() {
 		name: appName, short_name: appName, start_url: window.location.href, display: "standalone",
 		background_color: "#000000", theme_color: "#000000", 
 		icons: [
+			{ src: iconDataUri, sizes: "512x512", type: "image/png"},
 			{ src: iconDataUri, sizes: "512x512", type: "image/png", purpose: "any maskable" }
 		]
 	};
@@ -1699,7 +1700,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 	}
 	const subtitle = document.createElement('div');
 	subtitle.className = 'reader-subtitle';
-	subtitle.innerHTML = `<span>${fullTransName}</span>`; // <span>${book.name} ${chapterNum}</span> &middot; 
+	subtitle.innerHTML = `${fullTransName}`; // <span>${book.name} ${chapterNum}</span> &middot; 
 	container.appendChild(subtitle);
 
 	verses.forEach((text, vNum) => {
