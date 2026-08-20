@@ -1585,6 +1585,7 @@ function updateResumeFabVisibility() {
 }
 
 function renderHome() {
+	cancelSpeech();
 	hideAllViews(); $('view-home').classList.add('active');
 	$('headerTitle').innerText = 'Vult';
 	$('navBack').style.display = 'none';
@@ -1622,6 +1623,7 @@ function renderBookmarksList() {
 }
 
 function openBook(index, isNT) {
+	cancelSpeech();
 	hideAllViews(); $('view-chapters').classList.add('active');
 	
 	$('navBack').style.display = 'flex'; $('navBack').onclick = renderHome;
