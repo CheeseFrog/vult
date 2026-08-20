@@ -183,7 +183,7 @@
 		/* Toggle Switch */
 		.ios-toggle { position: relative; width: 3em; height: 1.75em; font-size: 1rem; appearance: none; -webkit-appearance: none; background: var(--border-color); outline: none; border-radius: 1em; cursor: pointer; transition: background var(--dur) var(--ease-out); margin: 0; pointer-events: none; }
 		.ios-toggle::after { content: ''; position: absolute; top: 0.125em; left: 0.125em; width: 1.5em; height: 1.5em; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform var(--dur) var(--ease-out); }
-		.ios-toggle:checked { background: #34c759; }
+		.ios-toggle:checked { background: color-mix(in srgb, var(--primary-color), var(--bg-color) 20%); } /*34c759*/
 		.ios-toggle:checked::after { transform: translateX(1.25em); }
 
 		/* --- Bible App Views --- */
@@ -254,7 +254,7 @@
 		
 		/* Verse Flash Animation using Opacity */
 		@keyframes verseFlash { 0% { opacity: 1; } 40% { opacity: 0.3; } 100% { opacity: 1; } }
-		.flash { animation: verseFlash var(--dur) var(--ease-out); }
+		.verse.flash, #studyModalSubtitle:active { animation: verseFlash var(--dur) var(--ease-out); }
 
 		/* FABs Unified Dimensions & Shadows */
 		.fab, .fab-resume { background: var(--surface-color); box-shadow: var(--shadow); height: var(--fab-size); transition: transform var(--dur) var(--ease-out), background var(--dur) var(--ease-out); margin: 20px 0;}
@@ -1781,8 +1781,6 @@ function copySingleVerse(book, chap, verseNum, text) {
 function copyInnerText(el) {
 	navigator.clipboard.writeText(el.innerText);
 	if ('vibrate' in navigator) navigator.vibrate(50);
-	console.log(el);
-	el.classList.remove('flash'); void el.offsetWidth; el.classList.add('flash');
 }
 
 async function shareSelected() {
