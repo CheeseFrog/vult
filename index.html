@@ -237,6 +237,11 @@
 		#readerContent { margin: -2px; }
 		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
 		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), filter var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); }
+		
+		.verse.break {margin-bottom: 20px;}
+		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); }	 */
+		.verse.break:after { content: "·    ·    ·"; font-size: 0.9em; white-space: pre; position: absolute; display: block; margin-top: 5px; width: 100%; left: 0; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); }
+
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color var(--dur) var(--ease-out); }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
 		
@@ -267,7 +272,7 @@
 		.fab-panic:active { color: var(--fab-panic-color); }
 		.fab-resume { color: var(--primary-color); border-radius: var(--radius-lg); gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
 		.resume-wrapper, .selection-fabs, #panicBtn { position: absolute; z-index: var(--z-floating); transition: background var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
-		:is(.resume-wrapper, .selection-fabs, #panicBtn):not(.visible) { pointer-events: none;  opacity: 0; transform: translateY(12px); }
+		:is(.resume-wrapper, .selection-fabs, #panicBtn):not(.visible) { pointer-events: none; opacity: 0; transform: translateY(12px); }
 		
 		/* Selection FABs (Smooth transition toggle without keyframe flash) */
 		.selection-fabs { left: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - var(--fab-size)*5) - 40px)/4), 20px); }
@@ -712,7 +717,7 @@ const syncSelectDisplay = (selectDom, displayDom) => {
 const setupLongPress = (element, onLongPress, onClick) => {
 	if (onLongPress) {
 		element.addEventListener('contextmenu', (e) => {
-			e.preventDefault();  // Stop native context menu from appearing
+			e.preventDefault(); // Stop native context menu from appearing
 			e.stopPropagation(); // Stop event bubbling
 			onLongPress(e);
 		});
@@ -1383,25 +1388,31 @@ async function loadBibleData() {
 			bookList.forEach((bookItem, bIdx) => {
 				let bookName = bookItem.name || bookItem.book_name || BIBLE_BOOKS[bIdx] || `Book ${bIdx + 1}`;
 				let chapters = [];
+				let breaks = [];
 				let chaptersData = Array.isArray(bookItem) ? bookItem : (bookItem.chapters || []);
 				
 				if (typeof chaptersData === 'object') {
 					const chapArray = Array.isArray(chaptersData) ? chaptersData : Object.values(chaptersData);
 					chapArray.forEach((chapItem, cIdx) => {
 						let versesArray = [];
+						let breakSet = new Set();
 						let versesData = Array.isArray(chapItem) ? chapItem : (chapItem.verses || chapItem);
 						const vArray = Array.isArray(versesData) ? versesData : Object.values(versesData);
 						vArray.forEach((v, vIdx) => {
 							let vNum = v.verse || v.n || (vIdx + 1);
 							let text = v.text || v.txt || (typeof v === 'string' ? v : "");
+							if (text.includes('¶')) {
+								breakSet.add(parseInt(vNum));
+							}
 							text = text.replace(/¶/g, '').trim(); 
 							if (vNum && text) versesArray[parseInt(vNum)] = text;
 						});
 						let chapNum = chapItem.chapter || chapItem.c || (cIdx + 1);
 						chapters[parseInt(chapNum)] = versesArray;
+						breaks[parseInt(chapNum)] = breakSet;
 					});
 				}
-				allBooks.push({ name: bookName, chapters: chapters });
+				allBooks.push({ name: bookName, chapters: chapters, breaks: breaks });
 			});
 		} else {
 			let text = "";
@@ -1417,10 +1428,15 @@ async function loadBibleData() {
 				if (!line.trim()) continue;
 				let match = line.match(/^([A-Za-z\s\d]+?)[\s\t]+(\d+)[:\t](\d+)[\s\t]+(.*)$/);
 				if (match) {
-					let bName = match[1].trim(), cNum = parseInt(match[2]), vNum = parseInt(match[3]), vText = match[4].replace(/¶/g, '').trim(); 
+					let bName = match[1].trim(), cNum = parseInt(match[2]), vNum = parseInt(match[3]), rawText = match[4]; 
 					let book = allBooks.find(b => b.name === bName);
-					if (!book) { book = { name: bName, chapters: [] }; allBooks.push(book); }
+					if (!book) { book = { name: bName, chapters: [], breaks: [] }; allBooks.push(book); }
 					if (!book.chapters[cNum]) book.chapters[cNum] = [];
+					if (!book.breaks[cNum]) book.breaks[cNum] = new Set();
+					if (rawText.includes('¶')) {
+						book.breaks[cNum].add(vNum);
+					}
+					let vText = rawText.replace(/¶/g, '').trim();
 					book.chapters[cNum][vNum] = vText;
 				}
 			}
@@ -1681,6 +1697,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 	selectedVerses.clear(); updateSelectionFabs();
 
 	const verses = book.chapters[chapterNum];
+	const breakSet = book.breaks && book.breaks[chapterNum] ? book.breaks[chapterNum] : new Set();
 	let textDirection = (state.source === 'getbible' && translationMeta[state.translation] && translationMeta[state.translation].direction) ? translationMeta[state.translation].direction.toLowerCase() : 'ltr';
 	container.setAttribute('dir', textDirection);
 
@@ -1695,7 +1712,9 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 
 	verses.forEach((text, vNum) => {
 		if (!text) return;
-		let p = createEl('p', { className: 'verse', id: `v${vNum}`, innerHTML: `<span class="verse-num">${vNum}</span>${text}` }, container);
+		let className = 'verse';
+		if (breakSet.has(vNum)) className += ' break';
+		let p = createEl('p', { className: className, id: `v${vNum}`, innerHTML: `<span class="verse-num">${vNum}</span>${text}` }, container);
 		
 		if (isVerseBookmarked(vNum)) p.classList.add('bookmarked');
 		
