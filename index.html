@@ -204,6 +204,7 @@
 		header.minified { height: 1.85rem; }
 		header.minified h1 { font-size: 0.95rem; }
 		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
+		header.minified ~ #bottomComponents:has(.play-btn[style^="--progress-angle: 0deg"]) { transform: translateY(var(--bottom-bar-height)); }
 
 		/* Loading Bar */
 		.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--surface-color-active); display: none; overflow: hidden; z-index: var(--z-floating); }
@@ -304,7 +305,7 @@
 		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: var(--radius-full); background: conic-gradient(currentColor var(--progress-angle), var(--border-color) var(--progress-angle)) no-repeat; mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.8px), black calc(100% - 2.8px)); transition: background var(--dur) var(--ease-out); }
 		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; }
 		.bb-btn.play-btn.is-paused { color: var(--text-muted); }
-		.bb-btn.play-btn[style="--progress-angle: 0deg;"] { color: var(--text-color); }
+		.bb-btn.play-btn[style^="--progress-angle: 0deg"] { color: var(--text-color); }
 
 		/* Bottom Layout Grouping */
 		.bottom-components { position: fixed; bottom: 0; left: 0; right: 0; z-index: var(--z-floating); pointer-events: none; }
