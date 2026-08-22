@@ -4,7 +4,7 @@
  */
 
 function setupFrameGestures(frame, onSwipeLeft, onSwipeRight, animTargetID = frame.id) {
-	const activationThreshold = 150; // Pixels required to trigger the final action
+	const activationThreshold = 120; // Pixels required to trigger the final action
 	let currentTranslateX = 0;
 	let isInteracting = false;
 	let wheelResetTimeout = null;
@@ -103,7 +103,7 @@ function setupFrameGestures(frame, onSwipeLeft, onSwipeRight, animTargetID = fra
 
 
 function loadFabigation() {
-	const myFrame = document.getElementById('readerContent');
+	const myFrame = document.getElementById('view-reader');
 	setupFrameGestures(myFrame, ()=>{nextChapter()}, ()=>{prevChapter()}, 'versesContainer');
 }
 
