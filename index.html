@@ -220,7 +220,7 @@
 		summary { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 15px; cursor: pointer; color: var(--text-color); list-style: none; position: relative; padding-right: 30px; outline: none; }
 		summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform var(--dur) var(--ease-out), top var(--dur) var(--ease-out); }
 		details.is-open summary::after { transform: rotate(45deg); top: calc(50% - 8px); }
-		.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.96); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); }
+		.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.95); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); }
 		.details-wrapper > div { overflow: hidden; }
 		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; transform: none; }
 		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
@@ -265,8 +265,8 @@
 
 		/* FABs Unified Dimensions & Shadows */
 		.fab, .fab-resume { background: var(--surface-color); box-shadow: var(--shadow); height: var(--fab-size); transition: transform var(--dur) var(--ease-out), background var(--dur) var(--ease-out); margin: 20px 0;}
-		.fab:active, .fab-resume:active, .play-btn:active { transform: scale(0.95); background: var(--surface-color-active); }
-		.bb-btn:active { transform: scale(0.95); }
+		.fab:active, .fab-resume:active, .play-btn:active { transform: scale(.95); background: var(--surface-color-active); }
+		.bb-btn:active { transform: scale(.95); }
 		.fab { position: absolute; z-index: var(--z-floating); width: var(--fab-size); }
 		.fab-panic { background-color: var(--fab-panic-color); color: white; right: 20px; }
 		.panic-symbol { font-size: 1.8rem; line-height: 1; }
