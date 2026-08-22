@@ -4,7 +4,7 @@
  */
 
 function setupFrameGestures(frame, onSwipeLeft, onSwipeRight, animTargetID = frame.id) {
-	const activationThreshold = 120; // Pixels required to trigger the final action
+	const activationThreshold = 110; // Pixels required to trigger the final action
 	let currentTranslateX = 0;
 	let isInteracting = false;
 	let wheelResetTimeout = null;
@@ -78,27 +78,27 @@ function setupFrameGestures(frame, onSwipeLeft, onSwipeRight, animTargetID = fra
 		finalizeGesture();
 	});
 
-	// --- TRACKPAD / WHEEL GESTURES ---
-	frame.addEventListener("wheel", (e) => {
-		// Ignore vertical scrolling, only track horizontal trackpad swipes
-		if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return;
+	// // --- TRACKPAD / WHEEL GESTURES ---
+	// frame.addEventListener("wheel", (e) => {
+	// 	// Ignore vertical scrolling, only track horizontal trackpad swipes
+	// 	if (Math.abs(e.deltaY) > Math.abs(e.deltaX)) return;
 		
-		isInteracting = true;
-		clearTimeout(wheelResetTimeout);
+	// 	isInteracting = true;
+	// 	clearTimeout(wheelResetTimeout);
 
-		// Accumulate horizontal scroll delta (subtracting moves it intuitively with the swipe)
-		currentTranslateX -= e.deltaX;
+	// 	// Accumulate horizontal scroll delta (subtracting moves it intuitively with the swipe)
+	// 	currentTranslateX -= e.deltaX;
 		
-		// Cap the maximum visual translation so it doesn't fly entirely off-screen
-		const maxPan = activationThreshold + 50;
-		currentTranslateX = Math.max(-maxPan, Math.min(maxPan, currentTranslateX));
+	// 	// Cap the maximum visual translation so it doesn't fly entirely off-screen
+	// 	const maxPan = activationThreshold + 50;
+	// 	currentTranslateX = Math.max(-maxPan, Math.min(maxPan, currentTranslateX));
 
-		updateTransform(currentTranslateX, false);
+	// 	updateTransform(currentTranslateX, false);
 
-		// Trackpads don't have a reliable 'touchend' equivalent. 
-		// A pause in wheel events indicates the gesture is finished.
-		wheelResetTimeout = setTimeout(finalizeGesture, 150);
-	}, { passive: true });
+	// 	// Trackpads don't have a reliable 'touchend' equivalent. 
+	// 	// A pause in wheel events indicates the gesture is finished.
+	// 	wheelResetTimeout = setTimeout(finalizeGesture, 150);
+	// }, { passive: true });
 }
 
 
