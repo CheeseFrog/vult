@@ -4,7 +4,7 @@
  */
 
 function setupFrameGestures(frame, onSwipeLeft, onSwipeRight, animTargetID = frame.id) {
-	const activationThreshold = 110; // Pixels required to trigger the final action
+	const activationThreshold = 100; // Pixels required to trigger the final action
 	let currentTranslateX = 0;
 	let isInteracting = false;
 	let wheelResetTimeout = null;
