@@ -1,1501 +1,1535 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-	<!-- <meta name="theme-color" content="#f8f8f8" media="(prefers-color-scheme: light)"> -->
-	<meta name="theme-color" content="#000000">
-	<!-- iOS PWA Capabilities -->
-	<meta name="apple-mobile-web-app-capable" content="yes">
-	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-	<meta name="apple-mobile-web-app-title" content="Calculator">
-	<link rel="apple-touch-icon" href="src/icon-512.png">
-	<title>Calculator</title>
-	<!-- Dynamic and Static Web Manifest Link -->
-	<link rel="manifest" id="dynamicManifest" href="./manifest.json">
-	<!-- Modern Material Symbols Rounded import -->
-	<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
-	<!-- Shake.js Support (Loads local first from src/, falls back to CDN) -->
-	<script src="src/shake.js" onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/alexgibson/shake.js/shake.js';"></script>
-	<script src="src/fabigation-mod.js"></script>
-	<style>
-		:root {
-			/* Animation & Transition Variables */
-			--dur: 0.35s;
-			--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+	<!DOCTYPE html>
+	<html lang="en" data-theme="dark">
+	<head>
+		<meta charset="UTF-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+		<!-- <meta name="theme-color" content="#f8f8f8" media="(prefers-color-scheme: light)"> -->
+		<meta name="theme-color" content="#000000">
+		<!-- iOS PWA Capabilities -->
+		<meta name="apple-mobile-web-app-capable" content="yes">
+		<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+		<meta name="apple-mobile-web-app-title" content="Calculator">
+		<link rel="apple-touch-icon" href="src/icon-512.png">
+		<title>Calculator</title>
+		<link rel="icon" href="src/icon-512.png" />
+		<!-- Dynamic and Static Web Manifest Link -->
+		<link rel="manifest" id="dynamicManifest" href="./manifest.json">
+		<!-- Modern Material Symbols Rounded import -->
+		<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0" rel="stylesheet" />
+		<!-- Shake.js Support (Loads local first from src/, falls back to CDN) -->
+		<script src="src/shake.js" onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/alexgibson/shake.js/shake.js';"></script>
+		<script src="src/fabigation-mod.js"></script>
+		<style>
+			:root {
+				/* Animation & Transition Variables */
+				--dur: 0.35s;
+				--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
-			/* Border Radius Variables */
-			--radius-sm: 8px;
-			--radius-md: 12px;
-			--radius-lg: 28px;
-			--radius-full: 50%;
+				/* Border Radius Variables */
+				--radius-sm: 8px;
+				--radius-md: 12px;
+				--radius-lg: 28px;
+				--radius-full: 50%;
 
-			/* Z-Index Hierarchy Variables */
-			--z-sticky: 10;
-			--z-floating: 20;
-			--z-modal: 50;
-			--z-toast: 9999;
+				/* Z-Index Hierarchy Variables */
+				--z-sticky: 10;
+				--z-floating: 20;
+				--z-modal: 50;
+				--z-toast: 9999;
 
-			/* iOS Calculator Colors */
-			--calc-bg: #000000;
-			--calc-text: #ffffff;
-			--calc-btn-num: #2f2f2f;
-			--calc-btn-op: #ff9200;
-			--calc-btn-func: #5a5a5a;
+				/* iOS Calculator Colors */
+				--calc-bg: #000000;
+				--calc-text: #ffffff;
+				--calc-btn-num: #2f2f2f;
+				--calc-btn-op: #ff9200;
+				--calc-btn-func: #5a5a5a;
 
-			/* Bible App Variables (iOS Dark Mode Default) */
-			--bg-color: #000000;
-			--surface-color: #1c1c1e;
-			--surface-color-active: #2c2c2e;
-			--text-color: #ffffff;
-			--text-muted: #8e8e93;
-			--primary-color: #0a84ff; /* iOS Blue */
-			--header-bg: #1c1c1e;
-			--header-bg-tp: #28282bB3;
-			--border-color: #54545680; /* --border-color: #38383a; */
-			--highlight: color-mix(in srgb, var(--primary-color) 30%, transparent);
-			--bookmarked-bg: rgba(255, 214, 10, 0.3); /* iOS Yellow */
-			--playing-bg: rgba(128, 128, 128, 0.15);
-			--base-sans-serif: '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', Arial, sans-serif;
-			--base-serif: Georgia, serif;
-			--shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.22), 0 0 0 1px hsla(0,0%,100%,0.08) inset;
-			--bottom-bar-height: calc(var(--fab-size) + 12px);
-			--header-height: 56px;
-			--fab-size: 56px;
-			--fab-panic-color: rgb(255 66 69); /* #ff4c43; */
+				/* Bible App Variables (iOS Dark Mode Default) */
+				--bg-color: #000000;
+				--surface-color: #1c1c1e;
+				--surface-color-active: #2c2c2e;
+				--text-color: #ffffff;
+				--text-muted: #8e8e93;
+				--primary-color: #0a84ff; /* iOS Blue */
+				--header-bg: #1c1c1e;
+				--header-bg-tp: #28282bB3;
+				--border-color: #54545680; /* --border-color: #38383a; */
+				--highlight: color-mix(in srgb, var(--primary-color) 30%, transparent);
+				--bookmarked-bg: rgba(255, 214, 10, 0.3); /* iOS Yellow */
+				--playing-bg: rgba(128, 128, 128, 0.15);
+				--base-sans-serif: '-apple-system', 'BlinkMacSystemFont', 'Helvetica Neue', Arial, sans-serif;
+				--base-serif: Georgia, serif;
+				--shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.22), 0 0 0 1px hsla(0,0%,100%,0.08) inset;
+				--bottom-bar-height: calc(var(--fab-size) + 12px);
+				--header-height: 56px;
+				--fab-size: 56px;
+				--fab-panic-color: rgb(255 66 69); /* #ff4c43; */
+				
+				/* Reader Specific */
+				--reader-font-family: var(--base-serif);
+				--reader-font-size: 16px;
+				color-scheme: dark;
+				scrollbar-color: var(--text-muted) var(--surface-color);
+			}
+
+			[data-theme="light"] {
+				/* Bible App Variables (iOS Light Mode) */
+				--bg-color: #f2f2f7;
+				--surface-color: #ffffff;
+				--surface-color-active: #e5e5ea;
+				--text-color: #000000;
+				--text-muted: #8e8e93;
+				--primary-color: #007aff; /* iOS Blue */
+				--header-bg: #f8f8f8;
+				--header-bg-tp: #fbfbf8B3;
+				--border-color: #94949880; /* --border-color: #c6c6c8; */
+				--bookmarked-bg: rgba(255, 204, 0, 0.3); /* iOS Yellow */
+				--playing-bg: rgba(128, 128, 128, 0.15);
+				--fab-panic-color: rgb(255 56 60);
+				color-scheme: light;
+			}
+
+			* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; user-select: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+			button, input, select, textarea { font-family: inherit; font-size: inherit; }
 			
-			/* Reader Specific */
-			--reader-font-family: var(--base-serif);
-			--reader-font-size: 16px;
-			color-scheme: dark;
-			scrollbar-color: var(--text-muted) var(--surface-color);
-		}
+			/* Base App Font is fixed to iOS standards, isolating the reader settings */
+			html, body { font-family: var(--base-sans-serif); background-color: var(--bg-color); overflow: hidden; font-size: 16px; color: var(--text-color); touch-action: manipulation; overflow-anchor: none; overscroll-behavior: contain; }
+			
+			/* Utility Classes */
+			.text-muted { color: var(--text-muted); }
+			.text-primary { color: var(--primary-color); }
 
-		[data-theme="light"] {
-			/* Bible App Variables (iOS Light Mode) */
-			--bg-color: #f2f2f7;
-			--surface-color: #ffffff;
-			--surface-color-active: #e5e5ea;
-			--text-color: #000000;
-			--text-muted: #8e8e93;
-			--primary-color: #007aff; /* iOS Blue */
-			--header-bg: #f8f8f8;
-			--header-bg-tp: #fbfbf8B3;			
-			--border-color: #94949880; /* --border-color: #c6c6c8; */
-			--bookmarked-bg: rgba(255, 204, 0, 0.3); /* iOS Yellow */
-			--playing-bg: rgba(128, 128, 128, 0.15);
-			--fab-panic-color: rgb(255 56 60);
-			color-scheme: light;
-		}
+			/* =========================================
+				SHARED CSS UTILITY & LAYOUT GROUPS
+			========================================= */
+			#app-calculator, #app-calculator-wrapper, #app-bible { width: 100vw; height: 100vh; height: 100dvh; position: absolute; top: 0; left: 0; }
+			.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .ios-stepper span, .fab, .fab-resume { display: flex; align-items: center; justify-content: center; }
+			.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .fab, .fab-resume { border: none; cursor: pointer; }
+			.ios-select-display, .grid-item, .bookmark-text, .resume-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			.calc-btn, .fab, .ios-toggle::after { border-radius: var(--radius-full); }
+			.modal-btn:active, .grid-item:active, .bookmark-item:active { background: var(--border-color); }
+			.grid-item, .bookmark-item, dialog { background: var(--surface-color); }
+			.grid-item, .bookmark-item { border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: background var(--dur) var(--ease-out); }
+			.ios-select-overlay, .translation-select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; appearance: none; -webkit-appearance: none; z-index: var(--z-floating); }
+			.resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
 
-		* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; -webkit-touch-callout: none; -webkit-user-select: none; -moz-user-select: none; user-select: none; -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
-		button, input, select, textarea { font-family: inherit; font-size: inherit; }
-		
-		/* Base App Font is fixed to iOS standards, isolating the reader settings */
-		html, body { font-family: var(--base-sans-serif); background-color: var(--bg-color); overflow: hidden; font-size: 16px; color: var(--text-color); touch-action: manipulation; overflow-anchor: none; overscroll-behavior: contain; }
-		
-		/* Utility Classes */
-		.text-muted { color: var(--text-muted); }
-		.text-primary { color: var(--primary-color); }
+			header, .bottom-components, .view, dialog, .verses-container, .ios-toggle, .loading-bar, summary, details, .details-wrapper, .fab, .fab-resume, .play-btn, .bottom-components, .toast {
+				will-change: transform, opacity;
+				backface-visibility: hidden;
+				transform-origin: top center;
+			}
 
-		/* =========================================
-			SHARED CSS UTILITY & LAYOUT GROUPS
-		========================================= */
-		#app-calculator, #app-calculator-wrapper, #app-bible { width: 100vw; height: 100vh; height: 100dvh; position: absolute; top: 0; left: 0; }
-		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .ios-stepper span, .fab, .fab-resume { display: flex; align-items: center; justify-content: center; }
-		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .fab, .fab-resume { border: none; cursor: pointer; }
-		.ios-select-display, .grid-item, .bookmark-text, .resume-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-		.calc-btn, .fab, .ios-toggle::after { border-radius: var(--radius-full); }
-		.modal-btn:active, .grid-item:active, .bookmark-item:active { background: var(--border-color); }
-		.grid-item, .bookmark-item, dialog { background: var(--surface-color); }
-		.grid-item, .bookmark-item { border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: background var(--dur) var(--ease-out); }
-		.ios-select-overlay, .translation-select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; appearance: none; -webkit-appearance: none; z-index: var(--z-floating); }
-		.resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
+			/* Fade Up Animation for Views */
+			@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+			@keyframes fadeIn { from { opacity: 0; } to { } }
 
-		/* Fade Up Animation for Views */
-		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.98); } to { } }
-		@keyframes fadeIn { from { opacity: 0; } to { } }
+			/* Chapter Transition Animation */
+			.chapter-transition .verses-container { animation: fadeUp var(--dur) var(--ease-out) forwards; animation-fill-mode: none; }
 
-		/* Chapter Transition Animation */
-		.chapter-transition .verses-container { animation: fadeUp var(--dur) var(--ease-out) forwards; animation-fill-mode: none; }
+			/* --- Calculator View (Centered) --- */
+			#app-bible { background-color: var(--bg-color); display: none; flex-direction: column; z-index: var(--z-sticky); }
+			#app-calculator-wrapper { background-color: black; display: flex; justify-content: center; align-items: center; z-index: var(--z-sticky); }
+			#app-calculator { display: flex; flex-direction: column; justify-content: flex-end; padding: 2dvh; width: 100%; max-width: min(100%, 65dvh); height: 100%; margin: auto; position: relative; }
+			.calc-display-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding-bottom: 2dvh; width: 100%; overflow: hidden; }
+			
+			/* Shared Calculator Display Styling */
+			.calc-displays { white-space: nowrap; text-align: right; width: 100%; overflow-x: auto; scrollbar-width: thin; }
+			#calcHistory { font-size: 3.5dvh; font-weight: 300; color: var(--text-muted); margin-bottom: 1dvh; min-height: 3.5dvh; }
+			#calcDisplay { font-size: 9dvh; font-weight: 300; color: var(--calc-text); }
+			.calc-help { position: absolute; top: 2dvh; left: 2dvh; color: var(--calc-btn-num); font-size: 3.5vh; cursor: pointer; }
+			body:has(#helpModal[open]) #calcHelpBtn { color: var(--primary-color); }
+			.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5dvh; }
+			.calc-btn { aspect-ratio: 1; font-size: 4dvh; color: var(--calc-text); background-color: var(--calc-btn-num); transition: filter var(--dur) var(--ease-out); box-shadow: var(--shadow); }
+			.calc-btn:active { filter: brightness(1.4); }
+			.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 10dvh; justify-content: flex-start; padding-left:0; padding-right: 1.5dvh; }
+			.btn-op { background-color: var(--calc-btn-op); font-size: 5dvh; }
+			.btn-func { background-color: var(--calc-btn-func); }
 
-		/* --- Calculator View (Centered) --- */
-		#app-bible { background-color: var(--bg-color); display: none; flex-direction: column; z-index: var(--z-sticky); }
-		#app-calculator-wrapper { background-color: black; display: flex; justify-content: center; align-items: center; z-index: var(--z-sticky); }
-		#app-calculator { display: flex; flex-direction: column; justify-content: flex-end; padding: 2dvh; width: 100%; max-width: min(100%, 65dvh); height: 100%; margin: auto; position: relative; }
-		.calc-display-container { flex: 1; display: flex; flex-direction: column; justify-content: flex-end; align-items: flex-end; padding-bottom: 2dvh; width: 100%; overflow: hidden; }
-		
-		/* Shared Calculator Display Styling */
-		.calc-displays { white-space: nowrap; text-align: right; width: 100%; overflow-x: auto; scrollbar-width: thin; }
-		#calcHistory { font-size: 3.5dvh; font-weight: 300; color: var(--text-muted); margin-bottom: 1dvh; min-height: 3.5dvh; }
-		#calcDisplay { font-size: 9dvh; font-weight: 300; color: var(--calc-text); }
-		.calc-help { position: absolute; top: 2dvh; left: 2dvh; color: var(--calc-btn-num); font-size: 3.5vh; cursor: pointer; }
-		body:has(#helpModal[open]) #calcHelpBtn { color: var(--primary-color); }
-		.calc-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.5dvh; }
-		.calc-btn { aspect-ratio: 1; font-size: 4dvh; color: var(--calc-text); background-color: var(--calc-btn-num); transition: filter var(--dur) var(--ease-out); box-shadow: var(--shadow); }
-		.calc-btn:active { filter: brightness(1.4); }
-		.calc-btn.zero { grid-column: span 2; aspect-ratio: auto; border-radius: 10dvh; justify-content: flex-start; padding-left:0; padding-right: 1.5dvh; }
-		.btn-op { background-color: var(--calc-btn-op); font-size: 5dvh; }
-		.btn-func { background-color: var(--calc-btn-func); }
+			/* Dialog Overlays */
+			dialog { margin: auto; padding: 25px; border-radius: var(--radius-md); border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible;}
+			dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); }
+			dialog[open]::backdrop { animation: fadeIn var(--dur) var(--ease-out) forwards; }
+			dialog[open] { animation: fadeUp var(--dur) var(--ease-out) forwards; }
+			dialog:focus-visible { outline: none; }
+			dialog h3 { margin-bottom: 20px; margin-top: -5px; font-weight: 600; text-align: center; }
+			dialog p { margin-bottom: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+			.modal-btn { margin-top: 20px; width: 100%; padding: 12px; background: var(--surface-color-active); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 1em; cursor: pointer; font-weight: 600; transition: background var(--dur) var(--ease-out); }
+			.modal-btn.primary { background: var(--primary-color); color: white; border: none; }
+			.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
+			.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
+			.modal-actions .modal-btn { margin-top: 0; flex: 1; }
+			.bookmark-item:active .bookmark-ref, .translation-select-wrapper:active, :is([onclick], button):active:not(.ios-row) :is(.material-symbols-rounded, .text-primary) { color: color-mix(in srgb, var(--primary-color), var(--text-color) 35%); }
 
-		/* Dialog Overlays */
-		dialog { margin: auto; padding: 25px; border-radius: var(--radius-md); border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible;}
-		dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); }
-		dialog[open]::backdrop { animation: fadeIn var(--dur) var(--ease-out) forwards; }
-		dialog[open] { animation: fadeUp var(--dur) var(--ease-out) forwards; }
-		dialog:focus-visible { outline: none; }
-		dialog h3 { margin-bottom: 20px; margin-top: -5px; font-weight: 600; text-align: center; }
-		dialog p { margin-bottom: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
-		.modal-btn { margin-top: 20px; width: 100%; padding: 12px; background: var(--surface-color-active); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 1em; cursor: pointer; font-weight: 600; transition: background var(--dur) var(--ease-out); }
-		.modal-btn.primary { background: var(--primary-color); color: white; border: none; }
-		.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
-		.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
-		.modal-actions .modal-btn { margin-top: 0; flex: 1; }
-		.bookmark-item:active .bookmark-ref, .translation-select-wrapper:active, :is([onclick], button):active:not(.ios-row) :is(.material-symbols-rounded, .text-primary) { color: color-mix(in srgb, var(--primary-color), var(--text-color) 35%); }
+			/* iOS Settings Lists */
+			.ios-list { border-radius: var(--radius-md); overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
+			.ios-list:last-of-type { margin-bottom: 0; }
+			.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; min-height: 50px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background var(--dur) var(--ease-out); position: relative; }
+			.ios-row:active { background: var(--surface-color-active); }
+			.ios-row:last-child { border-bottom-color: transparent; }
+			.ios-row-label { font-size: 1rem; color: var(--text-color); flex: 1; }
+			.ios-row-control { display: flex; align-items: center; gap: 10px; }
+			.ios-row.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
 
-		/* iOS Settings Lists */
-		.ios-list { border-radius: var(--radius-md); overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
-		.ios-list:last-of-type { margin-bottom: 0; }
-		.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; min-height: 50px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background var(--dur) var(--ease-out); position: relative; }
-		.ios-row:active { background: var(--surface-color-active); }
-		.ios-row:last-child { border-bottom-color: transparent; }
-		.ios-row-label { font-size: 1rem; color: var(--text-color); flex: 1; }
-		.ios-row-control { display: flex; align-items: center; gap: 10px; }
-		.ios-row.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
+			.settings-list { overflow-y: auto; max-height: 70vh; margin: -12px -8px; padding: 12px 8px; mask-image: linear-gradient(transparent, black 12px, black calc(100% - 12px), transparent);}
+			@media (orientation: landscape) {
+				#studyModal .ios-list { overflow-y: auto; max-height: 30vh;}
+				.settings-list { max-height: 50vh; }
+			}
+			
+			/* Select Dropdowns */
+			.ios-select-row { position: relative; overflow: hidden; }
+			.ios-select-display { color: var(--text-muted); font-size: 1rem; pointer-events: none; max-width: 150px; display: inline-block; text-align: right; }
+			.ios-select-wrapper { display: flex; align-items: center; color: var(--text-muted); }
+			.ios-select-wrapper .material-symbols-rounded { font-size: 20px; margin-left: 4px; pointer-events: none; }
+			
+			/* Steppers */
+			.ios-stepper { display: flex; align-items: stretch; height: 2em; border-radius: 0.5em; overflow: hidden; border: 1px solid var(--border-color); z-index: 20; position: relative; font-size: 1rem; }
+			.ios-stepper button { background: var(--surface-color); color: var(--primary-color); font-size: 1.2em; width: 1.875em; }
+			.ios-stepper button:active { background: var(--surface-color-active); }
+			.ios-stepper span { width: 2.63em; font-size: 0.95em; color: var(--text-color); background: var(--bg-color); pointer-events: none; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
 
-		.settings-list { overflow-y: auto; max-height: 70vh; margin: -12px -8px; padding: 12px 8px; mask-image: linear-gradient(transparent, black 12px, black calc(100% - 12px), transparent);}
-		@media (orientation: landscape) {
-			#studyModal .ios-list { overflow-y: auto; max-height: 30vh;}
-			.settings-list { max-height: 50vh; }
-		}
-		
-		/* Select Dropdowns */
-		.ios-select-row { position: relative; overflow: hidden; }
-		.ios-select-display { color: var(--text-muted); font-size: 1rem; pointer-events: none; max-width: 150px; display: inline-block; text-align: right; }
-		.ios-select-wrapper { display: flex; align-items: center; color: var(--text-muted); }
-		.ios-select-wrapper .material-symbols-rounded { font-size: 20px; margin-left: 4px; pointer-events: none; }
-		
-		/* Steppers */
-		.ios-stepper { display: flex; align-items: stretch; height: 2em; border-radius: 0.5em; overflow: hidden; border: 1px solid var(--border-color); z-index: 20; position: relative; font-size: 1rem; }
-		.ios-stepper button { background: var(--surface-color); color: var(--primary-color); font-size: 1.2em; width: 1.875em; }
-		.ios-stepper button:active { background: var(--surface-color-active); }
-		.ios-stepper span { width: 2.63em; font-size: 0.95em; color: var(--text-color); background: var(--bg-color); pointer-events: none; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+			/* Toggle Switch */
+			.ios-toggle { position: relative; width: 3em; height: 1.75em; font-size: 1rem; appearance: none; -webkit-appearance: none; background: var(--border-color); outline: none; border-radius: 1em; cursor: pointer; transition: background var(--dur) var(--ease-out); margin: 0; pointer-events: none; }
+			.ios-toggle::after { content: ''; position: absolute; top: 0.125em; left: 0.125em; width: 1.5em; height: 1.5em; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform var(--dur) var(--ease-out); will-change: transform; }
+			.ios-toggle:checked { background: color-mix(in srgb, var(--primary-color), var(--bg-color) 15%); } /*34c759*/
+			.ios-toggle:checked::after { transform: translateX(1.25em); }
 
-		/* Toggle Switch */
-		.ios-toggle { position: relative; width: 3em; height: 1.75em; font-size: 1rem; appearance: none; -webkit-appearance: none; background: var(--border-color); outline: none; border-radius: 1em; cursor: pointer; transition: background var(--dur) var(--ease-out); margin: 0; pointer-events: none; }
-		.ios-toggle::after { content: ''; position: absolute; top: 0.125em; left: 0.125em; width: 1.5em; height: 1.5em; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform var(--dur) var(--ease-out); }
-		.ios-toggle:checked { background: color-mix(in srgb, var(--primary-color), var(--bg-color) 20%); } /*34c759*/
-		.ios-toggle:checked::after { transform: translateX(1.25em); }
+			/* --- Bible App Views --- */
+			.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 20px) 20px 180px; transition: filter var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); }
+			.view.active { display: flex; animation: fadeUp var(--dur) var(--ease-out) forwards; }
+			
+			/* Header Transitions for Minified State */
+			header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: absolute; inset: 0; z-index: var(--z-sticky); height: var(--header-height); transition: height var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out); }
+			header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size var(--dur) var(--ease-out); }
+			.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; transition: opacity var(--dur) var(--ease-out); }
+			.header-right { justify-content: flex-end; }
+			.header-btn { background: none; color: var(--primary-color); font-size: 1.1rem; height: 100%; padding: 0 20px; }
+			body:has(#view-home.active) header h1 { font-variant: unicase; letter-spacing: 0.05em; }
+			.translation-select-wrapper { position: relative; display: flex; align-items: center; color: var(--primary-color); font-weight: 600; font-size: 1.2rem; }
+			#transSelectDisplay { max-width: 30vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-		/* --- Bible App Views --- */
-		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 20px) 20px 180px; transition: filter var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); }
-		.view.active { display: flex; animation: fadeUp var(--dur) var(--ease-out) forwards; }
-		
-		/* Header Transitions for Minified State */
-		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: absolute; inset: 0; z-index: var(--z-sticky); height: var(--header-height); transition: height var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out); }
-		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size var(--dur) var(--ease-out); }
-		.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; transition: opacity var(--dur) var(--ease-out); }
-		.header-right { justify-content: flex-end; }
-		.header-btn { background: none; color: var(--primary-color); font-size: 1.1rem; height: 100%; padding: 0 20px; }
-		body:has(#view-home.active) header h1 { font-variant: unicase; letter-spacing: 0.05em; }
-		.translation-select-wrapper { position: relative; display: flex; align-items: center; color: var(--primary-color); font-weight: 600; font-size: 1.2rem; }
-		#transSelectDisplay { max-width: 30vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+			/* Minified State Classes */
+			header.minified { height: 1.85rem; }
+			header.minified h1 { font-size: 0.95rem; }
+			header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
+			header.minified ~ #bottomComponents:has(.play-btn[style^="--progress-angle: 0deg"]), header.minified ~ #bottomComponents:has(.play-btn[style^="display: none"]) { transform: translateY(var(--bottom-bar-height)); }
 
-		/* Minified State Classes */
-		header.minified { height: 1.85rem; }
-		header.minified h1 { font-size: 0.95rem; }
-		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
-		header.minified ~ #bottomComponents:has(.play-btn[style^="--progress-angle: 0deg"]) { transform: translateY(var(--bottom-bar-height)); }
+			/* Loading Bar */
+			.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--surface-color-active); overflow: hidden; z-index: var(--z-floating); }
+			.loading-bar::before { content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%; background-color: var(--primary-color); transform-origin: left center; animation: loadingBarAnim 1s infinite ease-in-out; will-change: transform; }
+			@keyframes loadingBarAnim { 0% { transform: translateX(-100%) scaleX(1); } 50% { transform: translateX(50%) scaleX(1.6); } 100% { transform: translateX(200%) scaleX(1); } }
+			body:not(.is-loading) .loading-bar { display: none; }
+			body.is-loading .view { opacity: 0.3 !important; pointer-events: none !important; filter: grayscale(100%) !important; }
 
-		/* Loading Bar */
-		.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--surface-color-active); display: none; overflow: hidden; z-index: var(--z-floating); }
-		.loading-bar::before { content: ''; position: absolute; top: 0; left: -50%; width: 50%; height: 100%; background-color: var(--primary-color); animation: loadingBarAnim 1.5s infinite ease-in-out; }
-		@keyframes loadingBarAnim { 0% { left: -50%; width: 50%; } 50% { left: 25%; width: 80%; } 100% { left: 100%; width: 50%; } }
-		body.is-loading .loading-bar { display: block; }
-		body.is-loading .view { opacity: 0.3 !important; pointer-events: none !important; filter: grayscale(100%) !important; }
+			/* Grids & Details */
+			details { padding: 5px 0 15px 0; }
+			details:has(div:empty) { opacity: 0; }
+			summary { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 15px; cursor: pointer; color: var(--text-color); list-style: none; position: relative; padding-right: 30px; outline: none; }
+			summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform var(--dur) var(--ease-out), top var(--dur) var(--ease-out); will-change: transform; }
+			details.is-open summary::after { transform: rotate(45deg); top: calc(50% - 8px); }
+			.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.95, .75); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); will-change: transform, grid-template-rows, opacity; }
+			.details-wrapper > div { overflow: hidden; }
+			details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; transform: translateY(0) scale(1); }
+			.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
+			.grid-item { text-align: center; font-size: 0.9em; padding: 0 8px; line-height: 3rem; height: 3rem; }
+			
+			/* Bookmarks */
+			.bookmark-list { display: flex; flex-direction: column; gap: 10px; }
+			.bookmark-list p { color: var(--text-muted); font-size: 0.9em; padding: 0 10px; }
+			.bookmark-item { padding: 15px; }
+			.bookmark-ref { font-weight: 600; color: var(--primary-color); margin-bottom: 5px; }
+			.bookmark-text { font-size: 0.85em; color: var(--text-muted); }
 
-		/* Grids & Details */
-		details { padding: 5px 0 15px 0; }
-		details:has(div:empty) { opacity: 0; }
-		summary { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 15px; cursor: pointer; color: var(--text-color); list-style: none; position: relative; padding-right: 30px; outline: none; }
-		summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform var(--dur) var(--ease-out), top var(--dur) var(--ease-out); }
-		details.is-open summary::after { transform: rotate(45deg); top: calc(50% - 8px); }
-		.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.95); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); }
-		.details-wrapper > div { overflow: hidden; }
-		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; transform: none; }
-		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
-		.grid-item { text-align: center; font-size: 0.9em; padding: 0 8px; line-height: 3rem; height: 3rem; }
-		
-		/* Bookmarks */
-		.bookmark-list { display: flex; flex-direction: column; gap: 10px; }
-		.bookmark-list p { color: var(--text-muted); font-size: 0.9em; padding: 0 10px; }
-		.bookmark-item { padding: 15px; }
-		.bookmark-ref { font-weight: 600; color: var(--primary-color); margin-bottom: 5px; }
-		.bookmark-text { font-size: 0.85em; color: var(--text-muted); }
+			/* Reader View */
+			#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
+			#readerContent { margin: -2px; }
+			.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
+			.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 4px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); contain: content; /* Isolates layout & paint recalculations */ }
+			
+			.verse.break {margin-bottom: 20px;}
+			/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); }	 */
+			.verse.break:after { content: "·    ·    ·"; font-size: 0.9em; white-space: pre; position: absolute; display: block; margin-top: 5px; width: 100%; left: 0; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
 
-		/* Reader View */
-		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
-		#readerContent { margin: -2px; }
-		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
-		.verse { margin-bottom: min(0.4em, 10px); cursor: pointer; border-radius: 4px; padding: 5px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), filter var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); }
-		
-		.verse.break {margin-bottom: 20px;}
-		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); }	 */
-		.verse.break:after { content: "·    ·    ·"; font-size: 0.9em; white-space: pre; position: absolute; display: block; margin-top: 5px; width: 100%; left: 0; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
+			.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color var(--dur) var(--ease-out); }
+			.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
+			
+			/* Verse States */
+			[dir="rtl"] .verse { box-shadow: 4px 0 0 0 transparent; }
+			.verse.selected { background-color: var(--highlight); }
+			.verse.bookmarked { background-color: var(--bookmarked-bg); }
+			.verse.playing { box-shadow: -4px 0 0 0 var(--primary-color); background-color: var(--playing-bg); }
+			.verse.playing.paused { box-shadow: -4px 0 0 0 var(--text-muted); background-color: var(--playing-bg); }
+			[dir="rtl"] .verse.playing { box-shadow: 4px 0 0 0 var(--primary-color); }
+			[dir="rtl"] .verse.playing.paused { box-shadow: 4px 0 0 0 var(--text-muted); }
+			.verse.selected.bookmarked { background-color: color-mix(in srgb, var(--highlight) 50%, var(--bookmarked-bg) 50%); }
+			.verse.playing.selected { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--highlight) 50%); }
+			.verse.playing.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--bookmarked-bg) 50%); }
+			.verse.playing.selected.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 33%, color-mix(in srgb, var(--highlight) 50%, var(--bookmarked-bg) 50%) 67%); }
+			
+			/* Verse Flash Animation using Opacity */
+			@keyframes verseFlash { 0% { opacity: 1; } 40% { opacity: 0.3; } 100% { opacity: 1; } }
+			.verse.flash, #studyModalSubtitle:active { animation: verseFlash var(--dur) var(--ease-out); }
 
-		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color var(--dur) var(--ease-out); }
-		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
-		
-		/* Verse States */
-		[dir="rtl"] .verse { box-shadow: 4px 0 0 0 transparent; }
-		.verse.selected { background-color: var(--highlight); }
-		.verse.bookmarked { background-color: var(--bookmarked-bg); }
-		.verse.playing { box-shadow: -4px 0 0 0 var(--primary-color); background-color: var(--playing-bg); }
-		.verse.playing.paused { box-shadow: -4px 0 0 0 var(--text-muted); background-color: var(--playing-bg); }
-		[dir="rtl"] .verse.playing { box-shadow: 4px 0 0 0 var(--primary-color); }
-		[dir="rtl"] .verse.playing.paused { box-shadow: 4px 0 0 0 var(--text-muted); }
-		.verse.selected.bookmarked { background-color: color-mix(in srgb, var(--highlight) 50%, var(--bookmarked-bg) 50%); }
-		.verse.playing.selected { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--highlight) 50%); }
-		.verse.playing.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--bookmarked-bg) 50%); }
-		.verse.playing.selected.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 33%, color-mix(in srgb, var(--highlight) 50%, var(--bookmarked-bg) 50%) 67%); }
-		
-		/* Verse Flash Animation using Opacity */
-		@keyframes verseFlash { 0% { opacity: 1; } 40% { opacity: 0.3; } 100% { opacity: 1; } }
-		.verse.flash, #studyModalSubtitle:active { animation: verseFlash var(--dur) var(--ease-out); }
+			/* FABs Unified Dimensions & Shadows */
+			.fab, .fab-resume { background: var(--surface-color); box-shadow: var(--shadow); height: var(--fab-size); transition: transform var(--dur) var(--ease-out), background var(--dur) var(--ease-out); margin: 20px 0;}
+			.fab:active, .fab-resume:active, .play-btn:active { transform: scale(.95); background: var(--surface-color-active); }
+			.bb-btn:active { transform: scale(.95); }
+			.fab { position: absolute; z-index: var(--z-floating); width: var(--fab-size); }
+			.fab-panic { background-color: var(--fab-panic-color); color: white; right: 20px; }
+			.panic-symbol { font-size: 1.8rem; line-height: 1; }
+			.fab-panic:active { color: var(--fab-panic-color); }
+			.fab-resume { color: var(--primary-color); border-radius: var(--radius-lg); gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
+			.resume-wrapper, .selection-fabs, #panicBtn { position: absolute; z-index: var(--z-floating); transition: background var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
+			:is(.resume-wrapper, .selection-fabs, #panicBtn):not(.visible) { pointer-events: none; opacity: 0; transform: translateY(12px); }
+			
+			/* Selection FABs (Smooth transition toggle without keyframe flash) */
+			.selection-fabs { left: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - var(--fab-size)*5) - 40px)/4), 20px); }
+			body:not(.panic-active) .selection-fabs { justify-content: center; }
+			.fab-action { color: var(--primary-color); position: relative; }
 
-		/* FABs Unified Dimensions & Shadows */
-		.fab, .fab-resume { background: var(--surface-color); box-shadow: var(--shadow); height: var(--fab-size); transition: transform var(--dur) var(--ease-out), background var(--dur) var(--ease-out); margin: 20px 0;}
-		.fab:active, .fab-resume:active, .play-btn:active { transform: scale(.95); background: var(--surface-color-active); }
-		.bb-btn:active { transform: scale(.95); }
-		.fab { position: absolute; z-index: var(--z-floating); width: var(--fab-size); }
-		.fab-panic { background-color: var(--fab-panic-color); color: white; right: 20px; }
-		.panic-symbol { font-size: 1.8rem; line-height: 1; }
-		.fab-panic:active { color: var(--fab-panic-color); }
-		.fab-resume { color: var(--primary-color); border-radius: var(--radius-lg); gap: 8px; padding: 0 20px; font-weight: 600; font-size: 0.95rem; flex-shrink: 0; max-width: calc(100vw - 40px); }
-		.resume-wrapper, .selection-fabs, #panicBtn { position: absolute; z-index: var(--z-floating); transition: background var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out), transform var(--dur) var(--ease-out); }
-		:is(.resume-wrapper, .selection-fabs, #panicBtn):not(.visible) { pointer-events: none; opacity: 0; transform: translateY(12px); }
-		
-		/* Selection FABs (Smooth transition toggle without keyframe flash) */
-		.selection-fabs { left: 20px; right: 20px; display: flex; flex-direction: row; gap: 10px; gap: min(calc(((100vw - var(--fab-size)*5) - 40px)/4), 20px); }
-		body:not(.panic-active) .selection-fabs { justify-content: center; }
-		.fab-action { color: var(--primary-color); position: relative; }
+			/* Resume Wrapper Layout (Smooth transition toggle without keyframe flash) */
+			.resume-wrapper { left: 0; right: calc(var(--fab-size) + 30px); mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%); }
+			.resume-scroll { display: flex; gap: 10px; height: 100%; overflow-x: auto; align-items: center; scrollbar-width: none; padding-left: 20px; padding-right: 40px; }
+			body:not(.panic-active) .resume-wrapper { right: 0; mask-image: none; }
+			body:not(.panic-active) .resume-scroll { padding-right: 20px; }
+			
+			/* Simplified Pointer Events Control for Hidden/Visible FAB Groups */
+			#fabContainer { pointer-events: none; }
+			#fabContainer .visible > *, #panicBtn { pointer-events: auto; }
 
-		/* Resume Wrapper Layout (Smooth transition toggle without keyframe flash) */
-		.resume-wrapper { left: 0; right: calc(var(--fab-size) + 30px); mask-image: linear-gradient(to right, black calc(100% - 40px), transparent 100%); }
-		.resume-scroll { display: flex; gap: 10px; height: 100%; overflow-x: auto; align-items: center; scrollbar-width: none; padding-left: 20px; padding-right: 40px; }
-		body:not(.panic-active) .resume-wrapper { right: 0; mask-image: none; }
-		body:not(.panic-active) .resume-scroll { padding-right: 20px; }
-		
-		/* Simplified Pointer Events Control for Hidden/Visible FAB Groups */
-		#fabContainer { pointer-events: none; }
-		#fabContainer .visible > *, #panicBtn { pointer-events: auto; }
+			/* Orientation shorthand logic for Resume FABs */
+			.text-long { display: none; }
+			.text-short { display: inline; }
+			@media (orientation: landscape) {
+				.text-long { display: inline; }
+				.text-short { display: none; }
+			}
 
-		/* Orientation shorthand logic for modals and Resume FABs (Shorthand in Portrait, Longhand in Landscape) */
-		.text-long { display: none; }
-		.text-short { display: inline; }
-		@media (orientation: landscape) {
-			.text-long { display: inline; }
-			.text-short { display: none; }
-		}
+			/* Bottom Bar */
+			.bottom-bar { height: var(--bottom-bar-height); background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly; align-items: center; z-index: var(--z-sticky); pointer-events: auto; }
+			.bottom-bar { box-shadow: var(--bg-color) 0 calc(var(--fab-size)*-.5) var(--fab-size) -15px; }
+			.bottom-components:has(.bottom-bar.visible) { transform: translateY(0); }
+			.bottom-components { transform: translateY(var(--bottom-bar-height)); transition: transform var(--dur) var(--ease-out); }
+			.bb-btn { background: none; color: var(--text-color); padding: 10px; height: 100%; aspect-ratio: 1;}
+			.bb-btn .material-symbols-rounded { font-size: 32px; }
+			
+			/* Radial Progress Ring around Play Button */
+			.bb-btn.play-btn { --progress-angle: 0deg; position: relative; height: var(--fab-size); border-radius: var(--radius-full); padding: 0; color: var(--primary-color); transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out); }
+			.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: var(--radius-full); background: conic-gradient(currentColor var(--progress-angle), var(--border-color) var(--progress-angle)) no-repeat; mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.8px), black calc(100% - 2.8px)); transition: background var(--dur) var(--ease-out); }
+			.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; }
+			.bb-btn.play-btn.is-paused { color: var(--text-muted); }
+			.bb-btn.play-btn[style^="--progress-angle: 0deg"] { color: var(--text-color); }
 
-		/* Bottom Bar */
-		.bottom-bar { height: var(--bottom-bar-height); background: var(--header-bg); border-top: 1px solid var(--border-color); display: flex; justify-content: space-evenly; align-items: center; z-index: var(--z-sticky); pointer-events: auto; }
-		.bottom-bar { box-shadow: var(--bg-color) 0 calc(var(--fab-size)*-.5) var(--fab-size) -15px; }
-		.bottom-components:has(.bottom-bar.visible) { transform: translateY(0); }
-		.bottom-components {transform: translateY(var(--bottom-bar-height)); transition: transform var(--dur) var(--ease-out);}
-		.bb-btn { background: none; color: var(--text-color); padding: 10px; height: 100%; aspect-ratio: 1;}
-		.bb-btn .material-symbols-rounded { font-size: 32px; }
-		
-		/* Radial Progress Ring around Play Button */
-		.bb-btn.play-btn { --progress-angle: 0deg; position: relative; height: var(--fab-size); border-radius: var(--radius-full); padding: 0; color: var(--primary-color); transition: background var(--dur) var(--ease-out), color var(--dur) var(--ease-out); }
-		.bb-btn.play-btn::before { content: ''; position: absolute; inset: 0; border-radius: var(--radius-full); background: conic-gradient(currentColor var(--progress-angle), var(--border-color) var(--progress-angle)) no-repeat; mask-image: radial-gradient(circle closest-side at 50% 50%, transparent calc(100% - 3.8px), black calc(100% - 2.8px)); transition: background var(--dur) var(--ease-out); }
-		.bb-btn.play-btn .material-symbols-rounded { position: relative; z-index: 2; }
-		.bb-btn.play-btn.is-paused { color: var(--text-muted); }
-		.bb-btn.play-btn[style^="--progress-angle: 0deg"] { color: var(--text-color); }
+			/* Bottom Layout Grouping */
+			.bottom-components { position: fixed; bottom: 0; left: 0; right: 0; z-index: var(--z-floating); pointer-events: none; }
+			.fab-container { height: calc(var(--fab-size) + 40px); pointer-events: none; transition: transform var(--dur) var(--ease-out); z-index: var(--z-floating); }
 
-		/* Bottom Layout Grouping */
-		.bottom-components { position: fixed; bottom: 0; left: 0; right: 0; z-index: var(--z-floating); pointer-events: none; }
-		.fab-container { height: calc(var(--fab-size) + 40px); pointer-events: none; transition: transform var(--dur) var(--ease-out); z-index: var(--z-floating); }
+			/* Toast (Pure CSS Animation Triggered via Class Replacement) */
+			.toast { position: fixed; top: var(--header-height); left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px) saturate(180%); padding: 12px 24px; border-radius: var(--radius-lg); z-index: var(--z-toast); font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
+			@keyframes toastAnim { 0%, 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; pointer-events: none; } 15%, 85% { transform: translateX(-50%) translateY(-50%); opacity: 1; pointer-events: auto; } }
+			.toast.animate { animation: toastAnim 2s ease forwards; }
 
-		/* Toast (Pure CSS Animation Triggered via Class Replacement) */
-		.toast { position: fixed; top: var(--header-height); left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px) saturate(180%); padding: 12px 24px; border-radius: var(--radius-lg); z-index: var(--z-toast); font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
-		@keyframes toastAnim { 0%, 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; pointer-events: none; } 15%, 85% { transform: translateX(-50%) translateY(-50%); opacity: 1; pointer-events: auto; } }
-		.toast.animate { animation: toastAnim 2s ease forwards; }
+		</style>
+	</head>
+	<body>
 
-	</style>
-</head>
-<body>
-
-	<!-- CALCULATOR VIEW (Centered) -->
-	<div id="app-calculator-wrapper">
-		<div id="app-calculator">
-			<div class="calc-help material-symbols-rounded" id="calcHelpBtn">help</div>
-			<div class="calc-display-container">
-				<div class="calc-displays" id="calcHistory"></div>
-				<div class="calc-displays" id="calcDisplay">0</div>
-			</div>
-			<div class="calc-grid">
-				<button class="calc-btn btn-func" onclick="calcInput('C')">AC</button>
-				<button class="calc-btn btn-func" onclick="calcInput('±')">±</button>
-				<button class="calc-btn btn-func" onclick="calcInput('%')">%</button>
-				<button class="calc-btn btn-op" onclick="calcInput('÷')">÷</button>
-				
-				<button class="calc-btn btn-num" onclick="calcInput('7')">7</button>
-				<button class="calc-btn btn-num" onclick="calcInput('8')">8</button>
-				<button class="calc-btn btn-num" onclick="calcInput('9')">9</button>
-				<button class="calc-btn btn-op" onclick="calcInput('×')">×</button>
-				
-				<button class="calc-btn btn-num" onclick="calcInput('4')">4</button>
-				<button class="calc-btn btn-num" onclick="calcInput('5')">5</button>
-				<button class="calc-btn btn-num" onclick="calcInput('6')">6</button>
-				<button class="calc-btn btn-op" onclick="calcInput('-')">−</button>
-				
-				<button class="calc-btn btn-num" onclick="calcInput('1')">1</button>
-				<button class="calc-btn btn-num" onclick="calcInput('2')">2</button>
-				<button class="calc-btn btn-num" onclick="calcInput('3')">3</button>
-				<button class="calc-btn btn-op" onclick="calcInput('+')">+</button>
-				
-				<button class="calc-btn btn-num zero" onclick="calcInput('0')"><span style="display:flex; align-items:center; justify-content:center; width:50%; height:100%;">0</span></button>
-				<button class="calc-btn btn-num" onclick="calcInput('.')">.</button>
-				<button class="calc-btn btn-op" onclick="calcInput('=')">=</button>
-			</div>
-		</div>
-	</div>
-
-	<!-- TOAST NOTIFICATION -->
-	<div id="toastMsg" class="toast">Go back again to exit</div>
-
-	<!-- CALCULATOR HELP MODAL -->
-	<dialog id="helpModal">
-		<h3>Help</h3>
-		<p>Let the reader understand. How many times should I forgive my brother?</p>
-		<div class="ios-list">
-			<label class="ios-row">
-				<div class="ios-row-label">Always ask me</div>
-				<div class="ios-row-control">
-					<input type="checkbox" id="showHelpCheck" class="ios-toggle" checked>
+		<!-- CALCULATOR VIEW (Centered) -->
+		<div id="app-calculator-wrapper">
+			<div id="app-calculator">
+				<div class="calc-help material-symbols-rounded" id="calcHelpBtn">help</div>
+				<div class="calc-display-container">
+					<div class="calc-displays" id="calcHistory"></div>
+					<div class="calc-displays" id="calcDisplay">0</div>
 				</div>
-			</label>
+				<div class="calc-grid">
+					<button class="calc-btn btn-func" onclick="calcInput('C')">AC</button>
+					<button class="calc-btn btn-func" onclick="calcInput('±')">±</button>
+					<button class="calc-btn btn-func" onclick="calcInput('%')">%</button>
+					<button class="calc-btn btn-op" onclick="calcInput('÷')">÷</button>
+					
+					<button class="calc-btn btn-num" onclick="calcInput('7')">7</button>
+					<button class="calc-btn btn-num" onclick="calcInput('8')">8</button>
+					<button class="calc-btn btn-num" onclick="calcInput('9')">9</button>
+					<button class="calc-btn btn-op" onclick="calcInput('×')">×</button>
+					
+					<button class="calc-btn btn-num" onclick="calcInput('4')">4</button>
+					<button class="calc-btn btn-num" onclick="calcInput('5')">5</button>
+					<button class="calc-btn btn-num" onclick="calcInput('6')">6</button>
+					<button class="calc-btn btn-op" onclick="calcInput('-')">−</button>
+					
+					<button class="calc-btn btn-num" onclick="calcInput('1')">1</button>
+					<button class="calc-btn btn-num" onclick="calcInput('2')">2</button>
+					<button class="calc-btn btn-num" onclick="calcInput('3')">3</button>
+					<button class="calc-btn btn-op" onclick="calcInput('+')">+</button>
+					
+					<button class="calc-btn btn-num zero" onclick="calcInput('0')"><span style="display:flex; align-items:center; justify-content:center; width:50%; height:100%;">0</span></button>
+					<button class="calc-btn btn-num" onclick="calcInput('.')">.</button>
+					<button class="calc-btn btn-op" onclick="calcInput('=')">=</button>
+				</div>
+			</div>
 		</div>
-		<button class="modal-btn primary" onclick="closeModal('helpModal')">Close</button>
-	</dialog>
 
-<!-- EXTERNAL STUDY MODAL -->
-	<dialog id="studyModal">
-		<h3>Further Study</h3>
-		<p id="studyModalSubtitle" onclick="copyInnerText(this)"></p>
-		<div class="ios-list">
-			<div class="ios-row" onclick="openStudy('blb')">
-				<div class="ios-row-label">Blue Letter Bible</div>
-				<span class="material-symbols-rounded text-muted">open_in_new</span>
-			</div>
-			<div class="ios-row" onclick="openStudy('hub')">
-				<div class="ios-row-label">Bible Hub</div>
-				<span class="material-symbols-rounded text-muted">open_in_new</span>
-			</div>
-			<div class="ios-row" onclick="openStudy('gateway')">
-				<div class="ios-row-label">Bible Gateway</div>
-				<span class="material-symbols-rounded text-muted">open_in_new</span>
-			</div>
-			<div class="ios-row" onclick="openStudy('youversion')">
-				<div class="ios-row-label">Bible.com <span class="text-muted" style="font-size:0.85em;">(YouVersion)</span></div>
-				<span class="material-symbols-rounded text-muted">open_in_new</span>
-			</div>
-		</div>
-		<button class="modal-btn" onclick="closeModal('studyModal')">Cancel</button>
-	</dialog>
+		<!-- TOAST NOTIFICATION -->
+		<div id="toastMsg" class="toast">Go back again to exit</div>
 
-	<!-- SETTINGS MODAL -->
-	<dialog id="settingsModal">
-		<h3>Settings</h3>
-		<div id="settings-list" class="settings-list">
+		<!-- CALCULATOR HELP MODAL -->
+		<dialog id="helpModal">
+			<h3>Help</h3>
+			<p>Let the reader understand. How many times should I forgive my brother?</p>
 			<div class="ios-list">
-				<div class="ios-row ios-select-row">
-					<div class="ios-row-label">Theme</div>
-					<div class="ios-row-control">
-						<div class="ios-select-wrapper">
-							<span id="themeDisplay" class="ios-select-display">System</span>
-							<span class="material-symbols-rounded">chevron_right</span>
-						</div>
-					</div>
-					<select id="setTheme" class="ios-select-overlay">
-						<option value="system">System</option>
-						<option value="dark">Dark</option>
-						<option value="light">Light</option>
-					</select>
-				</div>
-				
-				<div class="ios-row ios-select-row">
-					<div class="ios-row-label">Text Font</div>
-					<div class="ios-row-control">
-						<div class="ios-select-wrapper">
-							<span id="fontFamDisplay" class="ios-select-display">Serif</span>
-							<span class="material-symbols-rounded">chevron_right</span>
-						</div>
-					</div>
-					<select id="setFontFam" class="ios-select-overlay">
-						<option value="var(--base-serif)">Serif</option>
-						<option value="var(--base-sans-serif)">Sans-serif</option>
-						<option value="monospace">Monospace</option>
-					</select>
-				</div>
-				
-				<div class="ios-row">
-					<div class="ios-row-label">Text Size</div>
-					<div class="ios-row-control">
-						<div class="ios-stepper">
-							<button onclick="changeFontSize(-1)">-</button>
-							<span id="fontSizeDisplay">16</span>
-							<button onclick="changeFontSize(1)">+</button>
-						</div>
-					</div>
-				</div>
-			</div>
-
-			<div class="ios-list" id="speechSettingsGroup">
-				<div class="ios-row" id="speechRateRow">
-					<div class="ios-row-label">Speech Rate</div>
-					<div class="ios-row-control">
-						<div class="ios-stepper">
-							<button onclick="changeSpeechRate(-0.1)">-</button>
-							<span id="rateDisplay">1.0</span>
-							<button onclick="changeSpeechRate(0.1)">+</button>
-						</div>
-					</div>
-				</div>
-
-				<div class="ios-row ios-select-row" id="speechVoiceRow">
-					<div class="ios-row-label">Voice</div>
-					<div class="ios-row-control">
-						<div class="ios-select-wrapper">
-							<span id="voiceDisplay" class="ios-select-display">System Default</span>
-							<span class="material-symbols-rounded">chevron_right</span>
-						</div>
-					</div>
-					<select id="setVoice" class="ios-select-overlay"></select>
-				</div>
-			</div>
-
-			<div class="ios-list">
-				<div class="ios-row" id="installRowContainer" onclick="handleInstallClick()">
-					<div class="ios-row-label">Install to Home Screen</div>
-					<div class="ios-row-control">
-						<span class="material-symbols-rounded text-muted">install_desktop</span>
-					</div>
-				</div>
 				<label class="ios-row">
-					<div class="ios-row-label">Panic Calculator Mode</div>
+					<div class="ios-row-label">Show Help Icon</div>
 					<div class="ios-row-control">
-						<input type="checkbox" id="setPanic" class="ios-toggle" checked>
-					</div>
-				</label>
-				<!-- Shake to Panic Row -->
-				<label class="ios-row" id="shakeRow">
-					<div class="ios-row-label">Shake to Panic</div>
-					<div class="ios-row-control">
-						<input type="checkbox" id="setShake" class="ios-toggle">
+						<input type="checkbox" id="showHelpCheck" class="ios-toggle" checked>
 					</div>
 				</label>
 			</div>
-		</div>
-		<div class="modal-actions">
-			<button class="modal-btn" onclick="closeModal('settingsModal'); openModal('advancedModal', 'modal-advanced')">More</button>
-			<button class="modal-btn primary" onclick="closeModal('settingsModal')">Done</button>
-		</div>
-	</dialog>
+			<button class="modal-btn primary" onclick="closeModal('helpModal')">Close</button>
+		</dialog>
 
-	<!-- ADVANCED SETTINGS MODAL -->
-	<dialog id="advancedModal">
-		<h3>More Settings</h3>
-		<div class="settings-list">
+	<!-- EXTERNAL STUDY MODAL -->
+		<dialog id="studyModal">
+			<h3>Further Study</h3>
+			<p id="studyModalSubtitle" onclick="copyInnerText(this)"></p>
 			<div class="ios-list">
-				<div class="ios-row ios-select-row">
-					<div class="ios-row-label">Data Source</div>
-					<div class="ios-row-control">
-						<div class="ios-select-wrapper">
-							<span id="sourceDisplay" class="ios-select-display">GetBible</span>
-							<span class="material-symbols-rounded">chevron_right</span>
-						</div>
-					</div>
-					<select id="setSource" class="ios-select-overlay">
-						<option value="getbible">GetBible</option>
-						<option value="openbible">OpenBible</option>
-					</select>
+				<div class="ios-row" onclick="openStudy('blb')">
+					<div class="ios-row-label">Blue Letter Bible</div>
+					<span class="material-symbols-rounded text-muted">open_in_new</span>
 				</div>
-			</div>
-			
-			<div class="ios-list">
-				<div class="ios-row" onclick="exportBookmarks()">
-					<div class="ios-row-label">Export Bookmarks</div>
-					<span class="material-symbols-rounded text-muted">upload</span>
+				<div class="ios-row" onclick="openStudy('hub')">
+					<div class="ios-row-label">Bible Hub</div>
+					<span class="material-symbols-rounded text-muted">open_in_new</span>
 				</div>
-				<div class="ios-row" onclick="$('importBookmarksInput').click()">
-					<div class="ios-row-label">Import Bookmarks</div>
-					<span class="material-symbols-rounded text-muted">download</span>
-					<input type="file" id="importBookmarksInput" style="display: none;" accept=".json" onchange="importBookmarks(event)">
+				<div class="ios-row" onclick="openStudy('gateway')">
+					<div class="ios-row-label">Bible Gateway</div>
+					<span class="material-symbols-rounded text-muted">open_in_new</span>
 				</div>
-			</div>
-			
-			<div class="ios-list">
-				<div class="ios-row" onclick="shareApp()">
-					<div class="ios-row-label">Share App</div>
-					<span class="material-symbols-rounded text-muted">share</span>
-				</div>
-				<div class="ios-row" onclick="window.location.href='mailto:au.yousef+dev@gmail.com'">
-					<div class="ios-row-label">Contact Developer</div>
-					<span class="material-symbols-rounded text-muted">mail</span>
-				</div>
-				<div class="ios-row" onclick="window.open('https://paypal.me/auyousef', '_blank')">
-					<div class="ios-row-label">Donate</div>
+				<div class="ios-row" onclick="openStudy('youversion')">
+					<div class="ios-row-label">Bible.com <span class="text-muted" style="font-size:0.85em;">(YouVersion)</span></div>
 					<span class="material-symbols-rounded text-muted">open_in_new</span>
 				</div>
 			</div>
-			
-			<div class="ios-list">
-				<div class="ios-row" onclick="resetApp()">
-					<div class="ios-row-label" style="color: var(--fab-panic-color);">Reset App</div>
-					<span class="material-symbols-rounded" style="color: var(--fab-panic-color);">delete_forever</span>
-				</div>
-			</div>
-		</div>
-		<button class="modal-btn primary" onclick="closeModal('advancedModal')">Done</button>
-	</dialog>
+			<button class="modal-btn" onclick="closeModal('studyModal')">Cancel</button>
+		</dialog>
 
-	<!-- BIBLE APP (VULT) -->
-	<div id="app-bible">
-		<header>
-			<div class="header-left">
-				<button class="header-btn" id="navBack" style="display: none;">
-					<span class="material-symbols-rounded">arrow_back_ios</span>
-				</button>
-				<div class="translation-select-wrapper header-btn" id="transSelectWrapper">
-					<span id="transSelectDisplay">KJV</span>
-					<span class="material-symbols-rounded">expand_more</span>
-					<select class="translation-select" id="transSelect"></select>
-				</div>
-			</div>
-			
-			<h1 id="headerTitle">Vult</h1>
-			
-			<div class="header-right">
-				<button class="header-btn" onclick="openSettings()">
-					<span class="material-symbols-rounded">settings</span>
-				</button>
-			</div>
-			<div class="loading-bar"></div>
-		</header>
-
-		<!-- HOME VIEW (Book Picker) -->
-		<div class="view active" id="view-home">
-			<details open id="ntDetails" class="is-open">
-				<summary id="ntSummary">NEW TESTAMENT</summary>
-				<div class="details-wrapper">
-					<div class="book-grid" id="ntGrid"></div>
-				</div>
-			</details>
-			<details open id="otDetails" class="is-open">
-				<summary id="otSummary">OLD TESTAMENT</summary>
-				<div class="details-wrapper">
-					<div class="book-grid" id="otGrid"></div>
-				</div>
-			</details>
-			<details open class="is-open">
-				<summary>BOOKMARKS</summary>
-				<div class="details-wrapper">
-					<div class="bookmark-list" id="bookmarksList"></div>
-				</div>
-			</details>
-		</div>
-
-		<!-- CHAPTERS VIEW -->
-		<div class="view" id="view-chapters">
-			<details open class="is-open">
-				<summary>CHAPTERS</summary>
-				<div class="details-wrapper">
-					<div class="chapter-grid" id="chapterGrid"></div>
-				</div>
-			</details>
-			<details open id="bookBookmarksDetails" class="is-open">
-				<summary>BOOKMARKS</summary>
-				<div class="details-wrapper">
-					<div class="bookmark-list" id="bookBookmarksList"></div>
-				</div>
-			</details>
-		</div>
-
-		<!-- READER VIEW -->
-		<div class="view" id="view-reader">
-			<div id="readerContent"></div>
-		</div>
-		
-		<div id="bottomComponents" class="bottom-components">
-			<div id="fabContainer" class="fab-container">
-				<!-- SCROLLING RESUME PILLS (Bottom Left - Home & Chapters view) -->
-				<div class="resume-wrapper" id="resumeWrapper">
-					<div class="resume-scroll" id="resumeScroll">
-						<!-- Dynamically populated buttons -->
+		<!-- SETTINGS MODAL -->
+		<dialog id="settingsModal">
+			<h3>Settings</h3>
+			<div id="settings-list" class="settings-list">
+				<div class="ios-list">
+					<div class="ios-row ios-select-row">
+						<div class="ios-row-label">Theme</div>
+						<div class="ios-row-control">
+							<div class="ios-select-wrapper">
+								<span id="themeDisplay" class="ios-select-display">System</span>
+								<span class="material-symbols-rounded">chevron_right</span>
+							</div>
+						</div>
+						<select id="setTheme" class="ios-select-overlay">
+							<option value="system">System</option>
+							<option value="dark">Dark</option>
+							<option value="light">Light</option>
+						</select>
+					</div>
+					
+					<div class="ios-row ios-select-row">
+						<div class="ios-row-label">Text Font</div>
+						<div class="ios-row-control">
+							<div class="ios-select-wrapper">
+								<span id="fontFamDisplay" class="ios-select-display">Serif</span>
+								<span class="material-symbols-rounded">chevron_right</span>
+							</div>
+						</div>
+						<select id="setFontFam" class="ios-select-overlay">
+							<option value="var(--base-serif)">Serif</option>
+							<option value="var(--base-sans-serif)">Sans-serif</option>
+							<option value="monospace">Monospace</option>
+						</select>
+					</div>
+					
+					<div class="ios-row">
+						<div class="ios-row-label">Text Size</div>
+						<div class="ios-row-control">
+							<div class="ios-stepper">
+								<button onclick="changeFontSize(-1)">-</button>
+								<span id="fontSizeDisplay">16</span>
+								<button onclick="changeFontSize(1)">+</button>
+							</div>
+						</div>
 					</div>
 				</div>
-		
-				<!-- SELECTION FABS (Bottom Left - Reader view) -->
-				<div class="selection-fabs" id="selectionFabs">
-					<button class="fab fab-action" id="bookmarkFabBtn" onclick="toggleBookmarks()">
-						<span class="material-symbols-rounded" id="bookmarkFabIcon">bookmark</span>
-					</button>
-					<button class="fab fab-action" onclick="copySelected()">
-						<span class="material-symbols-rounded">content_copy</span>
-					</button>
-					<button class="fab fab-action" onclick="shareSelected()">
-						<span class="material-symbols-rounded">share</span>
-					</button>
-					<button class="fab fab-action" onclick="openStudyModal()">
-						<span class="material-symbols-rounded">travel_explore</span>
-					</button>
+
+				<div class="ios-list" id="speechSettingsGroup">
+					<div class="ios-row" id="speechRateRow">
+						<div class="ios-row-label">Speech Rate</div>
+						<div class="ios-row-control">
+							<div class="ios-stepper">
+								<button onclick="changeSpeechRate(-0.1)">-</button>
+								<span id="rateDisplay">1.0</span>
+								<button onclick="changeSpeechRate(0.1)">+</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="ios-row ios-select-row" id="speechVoiceRow">
+						<div class="ios-row-label">Voice</div>
+						<div class="ios-row-control">
+							<div class="ios-select-wrapper">
+								<span id="voiceDisplay" class="ios-select-display">System Default</span>
+								<span class="material-symbols-rounded">chevron_right</span>
+							</div>
+						</div>
+						<select id="setVoice" class="ios-select-overlay"></select>
+					</div>
+				</div>
+
+				<div class="ios-list">
+					<div class="ios-row" id="installRowContainer" onclick="handleInstallClick()">
+						<div class="ios-row-label">Install to Home Screen</div>
+						<div class="ios-row-control">
+							<span class="material-symbols-rounded text-muted">install_desktop</span>
+						</div>
+					</div>
+					<label class="ios-row">
+						<div class="ios-row-label">Panic Calculator Mode</div>
+						<div class="ios-row-control">
+							<input type="checkbox" id="setPanic" class="ios-toggle" checked>
+						</div>
+					</label>
+					<!-- Shake to Panic Row -->
+					<label class="ios-row" id="shakeRow">
+						<div class="ios-row-label">Shake to Panic</div>
+						<div class="ios-row-control">
+							<input type="checkbox" id="setShake" class="ios-toggle">
+						</div>
+					</label>
+				</div>
+			</div>
+			<div class="modal-actions">
+				<button class="modal-btn" onclick="closeModal('settingsModal'); openModal('advancedModal', 'modal-advanced')">More</button>
+				<button class="modal-btn primary" onclick="closeModal('settingsModal')">Done</button>
+			</div>
+		</dialog>
+
+		<!-- ADVANCED SETTINGS MODAL -->
+		<dialog id="advancedModal">
+			<h3>More Settings</h3>
+			<div class="settings-list">
+				<div class="ios-list">
+					<div class="ios-row ios-select-row">
+						<div class="ios-row-label">Data Source</div>
+						<div class="ios-row-control">
+							<div class="ios-select-wrapper">
+								<span id="sourceDisplay" class="ios-select-display">GetBible</span>
+								<span class="material-symbols-rounded">chevron_right</span>
+							</div>
+						</div>
+						<select id="setSource" class="ios-select-overlay">
+							<option value="getbible">GetBible</option>
+							<option value="openbible">OpenBible</option>
+						</select>
+					</div>
 				</div>
 				
-				<!-- PANIC FAB -->
-				<button class="fab fab-panic" id="panicBtn" onclick="triggerPanic()">
-					<span class="panic-symbol">±</span>
-				</button>
-			</div> 
+				<div class="ios-list">
+					<div class="ios-row" onclick="exportBookmarks()">
+						<div class="ios-row-label">Export Bookmarks</div>
+						<span class="material-symbols-rounded text-muted">upload</span>
+					</div>
+					<div class="ios-row" onclick="$('importBookmarksInput').click()">
+						<div class="ios-row-label">Import Bookmarks</div>
+						<span class="material-symbols-rounded text-muted">download</span>
+						<input type="file" id="importBookmarksInput" style="display: none;" accept=".json" onchange="importBookmarks(event)">
+					</div>
+				</div>
+				
+				<div class="ios-list">
+					<div class="ios-row" onclick="shareApp()">
+						<div class="ios-row-label">Share App</div>
+						<span class="material-symbols-rounded text-muted">share</span>
+					</div>
+					<div class="ios-row" onclick="window.location.href='mailto:au.yousef+dev@gmail.com'">
+						<div class="ios-row-label">Contact Developer</div>
+						<span class="material-symbols-rounded text-muted">mail</span>
+					</div>
+					<div class="ios-row" onclick="window.open('https://paypal.me/auyousef', '_blank')">
+						<div class="ios-row-label">Donate</div>
+						<span class="material-symbols-rounded text-muted">open_in_new</span>
+					</div>
+				</div>
+				
+				<div class="ios-list">
+					<div class="ios-row" onclick="resetApp()">
+						<div class="ios-row-label" style="color: var(--fab-panic-color);">Reset App</div>
+						<span class="material-symbols-rounded" style="color: var(--fab-panic-color);">delete_forever</span>
+					</div>
+				</div>
+			</div>
+			<button class="modal-btn primary" onclick="closeModal('advancedModal')">Done</button>
+		</dialog>
+
+		<!-- BIBLE APP (VULT) -->
+		<div id="app-bible">
+			<header>
+				<div class="header-left">
+					<button class="header-btn" id="navBack" style="display: none;">
+						<span class="material-symbols-rounded">arrow_back_ios</span>
+					</button>
+					<div class="translation-select-wrapper header-btn" id="transSelectWrapper">
+						<span id="transSelectDisplay">KJV</span>
+						<span class="material-symbols-rounded">expand_more</span>
+						<select class="translation-select" id="transSelect"></select>
+					</div>
+				</div>
+				
+				<h1 id="headerTitle">Vult</h1>
+				
+				<div class="header-right">
+					<button class="header-btn" onclick="openSettings()">
+						<span class="material-symbols-rounded">settings</span>
+					</button>
+				</div>
+				<div class="loading-bar"></div>
+			</header>
+
+			<!-- HOME VIEW (Book Picker) -->
+			<div class="view active" id="view-home">
+				<details open id="ntDetails" class="is-open">
+					<summary id="ntSummary">NEW TESTAMENT</summary>
+					<div class="details-wrapper">
+						<div class="book-grid" id="ntGrid"></div>
+					</div>
+				</details>
+				<details open id="otDetails" class="is-open">
+					<summary id="otSummary">OLD TESTAMENT</summary>
+					<div class="details-wrapper">
+						<div class="book-grid" id="otGrid"></div>
+					</div>
+				</details>
+				<details open class="is-open">
+					<summary>BOOKMARKS</summary>
+					<div class="details-wrapper">
+						<div class="bookmark-list" id="bookmarksList"></div>
+					</div>
+				</details>
+			</div>
+
+			<!-- CHAPTERS VIEW -->
+			<div class="view" id="view-chapters">
+				<details open class="is-open">
+					<summary>CHAPTERS</summary>
+					<div class="details-wrapper">
+						<div class="chapter-grid" id="chapterGrid"></div>
+					</div>
+				</details>
+				<details open id="bookBookmarksDetails" class="is-open">
+					<summary>BOOKMARKS</summary>
+					<div class="details-wrapper">
+						<div class="bookmark-list" id="bookBookmarksList"></div>
+					</div>
+				</details>
+			</div>
+
+			<!-- READER VIEW -->
+			<div class="view" id="view-reader">
+				<div id="readerContent"></div>
+			</div>
 			
-			<!-- BOTTOM BAR -->
-			<div class="bottom-bar" id="bottomBar">
-				<button class="bb-btn" onclick="prevChapter()">
-					<span class="material-symbols-rounded">skip_previous</span>
-				</button>
-				<button class="bb-btn play-btn" id="playBtn">
-					<span class="material-symbols-rounded" id="playIcon">play_arrow</span>
-				</button>
-				<button class="bb-btn" onclick="nextChapter()">
-					<span class="material-symbols-rounded">skip_next</span>
-				</button>
+			<div id="bottomComponents" class="bottom-components">
+				<div id="fabContainer" class="fab-container">
+					<!-- SCROLLING RESUME PILLS (Bottom Left - Home & Chapters view) -->
+					<div class="resume-wrapper" id="resumeWrapper">
+						<div class="resume-scroll" id="resumeScroll">
+							<!-- Dynamically populated buttons -->
+						</div>
+					</div>
+			
+					<!-- SELECTION FABS (Bottom Left - Reader view) -->
+					<div class="selection-fabs" id="selectionFabs">
+						<button class="fab fab-action" id="bookmarkFabBtn" onclick="toggleBookmarks()">
+							<span class="material-symbols-rounded" id="bookmarkFabIcon">bookmark</span>
+						</button>
+						<button class="fab fab-action" onclick="copySelected()">
+							<span class="material-symbols-rounded">content_copy</span>
+						</button>
+						<button class="fab fab-action" onclick="shareSelected()">
+							<span class="material-symbols-rounded">share</span>
+						</button>
+						<button class="fab fab-action" onclick="openStudyModal()">
+							<span class="material-symbols-rounded">travel_explore</span>
+						</button>
+					</div>
+					
+					<!-- PANIC FAB -->
+					<button class="fab fab-panic" id="panicBtn" onclick="triggerPanic()">
+						<span class="panic-symbol">±</span>
+					</button>
+				</div> 
+				
+				<!-- BOTTOM BAR -->
+				<div class="bottom-bar" id="bottomBar">
+					<button class="bb-btn" onclick="prevChapter()">
+						<span class="material-symbols-rounded">skip_previous</span>
+					</button>
+					<button class="bb-btn play-btn" id="playBtn">
+						<span class="material-symbols-rounded" id="playIcon">play_arrow</span>
+					</button>
+					<button class="bb-btn" onclick="nextChapter()">
+						<span class="material-symbols-rounded">skip_next</span>
+					</button>
+				</div>
 			</div>
 		</div>
-	</div>
 
-<script>
-/* =========================================
-	DOM HELPERS & ABSTRACTIONS
-========================================= */
-const $ = (id) => document.getElementById(id);
+	<script>
+	/* =========================================
+		DOM HELPERS & ABSTRACTIONS
+	========================================= */
+	const $ = (id) => document.getElementById(id);
 
-const createEl = (tag, props, parent) => {
-	const el = document.createElement(tag);
-	for (let k in props) {
-		if (k === 'dataset') {
-			for (let d in props.dataset) el.dataset[d] = props.dataset[d];
-		} else {
-			el[k] = props[k];
-		}
-	}
-	if (parent) parent.appendChild(el);
-	return el;
-};
-
-const setTranslationState = (trans, newSource = state.source) => {
-	state.translation = trans;
-	state.source = newSource;
-	const sel = $('transSelect');
-	if (sel) sel.value = trans;
-	updateTransDisplay();
-	activeData = { OT: [], NT: [] };
-};
-
-const setAudioUI = (icon, addPausedClass) => {
-	$('playIcon').innerText = icon;
-	$('playBtn').classList.toggle('is-paused', addPausedClass);
-};
-
-const openModal = (id, navState) => { $(id).showModal(); pushNavState(navState); };
-const closeModal = (id) => $(id).close();
-
-const syncSelectDisplay = (selectDom, displayDom) => {
-	if (selectDom.selectedIndex >= 0) displayDom.innerText = selectDom.options[selectDom.selectedIndex].text;
-};
-
-// Reusable native event logic for buttons and verses that need both tap and long-press differentiation
-const setupLongPress = (element, onLongPress, onClick) => {
-	if (onLongPress) {
-		element.addEventListener('contextmenu', (e) => {
-			e.preventDefault(); // Stop native context menu from appearing
-			e.stopPropagation(); // Stop event bubbling
-			onLongPress(e);
-		});
-	}
-
-	if (onClick) {
-		element.addEventListener('click', (e) => {
-			onClick(e);
-		});
-	}
-};
-
-/* =========================================
-	FETCH HELPER: Cache API Integration
-========================================= */
-async function fetchWithCache(url) {
-	if (!('caches' in window)) return fetch(url);
-
-	let isCacheable = false;
-	try {
-		const requestUrl = new URL(url, window.location.href);
-		isCacheable = requestUrl.protocol === 'http:' || requestUrl.protocol === 'https:';
-	} catch (e) {
-		isCacheable = false;
-	}
-
-	try {
-		const response = await fetch(url);
-		
-		if (response.ok && isCacheable) {
-			const cache = await caches.open('vult-bible-cache');
-			cache.put(url, response.clone()).catch(() => {});
-		}
-		
-		if (!response.ok) throw new Error("HTTP error " + response.status);
-		return response;
-		
-	} catch (err) {
-		if (isCacheable) {
-			try {
-				const cache = await caches.open('vult-bible-cache');
-				const cachedResponse = await cache.match(url);
-				if (cachedResponse) return cachedResponse;
-			} catch (e) {
-				// Ignore secondary cache errors
+	const createEl = (tag, props, parent) => {
+		const el = document.createElement(tag);
+		for (let k in props) {
+			if (k === 'dataset') {
+				for (let d in props.dataset) el.dataset[d] = props.dataset[d];
+			} else {
+				el[k] = props[k];
 			}
 		}
-		
-		throw err;
-	}
-}
-
-/* =========================================
-	STATE MANAGEMENT & CONSTANTS
-========================================= */
-let state = {
-	theme: 'system', fontFamily: "var(--base-serif)", fontSize: 16,
-	panicEnabled: true, shakeToPanicEnabled: false, voiceURI: '', rate: 1, translation: 'kjv',
-	bookmarks: [], recentLocations: [], secretUnlocked: false,
-	source: 'getbible'
-};
-
-const BIBLE_BOOKS = [
-	"Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi",
-	"Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"
-];
-
-// Updated to match ESV Global Study Bible abbreviations
-const BOOK_SHORTHANDS = {
-	"Genesis": "Gen.", "Exodus": "Ex.", "Leviticus": "Lev.", "Numbers": "Num.", "Deuteronomy": "Deut.", "Joshua": "Josh.", "Judges": "Judg.", "Ruth": "Ruth", "1 Samuel": "1 Sam.", "2 Samuel": "2 Sam.", "1 Kings": "1 Kings", "2 Kings": "2 Kings", "1 Chronicles": "1 Chron.", "2 Chronicles": "2 Chron.", "Ezra": "Ezra", "Nehemiah": "Neh.", "Esther": "Esth.", "Job": "Job", "Psalms": "Ps.", "Proverbs": "Prov.", "Ecclesiastes": "Eccles.", "Song of Solomon": "Song", "Isaiah": "Isa.", "Jeremiah": "Jer.", "Lamentations": "Lam.", "Ezekiel": "Ezek.", "Daniel": "Dan.", "Hosea": "Hos.", "Joel": "Joel", "Amos": "Amos", "Obadiah": "Obad.", "Jonah": "Jonah", "Micah": "Mic.", "Nahum": "Nah.", "Habakkuk": "Hab.", "Zephaniah": "Zeph.", "Haggai": "Hag.", "Zechariah": "Zech.", "Malachi": "Mal.",
-	"Matthew": "Matt.", "Mark": "Mark", "Luke": "Luke", "John": "John", "Acts": "Acts", "Romans": "Rom.", "1 Corinthians": "1 Cor.", "2 Corinthians": "2 Cor.", "Galatians": "Gal.", "Ephesians": "Eph.", "Philippians": "Phil.", "Colossians": "Col.", "1 Thessalonians": "1 Thess.", "2 Thessalonians": "2 Thess.", "1 Timothy": "1 Tim.", "2 Timothy": "2 Tim.", "Titus": "Titus", "Philemon": "Philem.", "Hebrews": "Heb.", "James": "James", "1 Peter": "1 Pet.", "2 Peter": "2 Pet.", "1 John": "1 John", "2 John": "2 John", "3 John": "3 John", "Jude": "Jude", "Revelation": "Rev."
-};
-
-const OPENBIBLE_TRANS = [
-	{ value: 'akjv', label: 'AKJV', full: 'American King James Version' },
-	{ value: 'asv', label: 'ASV', full: 'American Standard Version' },
-	{ value: 'cpdv', label: 'CPDV', full: 'Catholic Public Domain Version' },
-	{ value: 'dbt', label: 'DBT', full: 'Darby Bible Translation' },
-	{ value: 'drb', label: 'DRB', full: 'Douay-Rheims Bible' },
-	{ value: 'erv', label: 'ERV', full: 'English Revised Version' },
-	{ value: 'jps', label: 'JPS', full: 'Jewish Publication Society' },
-	{ value: 'kjv', label: 'KJV', full: 'King James Version' },
-	{ value: 'slt', label: 'SLT', full: 'Smith\'s Literal Translation' },
-	{ value: 'wbt', label: 'WBT', full: 'Webster\'s Bible Translation' },
-	{ value: 'web', label: 'WEB', full: 'World English Bible' },
-	{ value: 'ylt', label: 'YLT', full: 'Young\'s Literal Translation' }
-];
-
-// Manual overrides for custom translation groupings
-const TRANS_GROUP_OVERRIDES = {
-	"klv": "Other (Unspecified)",
-	"mal1910": "Other (Asia)",
-	"tpikjpb": "Other (Oceania)",
-	"bibelselskap": "Norwegian",
-	"calo": "Spanish",
-	"che1860": "Other (Americas)",
-	"csielizabeth": "Other (Europe)",
-	"dari": "Other (Asia)",
-	"gaelic": "Gaelic",
-	"manxgaelic": "Gaelic",
-	"mg1865": "Other (Africa)",
-	"moderngreek": "Greek",
-	"monkjv": "Other (Asia)",
-	"ndebele": "Other (Africa)",
-	"norsmb": "Norwegian",
-	"shona": "Other (Africa)",
-	"tausug": "Other (Oceania)"
-};
-
-// Fallback Region mapping for languages with only 1 translation 
-const LANG_REGION_MAP = {
-	"Albanian": "Europe", "Basque": "Europe", "Breton": "Europe", "Bulgarian": "Europe", "Croatian": "Europe", "Czech": "Europe", "Danish": "Europe", "Dutch": "Europe", "Estonian": "Europe", "Faroese": "Europe", "Finnish": "Europe", "French": "Europe", "Georgian": "Europe", "German": "Europe", "Gothic": "Europe", "Greek": "Europe", "Hungarian": "Europe", "Icelandic": "Europe", "Italian": "Europe", "Latin": "Europe", "Latvian": "Europe", "Lithuanian": "Europe", "Norwegian": "Europe", "Polish": "Europe", "Portuguese": "Europe", "Romansh": "Europe", "Romanian": "Europe", "Russian": "Europe", "Scots Gaelic": "Europe", "Serbian": "Europe", "Slovak": "Europe", "Slovenian": "Europe", "Spanish": "Europe", "Swedish": "Europe", "Ukrainian": "Europe", "Welsh": "Europe",
-	"Afrikaans": "Africa", "Amharic": "Africa", "Coptic": "Africa", "Swahili": "Africa", "Wolof": "Africa", "Xhosa": "Africa", "Zulu": "Africa",
-	"Arabic": "Asia", "Aramaic": "Asia", "Armenian": "Asia", "Awadhi": "Asia", "Bengali": "Asia", "Chinese": "Asia", "Hebrew": "Asia", "Hindi": "Asia", "Indonesian": "Asia", "Japanese": "Asia", "Korean": "Asia", "Malayalam": "Asia", "Marathi": "Asia", "Nepali": "Asia", "Persian": "Asia", "Punjabi": "Asia", "Syriac": "Asia", "Tamil": "Asia", "Telugu": "Asia", "Thai": "Asia", "Turkish": "Asia", "Urdu": "Asia", "Vietnamese": "Asia",
-	"Haitian Creole": "Americas", "Kekchi": "Americas", "Navajo": "Americas", "Potawatomi": "Americas",
-	"Chamorro": "Oceania", "Maori": "Oceania", "Tagalog": "Oceania", "Uma": "Oceania"
-};
-
-let displayValue = '0';
-let historyValue = '';
-let lastTapTime = 0;
-let lastTapVal = '';
-let activeData = { OT: [], NT: [] }; 
-let currentBookIndex = -1;
-let currentIsNT = false;
-let currentChapter = -1;
-let playingIndex = -1;
-let selectedVerses = new Set();
-let synth = window.speechSynthesis || null;
-let voices = [];
-let isPlaying = false;
-let isPaused = false;
-let currentUtterance = null;
-let wakeLock = null;
-let activeView = 'home'; 
-let translationMeta = {};
-
-// PWA Install Prompt Capture
-let deferredPrompt = null;
-
-// History State Management
-let userInteracted = false;
-let isPopState = false;
-let pendingHistory = [];
-let historyDepth = 0;
-let backPressCount = 0;
-let backPressTimer = null;
-
-/* =========================================
-	PWA DYNAMIC MANIFEST & INSTALL LOGIC
-========================================= */
-function isRunningStandalone() {
-	return (window.matchMedia('(display-mode: standalone)').matches) || 
-			(window.navigator.standalone) || 
-			document.referrer.includes('android-app://');
-}
-
-function isIOSDevice() {
-	return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-}
-
-function updateDynamicManifest() {
-	const appName = state.panicEnabled ? "Calculator" : "Vult";
-	
-	// Raster PNG Generation
-	const canvas = document.createElement('canvas');
-	canvas.width = 512; canvas.height = 512;
-	const ctx = canvas.getContext('2d');
-	
-	ctx.fillStyle = '#000000';
-	ctx.beginPath();
-	const r = 120;
-	ctx.moveTo(r, 0); ctx.lineTo(512-r, 0); ctx.arcTo(512, 0, 512, r, r);
-	ctx.lineTo(512, 512-r); ctx.arcTo(512, 512, 512-r, 512, r);
-	ctx.lineTo(r, 512); ctx.arcTo(0, 512, 0, 512-r, r);
-	ctx.lineTo(0, r); ctx.arcTo(0, 0, r, 0, r);
-	ctx.fill();
-	
-	ctx.fillStyle = '#ffffff';
-	ctx.font = 'bold 360px -apple-system, sans-serif';
-	ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-	ctx.fillText('±', 256, 276); 
-	const iconDataUri = canvas.toDataURL('image/png');
-
-	// Generate manifest payload
-	const manifestObj = {
-		name: appName, short_name: appName, start_url: window.location.href, display: "standalone",
-		background_color: "#000000", theme_color: "#000000", 
-		icons: [
-			{ src: iconDataUri, sizes: "512x512", type: "image/png"},
-			{ src: iconDataUri, sizes: "512x512", type: "image/png", purpose: "any maskable" }
-		]
+		if (parent) parent.appendChild(el);
+		return el;
 	};
 
-	const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
-	const manifestLink = $('dynamicManifest');
-	if (manifestLink) manifestLink.setAttribute('href', URL.createObjectURL(blob));
-}
+	const setTranslationState = (trans, newSource = state.source) => {
+		state.translation = trans;
+		state.source = newSource;
+		const sel = $('transSelect');
+		if (sel) sel.value = trans;
+		updateTransDisplay();
+		activeData = { OT: [], NT: [] };
+	};
 
-window.addEventListener('beforeinstallprompt', (e) => {
-	e.preventDefault();
-	deferredPrompt = e;
-});
+	const setAudioUI = (icon, addPausedClass) => {
+		$('playIcon').innerText = icon;
+		$('playBtn').classList.toggle('is-paused', addPausedClass);
+	};
 
-window.addEventListener('appinstalled', () => { deferredPrompt = null; });
+	const openModal = (id, navState) => { $(id).showModal(); pushNavState(navState); };
+	const closeModal = (id) => $(id).close();
 
-async function handleInstallClick() {
-	closeModal('settingsModal');
-	if (deferredPrompt) {
-		updateDynamicManifest();
-		deferredPrompt.prompt();
-		const { outcome } = await deferredPrompt.userChoice;
-		if (outcome === 'accepted') {
-			deferredPrompt = null;
-			$('installRowContainer').style.display = 'none';
-		}
-	} else {
-		showToast("App can be installed from your browser menu.");
-	}
-}
+	const syncSelectDisplay = (selectDom, displayDom) => {
+		if (selectDom.selectedIndex >= 0) displayDom.innerText = selectDom.options[selectDom.selectedIndex].text;
+	};
 
-function showToast(msg) {
-	// Close all modals when a toast is triggered
-	document.querySelectorAll('dialog').forEach(d => { if (d.open) d.close(); });
-	
-	let toast = $('toastMsg');
-	toast.innerText = msg;
-	toast.classList.remove('animate');
-	void toast.offsetWidth; // Trigger reflow to restart pure CSS animation loop
-	toast.classList.add('animate');
-}
-
-/* =========================================
-	ROUTING & CORE HELPERS
-========================================= */
-const getCurrentBook = () => currentBookIndex >= 0 ? (currentIsNT ? activeData.NT : activeData.OT)[currentBookIndex] : null;
-
-const checkBookExists = (bookName) => {
-	let isNT = activeData.NT.some(b => b.name === bookName);
-	return { exists: isNT || activeData.OT.some(b => b.name === bookName), isNT };
-};
-
-const clearPlayingVerseStyles = () => {
-	document.querySelectorAll('.verse.playing').forEach(el => el.classList.remove('playing', 'paused'));
-};
-
-const registerInteraction = () => {
-	if (userInteracted) return;
-	userInteracted = true;
-	pendingHistory.forEach(v => { history.pushState({ view: v }, ''); historyDepth++; });
-	pendingHistory = [];
-};
-document.addEventListener('pointerdown', registerInteraction, { capture: true, once: true });
-document.addEventListener('keydown', registerInteraction, { capture: true, once: true });
-
-function pushNavState(viewName) {
-	activeView = viewName;
-	if (isPopState) return; 
-	
-	if (!userInteracted) { pendingHistory.push(viewName); } 
-	else { history.pushState({ view: viewName }, ''); historyDepth++; }
-}
-
-window.onpopstate = function (event) {
-	isPopState = true;
-	if (historyDepth > 0) historyDepth--;
-	
-	const dialogs = ['settingsModal', 'advancedModal', 'helpModal', 'studyModal'];
-	for(let id of dialogs) {
-		let el = $(id);
-		if (el && el.open) { el.close(); isPopState = false; return; }
-	}
-
-	const navBackBtn = $('navBack');
-	if (navBackBtn && navBackBtn.style.display !== 'none' && typeof navBackBtn.onclick === 'function') {
-		navBackBtn.onclick();
-	} else if (state.secretUnlocked) {
-		if (backPressCount === 0) {
-			backPressCount++; showToast("Go back again to exit"); history.pushState({ view: 'home' }, ''); historyDepth++;
-			backPressTimer = setTimeout(() => { backPressCount = 0; }, 2000);
-		} else {
-			clearTimeout(backPressTimer); backPressCount = 0;
-			if (state.panicEnabled) { triggerPanic(); } else { history.go(-2); historyDepth = Math.max(0, historyDepth - 2); }
-		}
-	}
-	
-	setTimeout(() => { isPopState = false; }, 10);
-};
-
-/* =========================================
-	INITIALIZATION & SHAKE/KEYBOARD SUPPORT
-========================================= */
-function init() {
-	// Register Service Worker for offline cold-start PWA capability
-	if ('serviceWorker' in navigator) {
-		navigator.serviceWorker.register('./src/sw.js').catch(err => {
-			console.log('ServiceWorker registration failed: ', err);
-		});
-	}
-
-	loadState();
-	if (!state.source) { state.source = 'getbible'; saveState(); }
-	
-	// Explicitly lock secretUnlocked on startup if panic mode is active to enable initial keyboard input
-	if (state.panicEnabled) {
-		state.secretUnlocked = false;
-	}
-
-	applySettings(); checkSpeechSupport(); setupPlayButton(); setupDialogDismiss(); setupDetailsAnimation();
-	setTimeout(updateDynamicManifest, 100); 
-	
-	// Setup Shake Listener
-	if (typeof Shake !== 'undefined') {
-		var myShakeEvent = new Shake({ threshold: 15, timeout: 1000 });
-		myShakeEvent.start();
-		window.addEventListener('shake', handleShakeEvent, false);
-	}
-
-	// Reader View Header Scroll Listener (Directional)
-	let lastScrollTop = 0;
-	$('view-reader').addEventListener('scroll', (e) => {
-		const currentScrollTop = e.target.scrollTop;
-		const header = document.querySelector('header');
-		const endOfContent = e.target.scrollHeight - e.target.clientHeight;
-		
-		if (currentScrollTop > lastScrollTop && currentScrollTop > 50 && currentScrollTop < endOfContent - 50) {
-			// Scrolling down and not at the end of content
-			header.classList.add('minified');
-		} else if (currentScrollTop < lastScrollTop || currentScrollTop >= endOfContent - 50) {
-			// Scrolling up and not at the end of content
-			header.classList.remove('minified');
-		}
-		
-		// Prevent negative scrolling values (bounce effect on iOS) from breaking logic
-		lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
-	});
-	
-	history.replaceState({ view: 'base' }, '');
-	
-	if (!state.panicEnabled) {
-		state.secretUnlocked = true; openBibleApp(); 
-	} else {
-		showCalculator();
-	}
-	
-	$('showHelpCheck').addEventListener('change', (e) => {
-		localStorage.setItem('vult_hideHelp', (!e.target.checked).toString());
-	});
-	$('calcHelpBtn').addEventListener('click', () => openModal('helpModal', 'modal-help'));
-}
-
-// Global Keyboard Listener for Calculator
-document.addEventListener('keydown', (e) => {
-	// Only map keys if calculator view is active (secretUnlocked is false)
-	if (state.secretUnlocked) return;
-	
-	const key = e.key;
-	if (key >= '0' && key <= '9') {
-		calcInput(key);
-	} else if (key === '.') {
-		calcInput('.');
-	} else if (key === '+') {
-		calcInput('+');
-	} else if (key === '-') {
-		calcInput('−');
-	} else if (key === '*') {
-		calcInput('×');
-	} else if (key === '/') {
-		e.preventDefault(); // Prevent "Quick Find" in Firefox
-		calcInput('÷');
-	} else if (key === '%') {
-		calcInput('÷');
-	} else if (key === 'Enter' || key === '=') {
-		e.preventDefault(); // Prevent accidental form submissions/refreshes
-		calcInput('=');
-	} else if (key === 'Backspace' || key === 'Delete') {
-		calcInput('C');
-	}
-});
-
-function handleShakeEvent() {
-	if (state.panicEnabled && state.shakeToPanicEnabled && state.secretUnlocked) {
-		triggerPanic();
-	}
-}
-
-function setupDialogDismiss() {
-	document.querySelectorAll('dialog').forEach(dialog => {
-		dialog.addEventListener('click', function(e) { if (e.target === this) this.close(); });
-	});
-}
-
-function setupDetailsAnimation() {
-	document.querySelectorAll('details').forEach(el => {
-		const summary = el.querySelector('summary');
-		if (!summary) return;
-		
-		summary.addEventListener('click', (e) => {
-			e.preventDefault();
-			if (el.classList.contains('is-open')) {
-				el.classList.remove('is-open');
-				setTimeout(() => {
-					if (!el.classList.contains('is-open')) el.open = false;
-				}, 300);
-			} else {
-				el.open = true;
-				requestAnimationFrame(() => {
-					requestAnimationFrame(() => { el.classList.add('is-open'); });
-				});
-			}
-		});
-	});
-}
-
-function checkSpeechSupport() {
-	if (!synth) {
-		$('playBtn').style.display = 'none';
-		$('speechSettingsGroup').style.display = 'none';
-	} else { populateVoices(); }
-}
-
-function setupPlayButton() {
-	setupLongPress($('playBtn'), 
-		() => { cancelSpeech(); playingIndex = -1; if ('vibrate' in navigator) navigator.vibrate(50); showToast("Playback stopped."); },
-		() => togglePlay()
-	);
-}
-
-async function requestWakeLock() {
-	if ('wakeLock' in navigator && document.visibilityState === 'visible') {
-		try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
-	}
-}
-
-function releaseWakeLock() {
-	if (wakeLock !== null) wakeLock.release().then(() => { wakeLock = null; });
-}
-
-document.addEventListener('visibilitychange', async () => {
-	if (wakeLock !== null && document.visibilityState === 'visible' && isPlaying) { await requestWakeLock(); }
-});
-
-function loadState() {
-	const saved = localStorage.getItem('vult_state');
-	if (saved) state = { ...state, ...JSON.parse(saved) };
-	
-	if (localStorage.getItem('vult_hideHelp') === 'true') {
-		const helpChk = $('showHelpCheck');
-		if (helpChk) helpChk.checked = false;
-	}
-
-	if (state.lastBook && state.lastChap && (!state.recentLocations || state.recentLocations.length === 0)) {
-		state.recentLocations = [{
-			book: state.lastBook.name,
-			isNT: state.lastBook.isNT,
-			chap: state.lastChap,
-			trans: state.lastTrans || state.translation
-		}];
-		delete state.lastBook; delete state.lastChap; delete state.lastTrans;
-		saveState();
-	}
-	if (!state.recentLocations) state.recentLocations = [];
-}
-
-function saveState() { localStorage.setItem('vult_state', JSON.stringify(state)); }
-
-/* =========================================
-	CALCULATOR LOGIC
-========================================= */
-function showCalculator() {
-	state.secretUnlocked = false; 
-	$('app-calculator-wrapper').style.display = 'flex';
-	$('app-bible').style.display = 'none';
-	displayValue = '0'; 
-	historyValue = '';
-	updateDisplay();
-}
-
-function formatDisplay(str) {
-	if (str === 'Error') return 'Error';
-	return str.replace(/\d+(\.\d*)?/g, (match) => {
-		let parts = match.split('.');
-		parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-		return parts.join('.');
-	});
-}
-
-function calcInput(val) {
-	const now = Date.now();
-	// Debounce duplicate click events firing within 100ms for the same button
-	if (now - lastTapTime < 100 && lastTapVal === val) {
-		return;
-	}
-	lastTapTime = now;
-	lastTapVal = val;
-
-	if (!userInteracted) registerInteraction();
-	
-	if (val === 'C') { 
-		displayValue = '0'; 
-		historyValue = '';
-	} 
-	else if (val === '=') {
-		if (displayValue === '77') {
-			showToast("Try again, using another source...");
-		}
-		try {
-			historyValue = displayValue + ' =';
-			let evalExpr = displayValue.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
-			let res = eval(evalExpr);
-			if (isNaN(res) || !isFinite(res)) {
-				displayValue = 'Error';
-			} else {
-				displayValue = String(res);
-			}
-		} catch { 
-			displayValue = 'Error'; 
-		}
-	} else {
-		if (historyValue !== '') { historyValue = ''; }
-		if (displayValue === '0' || displayValue === 'Error') {
-			if (val === '.' || ['+', '−', '×', '÷', '%'].includes(val)) { displayValue = '0' + val; } else { displayValue = val; }
-		} else {
-			displayValue += val;
-		}
-	}
-	
-	updateDisplay();
-	if (displayValue === '70×7') { setTimeout(openBibleApp, 200); }
-}
-
-function updateDisplay() { 
-	const el = $('calcDisplay');
-	const histEl = $('calcHistory');
-	
-	el.innerText = formatDisplay(displayValue);
-	histEl.innerText = formatDisplay(historyValue);
-	histEl.scrollLeft = histEl.scrollWidth;
-
-	el.style.fontSize = '9dvh';
-	const container = el.parentElement;
-	let currentSize = 9.0;
-	while (el.scrollWidth > container.clientWidth && currentSize > 3.0) {
-		currentSize -= 0.5;
-		el.style.fontSize = currentSize + 'dvh';
-	}
-}
-
-/* =========================================
-	BIBLE TRANSLATIONS & DATA LOGIC
-========================================= */
-async function populateTranslations() {
-	const select = $('transSelect');
-	select.innerHTML = '';
-	
-	if (state.source === 'getbible') {
-		const createOptGroup = (label, items) => {
-			let group = createEl('optgroup', { label: label });
-			items.sort((a,b) => a.abbreviation.localeCompare(b.abbreviation)).forEach(t => {
-				createEl('option', {
-					value: t.abbreviation || t.value,
-					innerText: `${(t.abbreviation || t.label).toUpperCase()} - ${t.translation || t.full}`,
-					dataset: { acronym: (t.abbreviation || t.label).toUpperCase() }
-				}, group);
+	// Reusable native event logic for buttons and verses that need both tap and long-press differentiation
+	const setupLongPress = (element, onLongPress, onClick) => {
+		if (onLongPress) {
+			element.addEventListener('contextmenu', (e) => {
+				e.preventDefault(); // Stop native context menu from appearing
+				e.stopPropagation(); // Stop event bubbling
+				onLongPress(e);
 			});
-			return group;
+		}
+
+		if (onClick) {
+			element.addEventListener('click', (e) => {
+				onClick(e);
+			});
+		}
+	};
+
+	/* =========================================
+		FETCH HELPER: Cache API Integration
+	========================================= */
+	async function fetchWithCache(url) {
+		if (!('caches' in window)) return fetch(url);
+
+		let isCacheable = false;
+		try {
+			const requestUrl = new URL(url, window.location.href);
+			isCacheable = requestUrl.protocol === 'http:' || requestUrl.protocol === 'https:';
+		} catch (e) {
+			isCacheable = false;
+		}
+
+		try {
+			const response = await fetch(url);
+			
+			if (response.ok && isCacheable) {
+				const cache = await caches.open('vult-bible-cache');
+				cache.put(url, response.clone()).catch(() => {});
+			}
+			
+			if (!response.ok) throw new Error("HTTP error " + response.status);
+			return response;
+			
+		} catch (err) {
+			if (isCacheable) {
+				try {
+					const cache = await caches.open('vult-bible-cache');
+					const cachedResponse = await cache.match(url);
+					if (cachedResponse) return cachedResponse;
+				} catch (e) {
+					// Ignore secondary cache errors
+				}
+			}
+			
+			throw err;
+		}
+	}
+
+	/* =========================================
+		STATE MANAGEMENT & CONSTANTS
+	========================================= */
+	let state = {
+		theme: 'system', fontFamily: "var(--base-serif)", fontSize: 16,
+		panicEnabled: true, shakeToPanicEnabled: false, voiceURI: '', rate: 1, translation: 'kjv',
+		bookmarks: [], recentLocations: [], secretUnlocked: false,
+		source: 'getbible'
+	};
+
+	const BIBLE_BOOKS = [
+		"Genesis", "Exodus", "Leviticus", "Numbers", "Deuteronomy", "Joshua", "Judges", "Ruth", "1 Samuel", "2 Samuel", "1 Kings", "2 Kings", "1 Chronicles", "2 Chronicles", "Ezra", "Nehemiah", "Esther", "Job", "Psalms", "Proverbs", "Ecclesiastes", "Song of Solomon", "Isaiah", "Jeremiah", "Lamentations", "Ezekiel", "Daniel", "Hosea", "Joel", "Amos", "Obadiah", "Jonah", "Micah", "Nahum", "Habakkuk", "Zephaniah", "Haggai", "Zechariah", "Malachi",
+		"Matthew", "Mark", "Luke", "John", "Acts", "Romans", "1 Corinthians", "2 Corinthians", "Galatians", "Ephesians", "Philippians", "Colossians", "1 Thessalonians", "2 Thessalonians", "1 Timothy", "2 Timothy", "Titus", "Philemon", "Hebrews", "James", "1 Peter", "2 Peter", "1 John", "2 John", "3 John", "Jude", "Revelation"
+	];
+
+	// Updated to match ESV Global Study Bible abbreviations
+	const BOOK_SHORTHANDS = {
+		"Genesis": "Gen.", "Exodus": "Ex.", "Leviticus": "Lev.", "Numbers": "Num.", "Deuteronomy": "Deut.", "Joshua": "Josh.", "Judges": "Judg.", "Ruth": "Ruth", "1 Samuel": "1 Sam.", "2 Samuel": "2 Sam.", "1 Kings": "1 Kings", "2 Kings": "2 Kings", "1 Chronicles": "1 Chron.", "2 Chronicles": "2 Chron.", "Ezra": "Ezra", "Nehemiah": "Neh.", "Esther": "Esth.", "Job": "Job", "Psalms": "Ps.", "Proverbs": "Prov.", "Ecclesiastes": "Eccles.", "Song of Solomon": "Song", "Isaiah": "Isa.", "Jeremiah": "Jer.", "Lamentations": "Lam.", "Ezekiel": "Ezek.", "Daniel": "Dan.", "Hosea": "Hos.", "Joel": "Joel", "Amos": "Amos", "Obadiah": "Obad.", "Jonah": "Jonah", "Micah": "Mic.", "Nahum": "Nah.", "Habakkuk": "Hab.", "Zephaniah": "Zeph.", "Haggai": "Hag.", "Zechariah": "Zech.", "Malachi": "Mal.",
+		"Matthew": "Matt.", "Mark": "Mark", "Luke": "Luke", "John": "John", "Acts": "Acts", "Romans": "Rom.", "1 Corinthians": "1 Cor.", "2 Corinthians": "2 Cor.", "Galatians": "Gal.", "Ephesians": "Eph.", "Philippians": "Phil.", "Colossians": "Col.", "1 Thessalonians": "1 Thess.", "2 Thessalonians": "2 Thess.", "1 Timothy": "1 Tim.", "2 Timothy": "2 Tim.", "Titus": "Titus", "Philemon": "Philem.", "Hebrews": "Heb.", "James": "James", "1 Peter": "1 Pet.", "2 Peter": "2 Pet.", "1 John": "1 John", "2 John": "2 John", "3 John": "3 John", "Jude": "Jude", "Revelation": "Rev."
+	};
+
+	const OPENBIBLE_TRANS = [
+		{ value: 'akjv', label: 'AKJV', full: 'American King James Version' },
+		{ value: 'asv', label: 'ASV', full: 'American Standard Version' },
+		{ value: 'cpdv', label: 'CPDV', full: 'Catholic Public Domain Version' },
+		{ value: 'dbt', label: 'DBT', full: 'Darby Bible Translation' },
+		{ value: 'drb', label: 'DRB', full: 'Douay-Rheims Bible' },
+		{ value: 'erv', label: 'ERV', full: 'English Revised Version' },
+		{ value: 'jps', label: 'JPS', full: 'Jewish Publication Society' },
+		{ value: 'kjv', label: 'KJV', full: 'King James Version' },
+		{ value: 'slt', label: 'SLT', full: 'Smith\'s Literal Translation' },
+		{ value: 'wbt', label: 'WBT', full: 'Webster\'s Bible Translation' },
+		{ value: 'web', label: 'WEB', full: 'World English Bible' },
+		{ value: 'ylt', label: 'YLT', full: 'Young\'s Literal Translation' }
+	];
+
+	// Manual overrides for custom translation groupings
+	const TRANS_GROUP_OVERRIDES = {
+		"klv": "Other (Unspecified)",
+		"mal1910": "Other (Asia)",
+		"tpikjpb": "Other (Oceania)",
+		"bibelselskap": "Norwegian",
+		"calo": "Spanish",
+		"che1860": "Other (Americas)",
+		"csielizabeth": "Other (Europe)",
+		"dari": "Other (Asia)",
+		"gaelic": "Gaelic",
+		"manxgaelic": "Gaelic",
+		"mg1865": "Other (Africa)",
+		"moderngreek": "Greek",
+		"monkjv": "Other (Asia)",
+		"ndebele": "Other (Africa)",
+		"norsmb": "Norwegian",
+		"shona": "Other (Africa)",
+		"tausug": "Other (Oceania)"
+	};
+
+	// Fallback Region mapping for languages with only 1 translation 
+	const LANG_REGION_MAP = {
+		"Albanian": "Europe", "Basque": "Europe", "Breton": "Europe", "Bulgarian": "Europe", "Croatian": "Europe", "Czech": "Europe", "Danish": "Europe", "Dutch": "Europe", "Estonian": "Europe", "Faroese": "Europe", "Finnish": "Europe", "French": "Europe", "Georgian": "Europe", "German": "Europe", "Gothic": "Europe", "Greek": "Europe", "Hungarian": "Europe", "Icelandic": "Europe", "Italian": "Europe", "Latin": "Europe", "Latvian": "Europe", "Lithuanian": "Europe", "Norwegian": "Europe", "Polish": "Europe", "Portuguese": "Europe", "Romansh": "Europe", "Romanian": "Europe", "Russian": "Europe", "Scots Gaelic": "Europe", "Serbian": "Europe", "Slovak": "Europe", "Slovenian": "Europe", "Spanish": "Europe", "Swedish": "Europe", "Ukrainian": "Europe", "Welsh": "Europe",
+		"Afrikaans": "Africa", "Amharic": "Africa", "Coptic": "Africa", "Swahili": "Africa", "Wolof": "Africa", "Xhosa": "Africa", "Zulu": "Africa",
+		"Arabic": "Asia", "Aramaic": "Asia", "Armenian": "Asia", "Awadhi": "Asia", "Bengali": "Asia", "Chinese": "Asia", "Hebrew": "Asia", "Hindi": "Asia", "Indonesian": "Asia", "Japanese": "Asia", "Korean": "Asia", "Malayalam": "Asia", "Marathi": "Asia", "Nepali": "Asia", "Persian": "Asia", "Punjabi": "Asia", "Syriac": "Asia", "Tamil": "Asia", "Telugu": "Asia", "Thai": "Asia", "Turkish": "Asia", "Urdu": "Asia", "Vietnamese": "Asia",
+		"Haitian Creole": "Americas", "Kekchi": "Americas", "Navajo": "Americas", "Potawatomi": "Americas",
+		"Chamorro": "Oceania", "Maori": "Oceania", "Tagalog": "Oceania", "Uma": "Oceania"
+	};
+
+	let displayValue = '0';
+	let historyValue = '';
+	let lastTapTime = 0;
+	let lastTapVal = '';
+	let activeData = { OT: [], NT: [] }; 
+	let currentBookIndex = -1;
+	let currentIsNT = false;
+	let currentChapter = -1;
+	let playingIndex = -1;
+	let selectedVerses = new Set();
+	let synth = window.speechSynthesis || null;
+	let voices = [];
+	let isPlaying = false;
+	let isPaused = false;
+	let currentUtterance = null;
+	let wakeLock = null;
+	let activeView = 'home'; 
+	let translationMeta = {};
+
+	// PWA Install Prompt Capture
+	let deferredPrompt = null;
+
+	// History State Management
+	let userInteracted = false;
+	let isPopState = false;
+	let pendingHistory = [];
+	let historyDepth = 0;
+	let backPressCount = 0;
+	let backPressTimer = null;
+
+	/* =========================================
+		PWA DYNAMIC MANIFEST & INSTALL LOGIC
+	========================================= */
+	function isRunningStandalone() {
+		return (window.matchMedia('(display-mode: standalone)').matches) || 
+				(window.navigator.standalone) || 
+				document.referrer.includes('android-app://');
+	}
+
+	function isIOSDevice() {
+		return /iPad|iPhone|iPod/.test(navigator.userAgent) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+	}
+
+	function updateDynamicManifest() {
+		// updated to run via requestIdleCallback to eliminate main-thread frame drops during initial rendering.
+		const runManifestGeneration = () => {
+			const appName = state.panicEnabled ? "Calculator" : "Vult";
+			
+			const canvas = document.createElement('canvas');
+			canvas.width = 512; canvas.height = 512;
+			const ctx = canvas.getContext('2d');
+			
+			ctx.fillStyle = '#000000';
+			ctx.beginPath();
+			const r = 120;
+			ctx.moveTo(r, 0); ctx.lineTo(512-r, 0); ctx.arcTo(512, 0, 512, r, r);
+			ctx.lineTo(512, 512-r); ctx.arcTo(512, 512, 512-r, 512, r);
+			ctx.lineTo(r, 512); ctx.arcTo(0, 512, 0, 512-r, r);
+			ctx.lineTo(0, r); ctx.arcTo(0, 0, r, 0, r);
+			ctx.fill();
+			
+			ctx.fillStyle = '#ffffff';
+			ctx.font = 'bold 360px -apple-system, sans-serif';
+			ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+			ctx.fillText('±', 256, 276); 
+			const iconDataUri = canvas.toDataURL('image/png');
+
+			const manifestObj = {
+				name: appName, short_name: appName, start_url: window.location.href, display: "standalone",
+				background_color: "#000000", theme_color: "#000000", 
+				icons: [
+					{ src: iconDataUri, sizes: "512x512", type: "image/png"},
+					{ src: iconDataUri, sizes: "512x512", type: "image/png", purpose: "any maskable" }
+				]
+			};
+
+			const blob = new Blob([JSON.stringify(manifestObj)], { type: 'application/json' });
+			const manifestLink = $('dynamicManifest');
+			if (manifestLink) manifestLink.setAttribute('href', URL.createObjectURL(blob));
 		};
 
-		try {
-			const res = await fetchWithCache('https://api.getbible.net/v2/translations.json');
-			const data = await res.json();
-			translationMeta = data; 
-			let transArray = Object.values(data);
-			
-			let normalGroups = {};
-			let otherGroups = {};
-			let langGroups = {};
-
-			transArray.forEach(t => {
-				let abbrev = (t.abbreviation || "").toLowerCase();
-				
-				// Route manually mapped abbreviations to predefined custom groups
-				if (TRANS_GROUP_OVERRIDES[abbrev]) {
-					let gLabel = TRANS_GROUP_OVERRIDES[abbrev];
-					if (gLabel.startsWith("Other")) {
-						if (!otherGroups[gLabel]) otherGroups[gLabel] = [];
-						otherGroups[gLabel].push(t);
-					} else {
-						if (!langGroups[gLabel]) langGroups[gLabel] = [];
-						langGroups[gLabel].push(t);
-					}
-				} else {
-					let lang = t.language || 'Unknown';
-					if (!langGroups[lang]) langGroups[lang] = [];
-					langGroups[lang].push(t);
-				}
-			});
-
-			// Reconstruct general language groups
-			Object.keys(langGroups).forEach(lang => {
-				if (langGroups[lang].length > 1) {
-					if (!normalGroups[lang]) normalGroups[lang] = [];
-					normalGroups[lang].push(...langGroups[lang]);
-				} else {
-					let region = LANG_REGION_MAP[lang] || "Unspecified";
-					let gLabel = `Other (${region})`;
-					
-					if (!otherGroups[gLabel]) otherGroups[gLabel] = [];
-					otherGroups[gLabel].push(langGroups[lang][0]);
-				}
-			});
-
-			// Append standard groups first
-			Object.keys(normalGroups).sort().forEach(label => {
-				select.appendChild(createOptGroup(label, normalGroups[label]));
-			});
-
-			// Append "Other" groups at the bottom
-			Object.keys(otherGroups).sort().forEach(label => {
-				select.appendChild(createOptGroup(label, otherGroups[label]));
-			});
-
-		} catch (e) {
-			let group = createEl('optgroup', { label: 'English' });
-			createEl('option', { value: 'kjv', innerText: 'KJV - King James Version', dataset: { acronym: 'KJV' } }, group);
-			select.appendChild(group);
+		if ('requestIdleCallback' in window) {
+			requestIdleCallback(runManifestGeneration);
+		} else {
+			setTimeout(runManifestGeneration, 200);
 		}
-	} else {
-		// OpenBible flat list without optgroups
-		OPENBIBLE_TRANS.sort((a, b) => a.label.localeCompare(b.label)).forEach(t => {
-			createEl('option', { value: t.value, innerText: `${t.label.toUpperCase()} - ${t.full}`, dataset: { acronym: t.label.toUpperCase() } }, select);
+	}
+
+	window.addEventListener('beforeinstallprompt', (e) => {
+		e.preventDefault();
+		deferredPrompt = e;
+	});
+
+	window.addEventListener('appinstalled', () => { deferredPrompt = null; });
+
+	async function handleInstallClick() {
+		closeModal('settingsModal');
+		if (deferredPrompt) {
+			updateDynamicManifest();
+			deferredPrompt.prompt();
+			const { outcome } = await deferredPrompt.userChoice;
+			if (outcome === 'accepted') {
+				deferredPrompt = null;
+				$('installRowContainer').style.display = 'none';
+			}
+		} else {
+			showToast("App can be installed from your browser menu.");
+		}
+	}
+
+	function showToast(msg) {
+		// Close all modals when a toast is triggered
+		document.querySelectorAll('dialog').forEach(d => { if (d.open) d.close(); });
+		
+		let toast = $('toastMsg');
+		toast.innerText = msg;
+		toast.classList.remove('animate');
+		void toast.offsetWidth; // Trigger reflow to restart pure CSS animation loop
+		toast.classList.add('animate');
+	}
+
+	/* =========================================
+		ROUTING & CORE HELPERS
+	========================================= */
+	const getCurrentBook = () => currentBookIndex >= 0 ? (currentIsNT ? activeData.NT : activeData.OT)[currentBookIndex] : null;
+
+	const checkBookExists = (bookName) => {
+		let isNT = activeData.NT.some(b => b.name === bookName);
+		return { exists: isNT || activeData.OT.some(b => b.name === bookName), isNT };
+	};
+
+	const clearPlayingVerseStyles = () => {
+		document.querySelectorAll('.verse.playing').forEach(el => el.classList.remove('playing', 'paused'));
+	};
+
+	const registerInteraction = () => {
+		if (userInteracted) return;
+		userInteracted = true;
+		pendingHistory.forEach(v => { history.pushState({ view: v }, ''); historyDepth++; });
+		pendingHistory = [];
+	};
+	document.addEventListener('pointerdown', registerInteraction, { capture: true, once: true });
+	document.addEventListener('keydown', registerInteraction, { capture: true, once: true });
+
+	function pushNavState(viewName) {
+		activeView = viewName;
+		if (isPopState) return; 
+		
+		if (!userInteracted) { pendingHistory.push(viewName); } 
+		else { history.pushState({ view: viewName }, ''); historyDepth++; }
+	}
+
+	window.onpopstate = function (event) {
+		isPopState = true;
+		if (historyDepth > 0) historyDepth--;
+		
+		const dialogs = ['settingsModal', 'advancedModal', 'helpModal', 'studyModal'];
+		for(let id of dialogs) {
+			let el = $(id);
+			if (el && el.open) { el.close(); isPopState = false; return; }
+		}
+
+		const navBackBtn = $('navBack');
+		if (navBackBtn && navBackBtn.style.display !== 'none' && typeof navBackBtn.onclick === 'function') {
+			navBackBtn.onclick();
+		} else if (state.secretUnlocked) {
+			if (backPressCount === 0) {
+				backPressCount++; showToast("Go back again to exit"); history.pushState({ view: 'home' }, ''); historyDepth++;
+				backPressTimer = setTimeout(() => { backPressCount = 0; }, 2000);
+			} else {
+				clearTimeout(backPressTimer); backPressCount = 0;
+				if (state.panicEnabled) { triggerPanic(); } else { history.go(-2); historyDepth = Math.max(0, historyDepth - 2); }
+			}
+		}
+		
+		setTimeout(() => { isPopState = false; }, 10);
+	};
+
+	/* =========================================
+		INITIALIZATION & SHAKE/KEYBOARD SUPPORT
+	========================================= */
+	function init() {
+		// Register Service Worker for offline cold-start PWA capability
+		if ('serviceWorker' in navigator) {
+			navigator.serviceWorker.register('./src/sw.js').catch(err => {
+				console.log('ServiceWorker registration failed: ', err);
+			});
+		}
+
+		loadState();
+		if (!state.source) { state.source = 'getbible'; saveState(); }
+		
+		// Explicitly lock secretUnlocked on startup if panic mode is active to enable initial keyboard input
+		if (state.panicEnabled) {
+			state.secretUnlocked = false;
+		}
+
+		applySettings(); checkSpeechSupport(); setupPlayButton(); setupDialogDismiss(); setupDetailsAnimation();
+		setTimeout(updateDynamicManifest, 100); 
+		
+		// Setup Shake Listener
+		if (typeof Shake !== 'undefined') {
+			var myShakeEvent = new Shake({ threshold: 15, timeout: 1000 });
+			myShakeEvent.start();
+			window.addEventListener('shake', handleShakeEvent, false);
+		}
+
+		// Reader View Header Scroll Listener (Directional)
+		let lastScrollTop = 0;
+		$('view-reader').addEventListener('scroll', (e) => {
+			const currentScrollTop = e.target.scrollTop;
+			const header = document.querySelector('header');
+			const endOfContent = e.target.scrollHeight - e.target.clientHeight;
+			
+			if (currentScrollTop > lastScrollTop && currentScrollTop > 50 && currentScrollTop < endOfContent - 50) {
+				// Scrolling down and not at the end of content
+				header.classList.add('minified');
+			} else if (currentScrollTop < lastScrollTop || currentScrollTop >= endOfContent - 50) {
+				// Scrolling up and not at the end of content
+				header.classList.remove('minified');
+			}
+			
+			// Prevent negative scrolling values (bounce effect on iOS) from breaking logic
+			lastScrollTop = currentScrollTop <= 0 ? 0 : currentScrollTop;
+		}, { passive: true });
+		
+		history.replaceState({ view: 'base' }, '');
+		
+		if (!state.panicEnabled) {
+			state.secretUnlocked = true; openBibleApp(); 
+		} else {
+			showCalculator();
+		}
+		
+		$('showHelpCheck').addEventListener('change', (e) => {
+			localStorage.setItem('vult_hideHelp', (!e.target.checked).toString());
+		});
+		$('calcHelpBtn').addEventListener('click', () => openModal('helpModal', 'modal-help'));
+	}
+
+	// Global Keyboard Listener for Calculator
+	document.addEventListener('keydown', (e) => {
+		// Only map keys if calculator view is active (secretUnlocked is false)
+		if (state.secretUnlocked) return;
+		
+		const key = e.key;
+		if (key >= '0' && key <= '9') {
+			calcInput(key);
+		} else if (key === '.') {
+			calcInput('.');
+		} else if (key === '+') {
+			calcInput('+');
+		} else if (key === '-') {
+			calcInput('−');
+		} else if (key === '*') {
+			calcInput('×');
+		} else if (key === '/') {
+			e.preventDefault(); // Prevent "Quick Find" in Firefox
+			calcInput('÷');
+		} else if (key === '%') {
+			calcInput('÷');
+		} else if (key === 'Enter' || key === '=') {
+			e.preventDefault(); // Prevent accidental form submissions/refreshes
+			calcInput('=');
+		} else if (key === 'Backspace' || key === 'Delete') {
+			calcInput('C');
+		}
+	});
+
+	function handleShakeEvent() {
+		if (state.panicEnabled && state.shakeToPanicEnabled && state.secretUnlocked) {
+			triggerPanic();
+		}
+	}
+
+	function setupDialogDismiss() {
+		document.querySelectorAll('dialog').forEach(dialog => {
+			dialog.addEventListener('click', function(e) { if (e.target === this) this.close(); });
 		});
 	}
-	
-	// Attempt to reinstate saved selection, otherwise fall back to KJV
-	let exists = Array.from(select.options).some(o => o.value === state.translation);
-	if (exists) { 
-		state.translation = state.translation; 
-	} else { 
-		state.translation = 'kjv'; 
-		saveState(); 
-	}
-	
-	select.value = state.translation; 
-	updateTransDisplay();
-}
 
-function updateTransDisplay() {
-	const select = $('transSelect');
-	if (select.selectedIndex >= 0) {
-		let acr = select.options[select.selectedIndex].dataset.acronym || select.value.toUpperCase();
-		$('transSelectDisplay').innerText = acr;
-	}
-}
-
-async function loadBibleData() {
-	if (activeData.OT.length > 0 || activeData.NT.length > 0) return true;
-	document.body.classList.add('is-loading');
-	
-	try {
-		let allBooks = [];
-		if (state.source === 'getbible') {
-			const res = await fetchWithCache(`https://api.getbible.net/v2/${state.translation}.json`);
-			if (!res.ok) throw new Error("API returned " + res.status);
-			const data = await res.json();
+	function setupDetailsAnimation() {
+		document.querySelectorAll('details').forEach(el => {
+			const summary = el.querySelector('summary');
+			if (!summary) return;
 			
-			let bookList = Array.isArray(data) ? data : (data.books || Object.values(data));
-			bookList.forEach((bookItem, bIdx) => {
-				let bookName = bookItem.name || bookItem.book_name || BIBLE_BOOKS[bIdx] || `Book ${bIdx + 1}`;
-				let chapters = [];
-				let breaks = [];
-				let chaptersData = Array.isArray(bookItem) ? bookItem : (bookItem.chapters || []);
-				
-				if (typeof chaptersData === 'object') {
-					const chapArray = Array.isArray(chaptersData) ? chaptersData : Object.values(chaptersData);
-					chapArray.forEach((chapItem, cIdx) => {
-						let versesArray = [];
-						let breakSet = new Set();
-						let versesData = Array.isArray(chapItem) ? chapItem : (chapItem.verses || chapItem);
-						const vArray = Array.isArray(versesData) ? versesData : Object.values(versesData);
-						vArray.forEach((v, vIdx) => {
-							let vNum = v.verse || v.n || (vIdx + 1);
-							let text = v.text || v.txt || (typeof v === 'string' ? v : "");
-							if (text.includes('¶')) {
-								breakSet.add(parseInt(vNum));
-							}
-							text = text.replace(/¶/g, '').trim(); 
-							if (vNum && text) versesArray[parseInt(vNum)] = text;
-						});
-						let chapNum = chapItem.chapter || chapItem.c || (cIdx + 1);
-						chapters[parseInt(chapNum)] = versesArray;
-						breaks[parseInt(chapNum)] = breakSet;
+			summary.addEventListener('click', (e) => {
+				e.preventDefault();
+				if (el.classList.contains('is-open')) {
+					el.classList.remove('is-open');
+					setTimeout(() => {
+						if (!el.classList.contains('is-open')) el.open = false;
+					}, 350);
+				} else {
+					el.open = true;
+					requestAnimationFrame(() => {
+						requestAnimationFrame(() => { el.classList.add('is-open'); });
 					});
 				}
-				allBooks.push({ name: bookName, chapters: chapters, breaks: breaks });
 			});
-		} else {
-			let text = "";
-			try { 
-				const res = await fetchWithCache(`https://openbible.com/textfiles/${state.translation}.txt`);
-				text = await res.text();
-			} catch { 
-				const res = await fetchWithCache(`src/${state.translation}.txt`);
-				text = await res.text();
+		});
+	}
+
+	function checkSpeechSupport() {
+		if (!synth) {
+			$('playBtn').style.display = 'none';
+			$('speechSettingsGroup').style.display = 'none';
+		} else { populateVoices(); }
+	}
+
+	function setupPlayButton() {
+		setupLongPress($('playBtn'), 
+			() => { cancelSpeech(); playingIndex = -1; if ('vibrate' in navigator) navigator.vibrate(50); showToast("Playback stopped."); },
+			() => togglePlay()
+		);
+	}
+
+	async function requestWakeLock() {
+		if ('wakeLock' in navigator && document.visibilityState === 'visible') {
+			try { wakeLock = await navigator.wakeLock.request('screen'); } catch (e) {}
+		}
+	}
+
+	function releaseWakeLock() {
+		if (wakeLock !== null) wakeLock.release().then(() => { wakeLock = null; });
+	}
+
+	document.addEventListener('visibilitychange', async () => {
+		if (wakeLock !== null && document.visibilityState === 'visible' && isPlaying) { await requestWakeLock(); }
+	});
+
+	function loadState() {
+		const saved = localStorage.getItem('vult_state');
+		if (saved) state = { ...state, ...JSON.parse(saved) };
+		
+		if (localStorage.getItem('vult_hideHelp') === 'true') {
+			const helpChk = $('showHelpCheck');
+			if (helpChk) helpChk.checked = false;
+		}
+
+		if (state.lastBook && state.lastChap && (!state.recentLocations || state.recentLocations.length === 0)) {
+			state.recentLocations = [{
+				book: state.lastBook.name,
+				isNT: state.lastBook.isNT,
+				chap: state.lastChap,
+				trans: state.lastTrans || state.translation
+			}];
+			delete state.lastBook; delete state.lastChap; delete state.lastTrans;
+			saveState();
+		}
+		if (!state.recentLocations) state.recentLocations = [];
+	}
+
+	function saveState() { localStorage.setItem('vult_state', JSON.stringify(state)); }
+
+	/* =========================================
+		CALCULATOR LOGIC
+	========================================= */
+	function showCalculator() {
+		state.secretUnlocked = false; 
+		$('app-calculator-wrapper').style.display = 'flex';
+		$('app-bible').style.display = 'none';
+		displayValue = '0'; 
+		historyValue = '';
+		updateDisplay();
+	}
+
+	function formatDisplay(str) {
+		if (str === 'Error') return 'Error';
+		return str.replace(/\d+(\.\d*)?/g, (match) => {
+			let parts = match.split('.');
+			parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+			return parts.join('.');
+		});
+	}
+
+	function calcInput(val) {
+		const now = Date.now();
+		// Debounce duplicate click events firing within 100ms for the same button
+		if (now - lastTapTime < 100 && lastTapVal === val) {
+			return;
+		}
+		lastTapTime = now;
+		lastTapVal = val;
+
+		if (!userInteracted) registerInteraction();
+		
+		if (val === 'C') { 
+			displayValue = '0'; 
+			historyValue = '';
+		} 
+		else if (val === '=') {
+			if (displayValue === '77') {
+				showToast("Try again, using another source...");
 			}
-			
-			for (let line of text.split(/\r?\n/)) {
-				if (!line.trim()) continue;
-				let match = line.match(/^([A-Za-z\s\d]+?)[\s\t]+(\d+)[:\t](\d+)[\s\t]+(.*)$/);
-				if (match) {
-					let bName = match[1].trim(), cNum = parseInt(match[2]), vNum = parseInt(match[3]), rawText = match[4]; 
-					let book = allBooks.find(b => b.name === bName);
-					if (!book) { book = { name: bName, chapters: [], breaks: [] }; allBooks.push(book); }
-					if (!book.chapters[cNum]) book.chapters[cNum] = [];
-					if (!book.breaks[cNum]) book.breaks[cNum] = new Set();
-					if (rawText.includes('¶')) {
-						book.breaks[cNum].add(vNum);
+			try {
+				historyValue = displayValue + ' =';
+				let evalExpr = displayValue.replace(/×/g, '*').replace(/÷/g, '/').replace(/−/g, '-');
+				let res = eval(evalExpr);
+				if (isNaN(res) || !isFinite(res)) {
+					displayValue = 'Error';
+				} else {
+					displayValue = String(res);
+				}
+			} catch { 
+				displayValue = 'Error'; 
+			}
+		} else {
+			if (historyValue !== '') { historyValue = ''; }
+			if (displayValue === '0' || displayValue === 'Error') {
+				if (val === '.' || ['+', '−', '×', '÷', '%'].includes(val)) { displayValue = '0' + val; } else { displayValue = val; }
+			} else {
+				displayValue += val;
+			}
+		}
+		
+		updateDisplay();
+		if (displayValue === '70×7') { setTimeout(openBibleApp, 200); }
+	}
+
+	function updateDisplay() { 
+		const el = $('calcDisplay');
+		const histEl = $('calcHistory');
+		
+		el.innerText = formatDisplay(displayValue);
+		histEl.innerText = formatDisplay(historyValue);
+		histEl.scrollLeft = histEl.scrollWidth;
+
+		el.style.fontSize = '9dvh';
+		const container = el.parentElement;
+		let currentSize = 9.0;
+		while (el.scrollWidth > container.clientWidth && currentSize > 3.0) {
+			currentSize -= 0.5;
+			el.style.fontSize = currentSize + 'dvh';
+		}
+	}
+
+	/* =========================================
+		BIBLE TRANSLATIONS & DATA LOGIC
+	========================================= */
+	async function populateTranslations() {
+		const select = $('transSelect');
+		select.innerHTML = '';
+		
+		if (state.source === 'getbible') {
+			const createOptGroup = (label, items) => {
+				let group = createEl('optgroup', { label: label });
+				items.sort((a,b) => a.abbreviation.localeCompare(b.abbreviation)).forEach(t => {
+					createEl('option', {
+						value: t.abbreviation || t.value,
+						innerText: `${(t.abbreviation || t.label).toUpperCase()} - ${t.translation || t.full}`,
+						dataset: { acronym: (t.abbreviation || t.label).toUpperCase() }
+					}, group);
+				});
+				return group;
+			};
+
+			try {
+				const res = await fetchWithCache('https://api.getbible.net/v2/translations.json');
+				const data = await res.json();
+				translationMeta = data; 
+				let transArray = Object.values(data);
+				
+				let normalGroups = {};
+				let otherGroups = {};
+				let langGroups = {};
+
+				transArray.forEach(t => {
+					let abbrev = (t.abbreviation || "").toLowerCase();
+					
+					// Route manually mapped abbreviations to predefined custom groups
+					if (TRANS_GROUP_OVERRIDES[abbrev]) {
+						let gLabel = TRANS_GROUP_OVERRIDES[abbrev];
+						if (gLabel.startsWith("Other")) {
+							if (!otherGroups[gLabel]) otherGroups[gLabel] = [];
+							otherGroups[gLabel].push(t);
+						} else {
+							if (!langGroups[gLabel]) langGroups[gLabel] = [];
+							langGroups[gLabel].push(t);
+						}
+					} else {
+						let lang = t.language || 'Unknown';
+						if (!langGroups[lang]) langGroups[lang] = [];
+						langGroups[lang].push(t);
 					}
-					let vText = rawText.replace(/¶/g, '').trim();
-					book.chapters[cNum][vNum] = vText;
+				});
+
+				// Reconstruct general language groups
+				Object.keys(langGroups).forEach(lang => {
+					if (langGroups[lang].length > 1) {
+						if (!normalGroups[lang]) normalGroups[lang] = [];
+						normalGroups[lang].push(...langGroups[lang]);
+					} else {
+						let region = LANG_REGION_MAP[lang] || "Unspecified";
+						let gLabel = `Other (${region})`;
+						
+						if (!otherGroups[gLabel]) otherGroups[gLabel] = [];
+						otherGroups[gLabel].push(langGroups[lang][0]);
+					}
+				});
+
+				// Append standard groups first
+				Object.keys(normalGroups).sort().forEach(label => {
+					select.appendChild(createOptGroup(label, normalGroups[label]));
+				});
+
+				// Append "Other" groups at the bottom
+				Object.keys(otherGroups).sort().forEach(label => {
+					select.appendChild(createOptGroup(label, otherGroups[label]));
+				});
+
+			} catch (e) {
+				let group = createEl('optgroup', { label: 'English' });
+				createEl('option', { value: 'kjv', innerText: 'KJV - King James Version', dataset: { acronym: 'KJV' } }, group);
+				select.appendChild(group);
+			}
+		} else {
+			// OpenBible flat list without optgroups
+			OPENBIBLE_TRANS.sort((a, b) => a.label.localeCompare(b.label)).forEach(t => {
+				createEl('option', { value: t.value, innerText: `${t.label.toUpperCase()} - ${t.full}`, dataset: { acronym: t.label.toUpperCase() } }, select);
+			});
+		}
+		
+		// Attempt to reinstate saved selection, otherwise fall back to KJV
+		let exists = Array.from(select.options).some(o => o.value === state.translation);
+		if (exists) { 
+			state.translation = state.translation; 
+		} else { 
+			state.translation = 'kjv'; 
+			saveState(); 
+		}
+		
+		select.value = state.translation; 
+		updateTransDisplay();
+	}
+
+	function updateTransDisplay() {
+		const select = $('transSelect');
+		if (select.selectedIndex >= 0) {
+			let acr = select.options[select.selectedIndex].dataset.acronym || select.value.toUpperCase();
+			$('transSelectDisplay').innerText = acr;
+		}
+	}
+
+	async function loadBibleData() {
+		if (activeData.OT.length > 0 || activeData.NT.length > 0) return true;
+		document.body.classList.add('is-loading');
+		
+		try {
+			let allBooks = [];
+			if (state.source === 'getbible') {
+				const res = await fetchWithCache(`https://api.getbible.net/v2/${state.translation}.json`);
+				if (!res.ok) throw new Error("API returned " + res.status);
+				const data = await res.json();
+				
+				let bookList = Array.isArray(data) ? data : (data.books || Object.values(data));
+				bookList.forEach((bookItem, bIdx) => {
+					let bookName = bookItem.name || bookItem.book_name || BIBLE_BOOKS[bIdx] || `Book ${bIdx + 1}`;
+					let chapters = [];
+					let breaks = [];
+					let chaptersData = Array.isArray(bookItem) ? bookItem : (bookItem.chapters || []);
+					
+					if (typeof chaptersData === 'object') {
+						const chapArray = Array.isArray(chaptersData) ? chaptersData : Object.values(chaptersData);
+						chapArray.forEach((chapItem, cIdx) => {
+							let versesArray = [];
+							let breakSet = new Set();
+							let versesData = Array.isArray(chapItem) ? chapItem : (chapItem.verses || chapItem);
+							const vArray = Array.isArray(versesData) ? versesData : Object.values(versesData);
+							vArray.forEach((v, vIdx) => {
+								let vNum = v.verse || v.n || (vIdx + 1);
+								let text = v.text || v.txt || (typeof v === 'string' ? v : "");
+								if (text.includes('¶')) {
+									breakSet.add(parseInt(vNum));
+								}
+								text = text.replace(/¶/g, '').trim(); 
+								if (vNum && text) versesArray[parseInt(vNum)] = text;
+							});
+							let chapNum = chapItem.chapter || chapItem.c || (cIdx + 1);
+							chapters[parseInt(chapNum)] = versesArray;
+							breaks[parseInt(chapNum)] = breakSet;
+						});
+					}
+					allBooks.push({ name: bookName, chapters: chapters, breaks: breaks });
+				});
+			} else {
+				let text = "";
+				try { 
+					const res = await fetchWithCache(`https://openbible.com/textfiles/${state.translation}.txt`);
+					text = await res.text();
+				} catch { 
+					const res = await fetchWithCache(`src/${state.translation}.txt`);
+					text = await res.text();
+				}
+				
+				for (let line of text.split(/\r?\n/)) {
+					if (!line.trim()) continue;
+					let match = line.match(/^([A-Za-z\s\d]+?)[\s\t]+(\d+)[:\t](\d+)[\s\t]+(.*)$/);
+					if (match) {
+						let bName = match[1].trim(), cNum = parseInt(match[2]), vNum = parseInt(match[3]), rawText = match[4]; 
+						let book = allBooks.find(b => b.name === bName);
+						if (!book) { book = { name: bName, chapters: [], breaks: [] }; allBooks.push(book); }
+						if (!book.chapters[cNum]) book.chapters[cNum] = [];
+						if (!book.breaks[cNum]) book.breaks[cNum] = new Set();
+						if (rawText.includes('¶')) {
+							book.breaks[cNum].add(vNum);
+						}
+						let vText = rawText.replace(/¶/g, '').trim();
+						book.chapters[cNum][vNum] = vText;
+					}
 				}
 			}
+
+			let splitIdx = -1;
+			for (let i = 0; i < allBooks.length; i++) {
+				if (/(matt|mateo|mateus|matthieu|matthäus|matteo|matí)/i.test(allBooks[i].name.toLowerCase())) { splitIdx = i; break; }
+			}
+			if (splitIdx === -1) { splitIdx = (allBooks.length === 66) ? 39 : ((allBooks.length === 27) ? 0 : -1); }
+
+			if (splitIdx === 0) { activeData.OT = []; activeData.NT = allBooks; } 
+			else if (splitIdx > 0) { activeData.OT = allBooks.slice(0, splitIdx); activeData.NT = allBooks.slice(splitIdx); } 
+			else { activeData.OT = allBooks; activeData.NT = []; }
+
+			document.body.classList.remove('is-loading'); return true;
+		} catch (e) {
+			document.body.classList.remove('is-loading'); return false;
+		}
+	}
+
+	async function switchTranslation(newTrans) {
+		if (state.translation === newTrans) return true;
+		const prevTrans = state.translation;
+		
+		setTranslationState(newTrans);
+		
+		if (await loadBibleData()) { saveState(); return true; } 
+		else {
+			setTranslationState(prevTrans);
+			await loadBibleData(); return false;
+		}
+	}
+
+	// Cross-source translation resolver for Bookmarks, Recents, and startup loading
+	async function resolveAndSwitchTranslation(newTrans) {
+		newTrans = newTrans.toLowerCase();
+		if (state.translation === newTrans && activeData.OT.length > 0) return true;
+
+		const prevTrans = state.translation;
+		const prevSource = state.source;
+
+		// 1. Try with the currently active source first
+		setTranslationState(newTrans);
+
+		if (await loadBibleData()) {
+			saveState();
+			return true;
 		}
 
-		let splitIdx = -1;
-		for (let i = 0; i < allBooks.length; i++) {
-			if (/(matt|mateo|mateus|matthieu|matthäus|matteo|matí)/i.test(allBooks[i].name.toLowerCase())) { splitIdx = i; break; }
+		// 2. If it fails, attempt to switch to the alternative source and search there
+		const altSource = prevSource === 'getbible' ? 'openbible' : 'getbible';
+		state.source = altSource;
+		await populateTranslations();
+		
+		let existsInAlt = Array.from($('transSelect').options).some(o => o.value === newTrans);
+		if (!existsInAlt) {
+			// Not found in alternative source either; revert fully
+			setTranslationState(prevTrans, prevSource);
+			await populateTranslations();
+			await loadBibleData();
+			alert(`Error loading translation ${newTrans.toUpperCase()}.`);
+			return false;
 		}
-		if (splitIdx === -1) { splitIdx = (allBooks.length === 66) ? 39 : ((allBooks.length === 27) ? 0 : -1); }
 
-		if (splitIdx === 0) { activeData.OT = []; activeData.NT = allBooks; } 
-		else if (splitIdx > 0) { activeData.OT = allBooks.slice(0, splitIdx); activeData.NT = allBooks.slice(splitIdx); } 
-		else { activeData.OT = allBooks; activeData.NT = []; }
+		setTranslationState(newTrans, altSource);
 
-		document.body.classList.remove('is-loading'); return true;
-	} catch (e) {
-		document.body.classList.remove('is-loading'); return false;
-	}
-}
+		if (await loadBibleData()) {
+			saveState();
+			// Update settings UI display elements to match the new active source
+			const sourceDisplay = $('sourceDisplay');
+			if (sourceDisplay) sourceDisplay.innerText = altSource === 'getbible' ? 'GetBible' : 'OpenBible';
+			const setSource = $('setSource');
+			if (setSource) setSource.value = altSource;
+			return true;
+		}
 
-async function switchTranslation(newTrans) {
-	if (state.translation === newTrans) return true;
-	const prevTrans = state.translation;
-	
-	setTranslationState(newTrans);
-	
-	if (await loadBibleData()) { saveState(); return true; } 
-	else {
-		setTranslationState(prevTrans);
-		await loadBibleData(); return false;
-	}
-}
-
-// Cross-source translation resolver for Bookmarks, Recents, and startup loading
-async function resolveAndSwitchTranslation(newTrans) {
-	newTrans = newTrans.toLowerCase();
-	if (state.translation === newTrans && activeData.OT.length > 0) return true;
-
-	const prevTrans = state.translation;
-	const prevSource = state.source;
-
-	// 1. Try with the currently active source first
-	setTranslationState(newTrans);
-
-	if (await loadBibleData()) {
-		saveState();
-		return true;
-	}
-
-	// 2. If it fails, attempt to switch to the alternative source and search there
-	const altSource = prevSource === 'getbible' ? 'openbible' : 'getbible';
-	state.source = altSource;
-	await populateTranslations();
-	
-	let existsInAlt = Array.from($('transSelect').options).some(o => o.value === newTrans);
-	if (!existsInAlt) {
-		// Not found in alternative source either; revert fully
+		// 3. Fallback failure; restore original state
 		setTranslationState(prevTrans, prevSource);
 		await populateTranslations();
 		await loadBibleData();
@@ -1503,731 +1537,711 @@ async function resolveAndSwitchTranslation(newTrans) {
 		return false;
 	}
 
-	setTranslationState(newTrans, altSource);
+	/* =========================================
+		BIBLE UI NAVIGATION
+	========================================= */
+	async function openBibleApp() {
+		state.secretUnlocked = true;
+		$('app-calculator-wrapper').style.display = 'none';
+		$('app-bible').style.display = 'flex';
+		$('panicBtn').classList.toggle("visible", state.panicEnabled);
 
-	if (await loadBibleData()) {
-		saveState();
-		// Update settings UI display elements to match the new active source
-		const sourceDisplay = $('sourceDisplay');
-		if (sourceDisplay) sourceDisplay.innerText = altSource === 'getbible' ? 'GetBible' : 'OpenBible';
-		const setSource = $('setSource');
-		if (setSource) setSource.value = altSource;
-		return true;
-	}
+		document.body.classList.add('is-loading');
+		await populateTranslations();
 
-	// 3. Fallback failure; restore original state
-	setTranslationState(prevTrans, prevSource);
-	await populateTranslations();
-	await loadBibleData();
-	alert(`Error loading translation ${newTrans.toUpperCase()}.`);
-	return false;
-}
-
-/* =========================================
-	BIBLE UI NAVIGATION
-========================================= */
-async function openBibleApp() {
-	state.secretUnlocked = true;
-	$('app-calculator-wrapper').style.display = 'none';
-	$('app-bible').style.display = 'flex';
-	$('panicBtn').classList.toggle("visible", state.panicEnabled);
-
-	document.body.classList.add('is-loading');
-	await populateTranslations();
-
-	let success = false;
-	if (state.recentLocations && state.recentLocations.length > 0) {
-		const primaryLoc = state.recentLocations[0];
-		success = await resolveAndSwitchTranslation(primaryLoc.trans);
-	} else {
-		success = await loadBibleData();
-	}
-	document.body.classList.remove('is-loading');
-	
-	if (success && state.recentLocations && state.recentLocations.length > 0) {
-		const primaryLoc = state.recentLocations[0];
-		let { exists, isNT } = checkBookExists(primaryLoc.book);
-		if(exists) { pushNavState('home'); pushNavState('chapters'); openChapter(primaryLoc.book, isNT, primaryLoc.chap, false); }
-		else { renderHome(); }
-	} else { renderHome(); }
-}
-
-function createBookmarkElement(bm) {
-	return createEl('div', {
-		className: 'bookmark-item',
-		innerHTML: `<div class="bookmark-ref">${bm.ref} (${bm.trans.toUpperCase()})</div><div class="bookmark-text">${bm.text}</div>`,
-		onclick: async () => {
-			if (await resolveAndSwitchTranslation(bm.trans)) {
-				let { isNT } = checkBookExists(bm.book);
-				openChapter(bm.book, isNT, bm.chapter, true, bm.verse);
-			}
-		}
-	});
-}
-
-async function resumeLocation(index) {
-	if (!state.recentLocations || !state.recentLocations[index]) return;
-	const loc = state.recentLocations[index];
-	if (await resolveAndSwitchTranslation(loc.trans)) {
-		let { exists, isNT } = checkBookExists(loc.book);
-		if(exists) openChapter(loc.book, isNT, loc.chap, false);
-	}
-}
-
-function updateResumeFabVisibility() {
-	const wrapper = $('resumeWrapper');
-	const scroll = $('resumeScroll');
-	
-	if (state.recentLocations && state.recentLocations.length > 0) {
-		wrapper.classList.add('visible');
-		scroll.innerHTML = '';
-		state.recentLocations.forEach((loc, index) => {
-			let btn = createEl('button', { className: 'fab-resume', onclick: () => resumeLocation(index) }, scroll);
-			createEl('span', { className: 'material-symbols-rounded', innerText: 'history' }, btn);
-			let textSpan = createEl('span', { className: 'resume-text text-primary' }, btn);
-			createEl('span', { className: 'text-long', innerText: `${loc.book} ${loc.chap} (${loc.trans.toUpperCase()})` }, textSpan);
-			let shortBook = BOOK_SHORTHANDS[loc.book] || loc.book;
-			createEl('span', { className: 'text-short', innerText: `${shortBook} ${loc.chap} (${loc.trans.toUpperCase()})` }, textSpan);
-		});
-	} else {
-		wrapper.classList.remove('visible');
-	}
-}
-
-function renderHome() {
-	cancelSpeech();
-	hideAllViews(); $('view-home').classList.add('active');
-	$('headerTitle').innerText = 'Vult';
-	$('navBack').style.display = 'none';
-	$('transSelectWrapper').style.display = 'flex';
-	$('bottomBar').classList.remove('visible');
-	
-	updateResumeFabVisibility(); updateSelectionFabs();
-	
-	const ntGrid = $('ntGrid'), otGrid = $('otGrid');
-	const ntDetails = $('ntDetails'), otDetails = $('otDetails');
-	const ntSummary = $('ntSummary'), otSummary = $('otSummary');
-
-	ntGrid.innerHTML = ''; otGrid.innerHTML = '';
-	
-	if (activeData.NT.length === 0) { ntDetails.style.display = 'none'; otDetails.style.display = 'block'; otSummary.innerText = 'BOOKS'; } 
-	else if (activeData.OT.length === 0) { otDetails.style.display = 'none'; ntDetails.style.display = 'block'; ntSummary.innerText = 'BOOKS'; } 
-	else { ntDetails.style.display = 'block'; otDetails.style.display = 'block'; ntSummary.innerText = 'NEW TESTAMENT'; otSummary.innerText = 'OLD TESTAMENT'; }
-
-	const renderGrid = (data, grid, isNT) => {
-		data.forEach((b, i) => {
-			if (!b.chapters || !b.chapters.some(c => c && c.length > 0)) return; 
-			createEl('div', { className: 'grid-item', innerText: b.name, dir: 'auto', onclick: () => openBook(i, isNT) }, grid);
-		});
-	};
-
-	renderGrid(activeData.NT, ntGrid, true); renderGrid(activeData.OT, otGrid, false);
-	renderBookmarksList(); pushNavState('home');
-}
-
-function renderBookmarksList() {
-	const list = $('bookmarksList'); list.innerHTML = '';
-	if (state.bookmarks.length === 0) { list.innerHTML = '<p>No bookmarks yet.</p>'; return; }
-	state.bookmarks.forEach(bm => list.appendChild(createBookmarkElement(bm)));
-}
-
-function openBook(index, isNT) {
-	cancelSpeech();
-	hideAllViews(); $('view-chapters').classList.add('active');
-	
-	$('navBack').style.display = 'flex'; $('navBack').onclick = renderHome;
-	$('transSelectWrapper').style.display = 'none';
-	updateResumeFabVisibility();
-	
-	const book = isNT ? activeData.NT[index] : activeData.OT[index];
-	$('headerTitle').innerText = book.name;
-
-	const grid = $('chapterGrid'); grid.innerHTML = '';
-	for(let i=1; i<book.chapters.length; i++) {
-		if(!book.chapters[i] || book.chapters[i].length === 0) continue;
-		createEl('div', { className: 'grid-item', innerText: i, onclick: () => openChapter(book.name, isNT, i, false) }, grid);
-	}
-	
-	const bkmDetails = $('bookBookmarksDetails'), bkmList = $('bookBookmarksList');
-	bkmList.innerHTML = '';
-	const bkBookmarks = state.bookmarks.filter(bm => bm.book === book.name);
-	bkmDetails.style.display = 'block';
-	if (bkBookmarks.length > 0) { bkBookmarks.forEach(bm => bkmList.appendChild(createBookmarkElement(bm))); } 
-	else { bkmList.innerHTML = '<p>No bookmarks yet.</p>'; }
-	
-	pushNavState('chapters');
-}
-
-function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVerseNum = null, isContinuousNav = false) {
-	cancelSpeech(); currentIsNT = isNT; currentChapter = chapterNum;
-	const testament = isNT ? activeData.NT : activeData.OT;
-	currentBookIndex = testament.findIndex(b => b.name === bookName);
-	
-	const book = testament[currentBookIndex]; if(!book) return renderHome();
-
-	const locObj = { book: book.name, isNT: isNT, chap: chapterNum, trans: state.translation };
-	
-	if (isContinuousNav && state.recentLocations.length > 0) {
-		let tail = state.recentLocations.slice(1).filter(l => !(l.book === locObj.book && l.chap === locObj.chap));
-		state.recentLocations = [locObj, ...tail];
-	} else {
-		state.recentLocations = state.recentLocations.filter(l => !(l.book === locObj.book && l.chap === locObj.chap));
-		state.recentLocations.unshift(locObj);
-		if (state.recentLocations.length > 3) state.recentLocations.pop();
-	}
-	saveState();
-	
-	hideAllViews();
-	
-	$('navBack').style.display = 'flex';
-	$('navBack').onclick = () => openBook(currentBookIndex, currentIsNT);
-	$('transSelectWrapper').style.display = 'none';
-	$('headerTitle').innerText = `${book.name} ${chapterNum}`;
-	
-	const readerView = $('view-reader'); readerView.classList.add('active');
-	$('bottomBar').classList.add('visible'); updateSelectionFabs();
-
-	const container = $('readerContent'); 
-	
-	// Trigger CSS transition for chapter changes
-	container.classList.remove('chapter-transition');
-	void container.offsetWidth; 
-	container.classList.add('chapter-transition');
-
-	container.innerHTML = '';
-	selectedVerses.clear(); updateSelectionFabs();
-
-	const verses = book.chapters[chapterNum];
-	const breakSet = book.breaks && book.breaks[chapterNum] ? book.breaks[chapterNum] : new Set();
-	let textDirection = (state.source === 'getbible' && translationMeta[state.translation] && translationMeta[state.translation].direction) ? translationMeta[state.translation].direction.toLowerCase() : 'ltr';
-	container.setAttribute('dir', textDirection);
-
-	// Reader Subtitle
-	let fullTransName = state.translation.toUpperCase();
-	const transOpt = $('transSelect').options[$('transSelect').selectedIndex];
-	if (transOpt) {
-		const parts = transOpt.innerText.split(' - ');
-		if (parts.length > 1) fullTransName = parts[1];
-	}
-	createEl('div', { className: 'reader-subtitle', innerHTML: `${fullTransName}` }, container);
-	let versesContainer = createEl('div', { id: 'versesContainer', className: 'verses-container', innerHTML: `` }, container);
-
-	verses.forEach((text, vNum) => {
-		if (!text) return;
-		let className = 'verse';
-		if (breakSet.has(vNum)) className += ' break';
-		let p = createEl('p', { className: className, id: `v${vNum}`, innerHTML: `<span class="verse-num">${vNum}</span>${text}` }, versesContainer);
-		
-		if (isVerseBookmarked(vNum)) p.classList.add('bookmarked');
-		
-		setupLongPress(p, 
-			() => {
-				copySingleVerse(book.name, chapterNum, vNum, text); 
-				if ('vibrate' in navigator) navigator.vibrate(50);
-				p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
-			},
-			() => toggleVerseSelection(p, vNum)
-		);
-	});
-
-	if (scrollToVerse && targetVerseNum) {
-		scrollIntoVerse(targetVerseNum);
-	} else { readerView.scrollTop = 0; }
-	
-	pushNavState('reader');
-}
-
-function scrollIntoVerse(verseNum) {
-	const targetEl = $(`v${verseNum}`);
-	const readerView = $('view-reader');
-	if (targetEl && readerView) {
-		setTimeout(() => {
-			const isSmall = targetEl.offsetHeight < readerView.clientHeight;
-			const targetTop = targetEl.offsetTop - readerView.offsetTop;
-			const computedTop = isSmall ? targetTop - (readerView.clientHeight / 3) + (targetEl.offsetHeight / 3) : targetTop;
-
-			readerView.scrollTo({
-				top: Math.max(0, computedTop),
-				behavior: 'smooth'
-			});
-		}, 100);
-	}
-}
-
-function hideAllViews() {
-	document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-	$('bottomBar').classList.remove('visible');
-	$('resumeWrapper').classList.remove('visible');
-	document.querySelector('header').classList.remove('minified');
-	updateSelectionFabs();
-}
-
-/* =========================================
-	INTERACTIONS: Selection, Copy, Share, Bookmark, Study
-========================================= */
-function toggleVerseSelection(element, vNum) {
-	if (selectedVerses.has(vNum)) { selectedVerses.delete(vNum); element.classList.remove('selected'); } 
-	else { selectedVerses.add(vNum); element.classList.add('selected'); }
-	updateSelectionFabs();
-}
-
-function updateSelectionFabs() {
-	const fabs = $('selectionFabs');
-	if (selectedVerses.size > 0 && $('view-reader').classList.contains('active')) {
-		fabs.classList.add('visible');
-		let allBookmarked = Array.from(selectedVerses).every(v => isVerseBookmarked(v));
-		$('bookmarkFabIcon').innerText = allBookmarked ? 'bookmark_remove' : 'bookmark';
-	} else { 
-		fabs.classList.remove('visible');
-	}
-}
-
-function getSelectedTextData() {
-	const book = getCurrentBook(), sortedVerses = Array.from(selectedVerses).sort((a,b) => a-b);
-	let textOut = ""; sortedVerses.forEach(vNum => { textOut += `[${vNum}] ${book.chapters[currentChapter][vNum]} `; });
-	let ref = `${book.name} ${currentChapter}:`;
-	if(sortedVerses.length === 1) ref += sortedVerses[0]; else ref += `${sortedVerses[0]}-${sortedVerses[sortedVerses.length-1]}`;
-	return { text: textOut.trim(), ref: ref, firstV: sortedVerses[0], lastV: sortedVerses[sortedVerses.length-1], isRange: sortedVerses.length > 1 };
-}
-
-function getFullSelectedText() {
-	const data = getSelectedTextData(); return `${data.text} — ${data.ref} (${state.translation.toUpperCase()})`;
-}
-
-function copySelected() { navigator.clipboard.writeText(getFullSelectedText()).then(clearSelection); }
-
-function copySingleVerse(book, chap, verseNum, text) {
-	navigator.clipboard.writeText(`${text} — ${book} ${chap}:${verseNum} (${state.translation.toUpperCase()})`);
-}
-
-function copyInnerText(el) {
-	navigator.clipboard.writeText(el.innerText);
-	if ('vibrate' in navigator) navigator.vibrate(50);
-}
-
-async function shareSelected() {
-	const fullText = getFullSelectedText();
-	if (navigator.share) {
-		try { await navigator.share({ title: 'Vult Bible App', text: fullText }); clearSelection(); } catch (err) {}
-	} else { copySelected(); showToast("Text copied to clipboard"); }
-}
-
-function isVerseBookmarked(vNum) {
-	if (currentBookIndex < 0) return false;
-	const bookName = getCurrentBook().name;
-	return state.bookmarks.some(b => b.trans === state.translation && b.book === bookName && b.chapter === currentChapter && b.verse === vNum);
-}
-
-function toggleBookmarks() {
-	const bookName = getCurrentBook().name;
-	let allBookmarked = Array.from(selectedVerses).every(v => isVerseBookmarked(v));
-	
-	if (allBookmarked) {
-		selectedVerses.forEach(vNum => {
-			state.bookmarks = state.bookmarks.filter(b => !(b.trans === state.translation && b.book === bookName && b.chapter === currentChapter && b.verse === vNum));
-			const el = $(`v${vNum}`); if(el) el.classList.remove('bookmarked');
-		});
-	} else {
-		const book = getCurrentBook();
-		selectedVerses.forEach(vNum => {
-			if (!isVerseBookmarked(vNum)) {
-				state.bookmarks.push({
-					ref: `${bookName} ${currentChapter}:${vNum}`, book: bookName, chapter: currentChapter, verse: vNum,
-					text: book.chapters[currentChapter][vNum].substring(0, 50) + '...', trans: state.translation
-				});
-				const el = $(`v${vNum}`); if(el) el.classList.add('bookmarked');
-			}
-		});
-	}
-	saveState(); clearSelection();
-}
-
-function clearSelection() {
-	selectedVerses.clear(); document.querySelectorAll('.verse.selected').forEach(el => el.classList.remove('selected')); updateSelectionFabs();
-}
-
-function openStudyModal() {
-		const data = getSelectedTextData();
-		const subtitleEl = $('studyModalSubtitle');
-		if (subtitleEl) {
-			subtitleEl.innerText = data.ref + ' (' + state.translation.toUpperCase() + ')';
-		}
-		openModal('studyModal', 'modal-study');
-	}
-
-function openStudy(site) {
-	const data = getSelectedTextData();
-	const encRef = encodeURIComponent(data.ref);
-	const trans = state.translation.toUpperCase();
-	
-	const studyUrls = {
-		blb: `https://www.blueletterbible.org/Bible.cfm?b=${encodeURIComponent(getCurrentBook().name)}&c=${currentChapter}&t=${trans}`,
-		gateway: `https://www.biblegateway.com/passage/?search=${encRef}&version=${trans}`,
-		hub: `https://biblehub.com/${getCurrentBook().name.toLowerCase().replace(/ /g, '_')}/${currentChapter}-${data.firstV}.htm`,
-		youversion: `https://www.bible.com/search/bible?q=${encRef}`
-	};
-	
-	window.open(studyUrls[site], '_blank');
-	closeModal('studyModal');
-	clearSelection();
-}
-
-/* =========================================
-	SPEECH SYNTHESIS (AUDIO)
-========================================= */
-function updateAudioProgress(vNum) {
-	const playBtn = $('playBtn');
-	if (!playBtn) return;
-	const book = getCurrentBook();
-	if (!book || !book.chapters || !book.chapters[currentChapter]) {
-		playBtn.style.setProperty('--progress-angle', '0deg');
-		return;
-	}
-	const verses = book.chapters[currentChapter];
-	const totalVerses = verses.filter(v => v).length;
-	if (totalVerses <= 0 || vNum < 1) {
-		playBtn.style.setProperty('--progress-angle', '0deg');
-		return;
-	}
-	const ratio = Math.min(vNum / totalVerses, 1);
-	const angle = (ratio * 360).toFixed(1);
-	playBtn.style.setProperty('--progress-angle', `${angle}deg`);
-}
-
-function togglePlay() {
-	if (!synth) return;
-	if (isPlaying) {
-		if (isPaused) {
-			resumeSpeech();
+		let success = false;
+		if (state.recentLocations && state.recentLocations.length > 0) {
+			const primaryLoc = state.recentLocations[0];
+			success = await resolveAndSwitchTranslation(primaryLoc.trans);
 		} else {
-			pauseSpeech();
+			success = await loadBibleData();
 		}
-	} else {
-		let startIdx = 1; const playingEl = document.querySelector('.verse.playing');
-		if (playingEl) { let vMatch = playingEl.id.match(/^v(\d+)$/); if (vMatch) startIdx = parseInt(vMatch[1]); } 
-		else if (playingIndex !== -1) { startIdx = playingIndex; } 
-		else if (selectedVerses.size > 0) { startIdx = Math.min(...Array.from(selectedVerses)); clearSelection(); }
-		playVerse(startIdx);
-	}
-}
-
-function playVerse(vNum) {
-	if (!synth) return;
-	isPlaying = false; isPaused = false; if (synth) synth.cancel();
-	
-	const verses = getCurrentBook().chapters[currentChapter];
-	while(!verses[vNum] && vNum < verses.length) vNum++;
-	
-	if (vNum >= verses.length) { 
-		updateAudioProgress(verses.length);
-		nextChapter(true); 
-		return; 
+		document.body.classList.remove('is-loading');
+		
+		if (success && state.recentLocations && state.recentLocations.length > 0) {
+			const primaryLoc = state.recentLocations[0];
+			let { exists, isNT } = checkBookExists(primaryLoc.book);
+			if(exists) { pushNavState('home'); pushNavState('chapters'); openChapter(primaryLoc.book, isNT, primaryLoc.chap, false); }
+			else { renderHome(); }
+		} else { renderHome(); }
 	}
 
-	playingIndex = vNum; highlightPlayingVerse();
-	updateAudioProgress(vNum);
-
-	currentUtterance = new SpeechSynthesisUtterance(verses[vNum]);
-	if (state.voiceURI) { let voice = voices.find(v => v.voiceURI === state.voiceURI); if (voice) currentUtterance.voice = voice; }
-	currentUtterance.rate = state.rate; 
-	
-	// onend triggers the next verse, but ONLY if we are actively playing and not paused.
-	currentUtterance.onend = () => { if (isPlaying && !isPaused) playVerse(vNum + 1); };
-
-	isPlaying = true; isPaused = false; requestWakeLock(); 
-	setAudioUI('pause', false);
-	synth.speak(currentUtterance);
-}
-
-function pauseSpeech() {
-	if (!synth || !isPlaying || isPaused) return;
-	isPaused = true; 
-	synth.cancel(); // Completely cancel to avoid browser hanging bugs
-	releaseWakeLock();
-	setAudioUI('play_arrow', true);
-	highlightPlayingVerse();
-}
-
-function resumeSpeech() {
-	if (!synth || !isPlaying || !isPaused) return;
-	// Bypassing browser resume() entirely, restart the verse from scratch
-	playVerse(playingIndex); 
-}
-
-function highlightPlayingVerse() {
-	clearPlayingVerseStyles();
-	let el = $(`v${playingIndex}`);
-	if (el) {
-		el.classList.add('playing');
-		if (isPaused) el.classList.add('paused');
-		else scrollIntoVerse(playingIndex);
+	function createBookmarkElement(bm) {
+		return createEl('div', {
+			className: 'bookmark-item',
+			innerHTML: `<div class="bookmark-ref">${bm.ref} (${bm.trans.toUpperCase()})</div><div class="bookmark-text">${bm.text}</div>`,
+			onclick: async () => {
+				if (await resolveAndSwitchTranslation(bm.trans)) {
+					let { isNT } = checkBookExists(bm.book);
+					openChapter(bm.book, isNT, bm.chapter, true, bm.verse);
+				}
+			}
+		});
 	}
-}
 
-function cancelSpeech() {
-	isPlaying = false; isPaused = false; currentUtterance = null; releaseWakeLock(); if (synth) synth.cancel();
-	setAudioUI('play_arrow', false);
-	const playBtn = $('playBtn');
-	if (playBtn) {
-		playBtn.style.setProperty('--progress-angle', '0deg');
+	async function resumeLocation(index) {
+		if (!state.recentLocations || !state.recentLocations[index]) return;
+		const loc = state.recentLocations[index];
+		if (await resolveAndSwitchTranslation(loc.trans)) {
+			let { exists, isNT } = checkBookExists(loc.book);
+			if(exists) openChapter(loc.book, isNT, loc.chap, false);
+		}
 	}
-	clearPlayingVerseStyles();
-}
 
-function prevChapter() {
-	cancelSpeech(); playingIndex = -1; let book = getCurrentBook();
-	if (currentChapter > 1) { openChapter(book.name, currentIsNT, currentChapter - 1, false, null, true); } 
-	else {
-		const testament = currentIsNT ? activeData.NT : activeData.OT;
-		if (currentBookIndex > 0) { let prevBook = testament[currentBookIndex - 1]; openChapter(prevBook.name, currentIsNT, prevBook.chapters.length - 1, false, null, true); } 
-		else if (currentIsNT && activeData.OT.length > 0) { let otBook = activeData.OT[activeData.OT.length - 1]; openChapter(otBook.name, false, otBook.chapters.length - 1, false, null, true); }
+	function updateResumeFabVisibility() {
+		const wrapper = $('resumeWrapper');
+		const scroll = $('resumeScroll');
+		
+		if (state.recentLocations && state.recentLocations.length > 0) {
+			wrapper.classList.add('visible');
+			scroll.innerHTML = '';
+			state.recentLocations.forEach((loc, index) => {
+				let btn = createEl('button', { className: 'fab-resume', onclick: () => resumeLocation(index) }, scroll);
+				createEl('span', { className: 'material-symbols-rounded', innerText: 'history' }, btn);
+				let textSpan = createEl('span', { className: 'resume-text text-primary' }, btn);
+				createEl('span', { className: 'text-long', innerText: `${loc.book} ${loc.chap} (${loc.trans.toUpperCase()})` }, textSpan);
+				let shortBook = BOOK_SHORTHANDS[loc.book] || loc.book;
+				createEl('span', { className: 'text-short', innerText: `${shortBook} ${loc.chap} (${loc.trans.toUpperCase()})` }, textSpan);
+			});
+		} else {
+			wrapper.classList.remove('visible');
+		}
 	}
-}
 
-function nextChapter(autoPlay = false) {
-	cancelSpeech(); playingIndex = -1; let book = getCurrentBook();
-	if (currentChapter < book.chapters.length - 1) { openChapter(book.name, currentIsNT, currentChapter + 1, false, null, true); } 
-	else {
-		const testament = currentIsNT ? activeData.NT : activeData.OT;
-		if (currentBookIndex < testament.length - 1) { let nextBook = testament[currentBookIndex + 1]; openChapter(nextBook.name, currentIsNT, 1, false, null, true); } 
-		else if (!currentIsNT && activeData.NT.length > 0) { let ntBook = activeData.NT[0]; openChapter(ntBook.name, true, 1, false, null, true); }
-		else if (currentIsNT && currentBookIndex < testament.length) { showToast("End of the Bible reached."); return }
+	function renderHome() {
+		cancelSpeech();
+		hideAllViews(); $('view-home').classList.add('active');
+		$('headerTitle').innerText = 'Vult';
+		$('navBack').style.display = 'none';
+		$('transSelectWrapper').style.display = 'flex';
+		$('bottomBar').classList.remove('visible');
+		
+		updateResumeFabVisibility(); updateSelectionFabs();
+		
+		const ntGrid = $('ntGrid'), otGrid = $('otGrid');
+		const ntDetails = $('ntDetails'), otDetails = $('otDetails');
+		const ntSummary = $('ntSummary'), otSummary = $('otSummary');
+
+		ntGrid.innerHTML = ''; otGrid.innerHTML = '';
+		
+		if (activeData.NT.length === 0) { ntDetails.style.display = 'none'; otDetails.style.display = 'block'; otSummary.innerText = 'BOOKS'; } 
+		else if (activeData.OT.length === 0) { otDetails.style.display = 'none'; ntDetails.style.display = 'block'; ntSummary.innerText = 'BOOKS'; } 
+		else { ntDetails.style.display = 'block'; otDetails.style.display = 'block'; ntSummary.innerText = 'NEW TESTAMENT'; otSummary.innerText = 'OLD TESTAMENT'; }
+
+		const renderGrid = (data, grid, isNT) => {
+			data.forEach((b, i) => {
+				if (!b.chapters || !b.chapters.some(c => c && c.length > 0)) return; 
+				createEl('div', { className: 'grid-item', innerText: b.name, dir: 'auto', onclick: () => openBook(i, isNT) }, grid);
+			});
+		};
+
+		renderGrid(activeData.NT, ntGrid, true); renderGrid(activeData.OT, otGrid, false);
+		renderBookmarksList(); pushNavState('home');
 	}
-	if (autoPlay && synth) setTimeout(() => togglePlay(), 500);
-}
 
-/* =========================================
-	SETTINGS & THEMING
-========================================= */
-const bindSetting = (id, stateKey, displayId = null, extraAction = null) => {
-	$(id).addEventListener('change', (e) => {
-		let val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
-		state[stateKey] = val;
-		if (displayId) syncSelectDisplay(e.target, $(displayId));
-		if (extraAction) extraAction(val);
+	function renderBookmarksList() {
+		const list = $('bookmarksList'); list.innerHTML = '';
+		if (state.bookmarks.length === 0) { list.innerHTML = '<p>No bookmarks yet.</p>'; return; }
+		state.bookmarks.forEach(bm => list.appendChild(createBookmarkElement(bm)));
+	}
+
+	function openBook(index, isNT) {
+		cancelSpeech();
+		hideAllViews(); $('view-chapters').classList.add('active');
+		
+		$('navBack').style.display = 'flex'; $('navBack').onclick = renderHome;
+		$('transSelectWrapper').style.display = 'none';
+		updateResumeFabVisibility();
+		
+		const book = isNT ? activeData.NT[index] : activeData.OT[index];
+		$('headerTitle').innerText = book.name;
+
+		const grid = $('chapterGrid'); grid.innerHTML = '';
+		for(let i=1; i<book.chapters.length; i++) {
+			if(!book.chapters[i] || book.chapters[i].length === 0) continue;
+			createEl('div', { className: 'grid-item', innerText: i, onclick: () => openChapter(book.name, isNT, i, false) }, grid);
+		}
+		
+		const bkmDetails = $('bookBookmarksDetails'), bkmList = $('bookBookmarksList');
+		bkmList.innerHTML = '';
+		const bkBookmarks = state.bookmarks.filter(bm => bm.book === book.name);
+		bkmDetails.style.display = 'block';
+		if (bkBookmarks.length > 0) { bkBookmarks.forEach(bm => bkmList.appendChild(createBookmarkElement(bm))); } 
+		else { bkmList.innerHTML = '<p>No bookmarks yet.</p>'; }
+		
+		pushNavState('chapters');
+	}
+
+	function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVerseNum = null, isContinuousNav = false) {
+		cancelSpeech(); currentIsNT = isNT; currentChapter = chapterNum;
+		const testament = isNT ? activeData.NT : activeData.OT;
+		currentBookIndex = testament.findIndex(b => b.name === bookName);
+		
+		const book = testament[currentBookIndex]; if(!book) return renderHome();
+
+		const locObj = { book: book.name, isNT: isNT, chap: chapterNum, trans: state.translation };
+		
+		if (isContinuousNav && state.recentLocations.length > 0) {
+			let tail = state.recentLocations.slice(1).filter(l => !(l.book === locObj.book && l.chap === locObj.chap));
+			state.recentLocations = [locObj, ...tail];
+		} else {
+			state.recentLocations = state.recentLocations.filter(l => !(l.book === locObj.book && l.chap === locObj.chap));
+			state.recentLocations.unshift(locObj);
+			if (state.recentLocations.length > 3) state.recentLocations.pop();
+		}
 		saveState();
-	});
-};
+		
+		hideAllViews();
+		
+		$('navBack').style.display = 'flex';
+		$('navBack').onclick = () => openBook(currentBookIndex, currentIsNT);
+		$('transSelectWrapper').style.display = 'none';
+		$('headerTitle').innerText = `${book.name} ${chapterNum}`;
+		
+		const readerView = $('view-reader'); readerView.classList.add('active');
+		$('bottomBar').classList.add('visible'); updateSelectionFabs();
 
-bindSetting('setTheme', 'theme', 'themeDisplay', applySettings);
-bindSetting('setFontFam', 'fontFamily', 'fontFamDisplay', applySettings);
-bindSetting('setVoice', 'voiceURI', 'voiceDisplay');
+		const container = $('readerContent'); 
+		
+		// Trigger CSS transition for chapter changes
+		container.classList.remove('chapter-transition');
+		void container.offsetWidth; 
+		container.classList.add('chapter-transition');
 
-// Bind Main Panic Mode
-bindSetting('setPanic', 'panicEnabled', null, (val) => {
-	$('panicBtn').classList.toggle("visible", val);
-	
-	const shakeRow = $('shakeRow');
-	const setShake = $('setShake');
-	
-	if (val) {
-		shakeRow.classList.remove('disabled');
-		setShake.disabled = false;
-	} else {
-		shakeRow.classList.add('disabled');
-		setShake.disabled = true;
+		container.innerHTML = '';
+		selectedVerses.clear(); updateSelectionFabs();
+
+		const verses = book.chapters[chapterNum];
+		const breakSet = book.breaks && book.breaks[chapterNum] ? book.breaks[chapterNum] : new Set();
+		let textDirection = (state.source === 'getbible' && translationMeta[state.translation] && translationMeta[state.translation].direction) ? translationMeta[state.translation].direction.toLowerCase() : 'ltr';
+		container.setAttribute('dir', textDirection);
+
+		// Reader Subtitle
+		let fullTransName = state.translation.toUpperCase();
+		const transOpt = $('transSelect').options[$('transSelect').selectedIndex];
+		if (transOpt) {
+			const parts = transOpt.innerText.split(' - ');
+			if (parts.length > 1) fullTransName = parts[1];
+		}
+		createEl('div', { className: 'reader-subtitle', innerHTML: `${fullTransName}` }, container);
+		let versesContainer = createEl('div', { id: 'versesContainer', className: 'verses-container', innerHTML: `` }, container);
+
+		verses.forEach((text, vNum) => {
+			if (!text) return;
+			let className = 'verse';
+			if (breakSet.has(vNum)) className += ' break';
+			let p = createEl('p', { className: className, id: `v${vNum}`, innerHTML: `<span class="verse-num">${vNum}</span>${text}` }, versesContainer);
+			
+			if (isVerseBookmarked(vNum)) p.classList.add('bookmarked');
+			
+			setupLongPress(p, 
+				() => {
+					copySingleVerse(book.name, chapterNum, vNum, text); 
+					if ('vibrate' in navigator) navigator.vibrate(50);
+					p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
+				},
+				() => toggleVerseSelection(p, vNum)
+			);
+		});
+
+		if (scrollToVerse && targetVerseNum) {
+			scrollIntoVerse(targetVerseNum);
+		} else { readerView.scrollTop = 0; }
+		
+		pushNavState('reader');
 	}
-	
-	document.body.classList.toggle('panic-active', val);
-	updateDynamicManifest();
-});
 
-// Bind Shake to Panic (with iOS 13+ permission request integration)
-bindSetting('setShake', 'shakeToPanicEnabled', null, (val) => {
-	if (val && typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
-		DeviceMotionEvent.requestPermission().then(response => {
-			if (response !== 'granted') {
-				$('setShake').checked = false;
-				state.shakeToPanicEnabled = false;
-				saveState();
-				showToast("Motion permission denied");
-			}
-		}).catch(console.error);
-	}
-});
+	function scrollIntoVerse(verseNum) {
+		const targetEl = $(`v${verseNum}`);
+		const readerView = $('view-reader');
+		if (targetEl && readerView) {
+			setTimeout(() => {
+				const isSmall = targetEl.offsetHeight < readerView.clientHeight;
+				const targetTop = targetEl.offsetTop - readerView.offsetTop;
+				const computedTop = isSmall ? targetTop - (readerView.clientHeight / 3) + (targetEl.offsetHeight / 3) : targetTop;
 
-bindSetting('setSource', 'source', 'sourceDisplay', async () => {
-	if (state.secretUnlocked) {
-		document.body.classList.add('is-loading'); await populateTranslations(); $('transSelect').value = state.translation; updateTransDisplay();
-		activeData = { OT: [], NT: [] }; const success = await loadBibleData(); if(success) renderHome();
-	}
-});
-
-$('transSelect').addEventListener('change', async (e) => { updateTransDisplay(); await switchTranslation(e.target.value); renderHome(); });
-
-function openSettings() {
-	const hydrate = (id, stateVal, dispId) => {
-		const el = $(id);
-		if (el.type === 'checkbox') el.checked = stateVal; else el.value = stateVal;
-		if (dispId) syncSelectDisplay(el, $(dispId));
-	};
-	
-	hydrate('setTheme', state.theme, 'themeDisplay');
-	hydrate('setFontFam', state.fontFamily, 'fontFamDisplay');
-	hydrate('setSource', state.source, 'sourceDisplay');
-	
-	$('setPanic').checked = state.panicEnabled;
-	$('setShake').checked = state.shakeToPanicEnabled;
-	
-	const shakeRow = $('shakeRow');
-	const setShake = $('setShake');
-	if (state.panicEnabled) {
-		shakeRow.classList.remove('disabled');
-		setShake.disabled = false;
-	} else {
-		shakeRow.classList.add('disabled');
-		setShake.disabled = true;
-	}
-	
-	$('fontSizeDisplay').innerText = state.fontSize;
-	$('rateDisplay').innerText = state.rate.toFixed(1);
-
-	if (synth) populateVoices();
-	
-	$('installRowContainer').style.display = (isRunningStandalone() || isIOSDevice()) ? 'none' : 'flex';
-	openModal('settingsModal', 'modal-settings');
-}
-
-function changeFontSize(delta) {
-	let newVal = state.fontSize + delta;
-	if (newVal >= 12 && newVal <= 32) { state.fontSize = newVal; $('fontSizeDisplay').innerText = state.fontSize; applySettings(); saveState(); }
-}
-
-function changeSpeechRate(delta) {
-	let newVal = state.rate + delta;
-	if (newVal >= 0.5 && newVal <= 2.0) { state.rate = newVal; $('rateDisplay').innerText = state.rate.toFixed(1); saveState(); }
-}
-
-function applySettings() {
-	let appliedTheme = state.theme;
-	if (appliedTheme === 'system') {
-		appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
-	}
-	document.documentElement.setAttribute('data-theme', appliedTheme);
-	document.querySelector('meta[name="theme-color"]').setAttribute('content', appliedTheme === 'dark' ? '#1c1c1e' : '#f8f8f8');
-	document.documentElement.style.setProperty('--reader-font-family', state.fontFamily);
-	document.documentElement.style.setProperty('--reader-font-size', state.fontSize + 'px');
-	document.body.classList.toggle('panic-active', state.panicEnabled);
-}
-
-// System theme listener
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-	if (state.theme === 'system') applySettings();
-});
-
-function populateVoices() {
-	if (!synth) return;
-	voices = synth.getVoices();
-	const select = $('setVoice'); select.innerHTML = '';
-	
-	createEl('option', { value: '', innerText: 'System Default' }, select);
-
-	voices.forEach(v => {
-		createEl('option', { value: v.voiceURI, innerText: `${v.name} (${v.lang})` }, select);
-	});
-	
-	if (state.voiceURI && select.querySelector(`option[value="${state.voiceURI}"]`)) select.value = state.voiceURI; else select.value = '';
-	syncSelectDisplay(select, $('voiceDisplay'));
-}
-
-if (synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = populateVoices;
-
-/* =========================================
-	ADVANCED & ABOUT LOGIC
-========================================= */
-function exportBookmarks() {
-	if (state.bookmarks.length === 0) {
-		showToast("No bookmarks to export.");
-		return;
-	}
-	const blob = new Blob([JSON.stringify(state.bookmarks, null, 2)], { type: 'application/json' });
-	const url = URL.createObjectURL(blob);
-	const title = "vult_bookmarks_" + new Date().toISOString().slice(0, 10) + ".json";
-	
-	const dlAnchorElem = createEl('a', { href: url, download: title });
-	dlAnchorElem.click();
-	
-	showToast("Exported: " + title);
-	setTimeout(() => URL.revokeObjectURL(url), 1000);
-}
-
-function importBookmarks(event) {
-	const file = event.target.files[0];
-	if (!file) return;
-
-	const reader = new FileReader();
-	reader.onload = (e) => {
-		try {
-			const imported = JSON.parse(e.target.result);
-			if (Array.isArray(imported)) {
-				let added = 0;
-				// Merge bookmarks, ignoring duplicates based on location and translation
-				imported.forEach(bm => {
-					if (bm.ref && bm.trans && bm.book && bm.chapter && bm.verse) {
-						const exists = state.bookmarks.some(existing => 
-							existing.book === bm.book && existing.chapter === bm.chapter && 
-							existing.verse === bm.verse && existing.trans === bm.trans
-						);
-						if (!exists) {
-							state.bookmarks.push(bm);
-							added++;
-						}
-					}
+				readerView.scrollTo({
+					top: Math.max(0, computedTop),
+					behavior: 'smooth'
 				});
-				saveState();
-				// Re-render bookmarks if we are currently on the home view
-				if ($('view-home').classList.contains('active')) renderBookmarksList(); 
-				showToast(`Imported ${added} new bookmarks.`);
-			} else {
-				showToast("Invalid bookmarks format.");
+			}, 100);
+		}
+	}
+
+	function hideAllViews() {
+		document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
+		$('bottomBar').classList.remove('visible');
+		$('resumeWrapper').classList.remove('visible');
+		document.querySelector('header').classList.remove('minified');
+		updateSelectionFabs();
+	}
+
+	/* =========================================
+		INTERACTIONS: Selection, Copy, Share, Bookmark, Study
+	========================================= */
+	function toggleVerseSelection(element, vNum) {
+		if (selectedVerses.has(vNum)) { selectedVerses.delete(vNum); element.classList.remove('selected'); } 
+		else { selectedVerses.add(vNum); element.classList.add('selected'); }
+		updateSelectionFabs();
+	}
+
+	function updateSelectionFabs() {
+		const fabs = $('selectionFabs');
+		if (selectedVerses.size > 0 && $('view-reader').classList.contains('active')) {
+			fabs.classList.add('visible');
+			let allBookmarked = Array.from(selectedVerses).every(v => isVerseBookmarked(v));
+			$('bookmarkFabIcon').innerText = allBookmarked ? 'bookmark_remove' : 'bookmark';
+		} else { 
+			fabs.classList.remove('visible');
+		}
+	}
+
+	function getSelectedTextData() {
+		const book = getCurrentBook(), sortedVerses = Array.from(selectedVerses).sort((a,b) => a-b);
+		let textOut = ""; sortedVerses.forEach(vNum => { textOut += `[${vNum}] ${book.chapters[currentChapter][vNum]} `; });
+		let ref = `${book.name} ${currentChapter}:`;
+		if(sortedVerses.length === 1) ref += sortedVerses[0]; else ref += `${sortedVerses[0]}-${sortedVerses[sortedVerses.length-1]}`;
+		return { text: textOut.trim(), ref: ref, firstV: sortedVerses[0], lastV: sortedVerses[sortedVerses.length-1], isRange: sortedVerses.length > 1 };
+	}
+
+	function getFullSelectedText() {
+		const data = getSelectedTextData(); return `${data.text} — ${data.ref} (${state.translation.toUpperCase()})`;
+	}
+
+	function copySelected() { navigator.clipboard.writeText(getFullSelectedText()).then(clearSelection); }
+
+	function copySingleVerse(book, chap, verseNum, text) {
+		navigator.clipboard.writeText(`${text} — ${book} ${chap}:${verseNum} (${state.translation.toUpperCase()})`);
+	}
+
+	function copyInnerText(el) {
+		navigator.clipboard.writeText(el.innerText);
+		if ('vibrate' in navigator) navigator.vibrate(50);
+	}
+
+	async function shareSelected() {
+		const fullText = getFullSelectedText();
+		if (navigator.share) {
+			try { await navigator.share({ title: 'Vult Bible App', text: fullText }); clearSelection(); } catch (err) {}
+		} else { copySelected(); showToast("Text copied to clipboard"); }
+	}
+
+	function isVerseBookmarked(vNum) {
+		if (currentBookIndex < 0) return false;
+		const bookName = getCurrentBook().name;
+		return state.bookmarks.some(b => b.trans === state.translation && b.book === bookName && b.chapter === currentChapter && b.verse === vNum);
+	}
+
+	function toggleBookmarks() {
+		const bookName = getCurrentBook().name;
+		let allBookmarked = Array.from(selectedVerses).every(v => isVerseBookmarked(v));
+		
+		if (allBookmarked) {
+			selectedVerses.forEach(vNum => {
+				state.bookmarks = state.bookmarks.filter(b => !(b.trans === state.translation && b.book === bookName && b.chapter === currentChapter && b.verse === vNum));
+				const el = $(`v${vNum}`); if(el) el.classList.remove('bookmarked');
+			});
+		} else {
+			const book = getCurrentBook();
+			selectedVerses.forEach(vNum => {
+				if (!isVerseBookmarked(vNum)) {
+					state.bookmarks.push({
+						ref: `${bookName} ${currentChapter}:${vNum}`, book: bookName, chapter: currentChapter, verse: vNum,
+						text: book.chapters[currentChapter][vNum].substring(0, 50) + '...', trans: state.translation
+					});
+					const el = $(`v${vNum}`); if(el) el.classList.add('bookmarked');
+				}
+			});
+		}
+		saveState(); clearSelection();
+	}
+
+	function clearSelection() {
+		selectedVerses.clear(); document.querySelectorAll('.verse.selected').forEach(el => el.classList.remove('selected')); updateSelectionFabs();
+	}
+
+	function openStudyModal() {
+			const data = getSelectedTextData();
+			const subtitleEl = $('studyModalSubtitle');
+			if (subtitleEl) {
+				subtitleEl.innerText = data.ref + ' (' + state.translation.toUpperCase() + ')';
 			}
-		} catch (err) {
-			showToast("Error reading file.");
+			openModal('studyModal', 'modal-study');
 		}
-		// Reset the input so the same file can be uploaded again if needed
-		event.target.value = "";
+
+	function openStudy(site) {
+		const data = getSelectedTextData();
+		const encRef = encodeURIComponent(data.ref);
+		const trans = state.translation.toUpperCase();
+		
+		const studyUrls = {
+			blb: `https://www.blueletterbible.org/Bible.cfm?b=${encodeURIComponent(getCurrentBook().name)}&c=${currentChapter}&t=${trans}`,
+			gateway: `https://www.biblegateway.com/passage/?search=${encRef}&version=${trans}`,
+			hub: `https://biblehub.com/${getCurrentBook().name.toLowerCase().replace(/ /g, '_')}/${currentChapter}-${data.firstV}.htm`,
+			youversion: `https://www.bible.com/search/bible?q=${encRef}`
+		};
+		
+		window.open(studyUrls[site], '_blank');
+		closeModal('studyModal');
+		clearSelection();
+	}
+
+	/* =========================================
+		SPEECH SYNTHESIS (AUDIO)
+	========================================= */
+	function updateAudioProgress(vNum) {
+		const playBtn = $('playBtn');
+		if (!playBtn) return;
+		const book = getCurrentBook();
+		if (!book || !book.chapters || !book.chapters[currentChapter]) {
+			playBtn.style.setProperty('--progress-angle', '0deg');
+			return;
+		}
+		const verses = book.chapters[currentChapter];
+		const totalVerses = verses.filter(v => v).length;
+		if (totalVerses <= 0 || vNum < 1) {
+			playBtn.style.setProperty('--progress-angle', '0deg');
+			return;
+		}
+		const ratio = Math.min(vNum / totalVerses, 1);
+		const angle = (ratio * 360).toFixed(1);
+		playBtn.style.setProperty('--progress-angle', `${angle}deg`);
+	}
+
+	function togglePlay() {
+		if (!synth) return;
+		if (isPlaying) {
+			if (isPaused) {
+				resumeSpeech();
+			} else {
+				pauseSpeech();
+			}
+		} else {
+			let startIdx = 1; const playingEl = document.querySelector('.verse.playing');
+			if (playingEl) { let vMatch = playingEl.id.match(/^v(\d+)$/); if (vMatch) startIdx = parseInt(vMatch[1]); } 
+			else if (playingIndex !== -1) { startIdx = playingIndex; } 
+			else if (selectedVerses.size > 0) { startIdx = Math.min(...Array.from(selectedVerses)); clearSelection(); }
+			playVerse(startIdx);
+		}
+	}
+
+	function playVerse(vNum) {
+		if (!synth) return;
+		isPlaying = false; isPaused = false; if (synth) synth.cancel();
+		
+		const verses = getCurrentBook().chapters[currentChapter];
+		while(!verses[vNum] && vNum < verses.length) vNum++;
+		
+		if (vNum >= verses.length) { 
+			updateAudioProgress(verses.length);
+			nextChapter(true); 
+			return; 
+		}
+
+		playingIndex = vNum; highlightPlayingVerse();
+		updateAudioProgress(vNum);
+
+		currentUtterance = new SpeechSynthesisUtterance(verses[vNum]);
+		if (state.voiceURI) { let voice = voices.find(v => v.voiceURI === state.voiceURI); if (voice) currentUtterance.voice = voice; }
+		currentUtterance.rate = state.rate; 
+		
+		// onend triggers the next verse, but ONLY if we are actively playing and not paused.
+		currentUtterance.onend = () => { if (isPlaying && !isPaused) playVerse(vNum + 1); };
+
+		isPlaying = true; isPaused = false; requestWakeLock(); 
+		setAudioUI('pause', false);
+		synth.speak(currentUtterance);
+	}
+
+	function pauseSpeech() {
+		if (!synth || !isPlaying || isPaused) return;
+		isPaused = true; 
+		synth.cancel(); // Completely cancel to avoid browser hanging bugs
+		releaseWakeLock();
+		setAudioUI('play_arrow', true);
+		highlightPlayingVerse();
+	}
+
+	function resumeSpeech() {
+		if (!synth || !isPlaying || !isPaused) return;
+		// Bypassing browser resume() entirely, restart the verse from scratch
+		playVerse(playingIndex); 
+	}
+
+	function highlightPlayingVerse() {
+		clearPlayingVerseStyles();
+		let el = $(`v${playingIndex}`);
+		if (el) {
+			el.classList.add('playing');
+			if (isPaused) el.classList.add('paused');
+			else scrollIntoVerse(playingIndex);
+		}
+	}
+
+	function cancelSpeech() {
+		isPlaying = false; isPaused = false; currentUtterance = null; releaseWakeLock(); if (synth) synth.cancel();
+		setAudioUI('play_arrow', false);
+		const playBtn = $('playBtn');
+		if (playBtn) {
+			playBtn.style.setProperty('--progress-angle', '0deg');
+		}
+		clearPlayingVerseStyles();
+	}
+
+	function prevChapter() {
+		cancelSpeech(); playingIndex = -1; let book = getCurrentBook();
+		if (currentChapter > 1) { openChapter(book.name, currentIsNT, currentChapter - 1, false, null, true); } 
+		else {
+			const testament = currentIsNT ? activeData.NT : activeData.OT;
+			if (currentBookIndex > 0) { let prevBook = testament[currentBookIndex - 1]; openChapter(prevBook.name, currentIsNT, prevBook.chapters.length - 1, false, null, true); } 
+			else if (currentIsNT && activeData.OT.length > 0) { let otBook = activeData.OT[activeData.OT.length - 1]; openChapter(otBook.name, false, otBook.chapters.length - 1, false, null, true); }
+		}
+	}
+
+	function nextChapter(autoPlay = false) {
+		cancelSpeech(); playingIndex = -1; let book = getCurrentBook();
+		if (currentChapter < book.chapters.length - 1) { openChapter(book.name, currentIsNT, currentChapter + 1, false, null, true); } 
+		else {
+			const testament = currentIsNT ? activeData.NT : activeData.OT;
+			if (currentBookIndex < testament.length - 1) { let nextBook = testament[currentBookIndex + 1]; openChapter(nextBook.name, currentIsNT, 1, false, null, true); } 
+			else if (!currentIsNT && activeData.NT.length > 0) { let ntBook = activeData.NT[0]; openChapter(ntBook.name, true, 1, false, null, true); }
+			else if (currentIsNT && currentBookIndex < testament.length) { showToast("End of the Bible reached."); return }
+		}
+		if (autoPlay && synth) setTimeout(() => togglePlay(), 500);
+	}
+
+	/* =========================================
+		SETTINGS & THEMING
+	========================================= */
+	const bindSetting = (id, stateKey, displayId = null, extraAction = null) => {
+		$(id).addEventListener('change', (e) => {
+			let val = e.target.type === 'checkbox' ? e.target.checked : e.target.value;
+			state[stateKey] = val;
+			if (displayId) syncSelectDisplay(e.target, $(displayId));
+			if (extraAction) extraAction(val);
+			saveState();
+		});
 	};
-	reader.readAsText(file);
-}
 
-function resetApp() {
-	if (confirm("Are you sure you want to completely reset the app? This will wipe your bookmarks, history, and settings.")) {
-		localStorage.removeItem('vult_state');
-		localStorage.removeItem('vult_hideHelp');
-		window.location.reload();
-	}
-}
+	bindSetting('setTheme', 'theme', 'themeDisplay', applySettings);
+	bindSetting('setFontFam', 'fontFamily', 'fontFamDisplay', applySettings);
+	bindSetting('setVoice', 'voiceURI', 'voiceDisplay');
 
-function shareApp() {
-	if (navigator.share) {
-		navigator.share({
-			title: 'Vult',
-			url: window.location.href
-		}).catch(err => { console.log("Share canceled or failed", err); });
-	} else {
-		navigator.clipboard.writeText(window.location.href);
-		showToast("App URL copied to clipboard");
-	}
-}
-
-/* =========================================
-	PANIC LOGIC
-========================================= */
-function triggerPanic() {
-	document.querySelectorAll('dialog').forEach(d => { if (d.open) d.close(); });
-	cancelSpeech(); playingIndex = -1; clearSelection();
-	if (state.panicEnabled) { 
-		state.secretUnlocked = false; 
-		if (historyDepth > 0) {
-			history.go(-historyDepth);
-			historyDepth = 0;
+	// Bind Main Panic Mode
+	bindSetting('setPanic', 'panicEnabled', null, (val) => {
+		$('panicBtn').classList.toggle("visible", val);
+		
+		const shakeRow = $('shakeRow');
+		const setShake = $('setShake');
+		
+		if (val) {
+			shakeRow.classList.remove('disabled');
+			setShake.disabled = false;
+		} else {
+			shakeRow.classList.add('disabled');
+			setShake.disabled = true;
 		}
-		showCalculator(); 
+		
+		document.body.classList.toggle('panic-active', val);
+		updateDynamicManifest();
+	});
+
+	// Bind Shake to Panic (with iOS 13+ permission request integration)
+	bindSetting('setShake', 'shakeToPanicEnabled', null, (val) => {
+		if (val && typeof DeviceMotionEvent !== 'undefined' && typeof DeviceMotionEvent.requestPermission === 'function') {
+			DeviceMotionEvent.requestPermission().then(response => {
+				if (response !== 'granted') {
+					$('setShake').checked = false;
+					state.shakeToPanicEnabled = false;
+					saveState();
+					showToast("Motion permission denied");
+				}
+			}).catch(console.error);
+		}
+	});
+
+	bindSetting('setSource', 'source', 'sourceDisplay', async () => {
+		if (state.secretUnlocked) {
+			document.body.classList.add('is-loading'); await populateTranslations(); $('transSelect').value = state.translation; updateTransDisplay();
+			activeData = { OT: [], NT: [] }; const success = await loadBibleData(); if(success) renderHome();
+		}
+	});
+
+	$('transSelect').addEventListener('change', async (e) => { updateTransDisplay(); await switchTranslation(e.target.value); renderHome(); });
+
+	function openSettings() {
+		const hydrate = (id, stateVal, dispId) => {
+			const el = $(id);
+			if (el.type === 'checkbox') el.checked = stateVal; else el.value = stateVal;
+			if (dispId) syncSelectDisplay(el, $(dispId));
+		};
+		
+		hydrate('setTheme', state.theme, 'themeDisplay');
+		hydrate('setFontFam', state.fontFamily, 'fontFamDisplay');
+		hydrate('setSource', state.source, 'sourceDisplay');
+		
+		$('setPanic').checked = state.panicEnabled;
+		$('setShake').checked = state.shakeToPanicEnabled;
+		
+		const shakeRow = $('shakeRow');
+		const setShake = $('setShake');
+		if (state.panicEnabled) {
+			shakeRow.classList.remove('disabled');
+			setShake.disabled = false;
+		} else {
+			shakeRow.classList.add('disabled');
+			setShake.disabled = true;
+		}
+		
+		$('fontSizeDisplay').innerText = state.fontSize;
+		$('rateDisplay').innerText = state.rate.toFixed(1);
+
+		if (synth) populateVoices();
+		
+		$('installRowContainer').style.display = (isRunningStandalone() || isIOSDevice()) ? 'none' : 'flex';
+		openModal('settingsModal', 'modal-settings');
 	}
-}
 
-window.onload = init;
+	function changeFontSize(delta) {
+		let newVal = state.fontSize + delta;
+		if (newVal >= 12 && newVal <= 32) { state.fontSize = newVal; $('fontSizeDisplay').innerText = state.fontSize; applySettings(); saveState(); }
+	}
 
-</script>
-</body>
-</html>
+	function changeSpeechRate(delta) {
+		let newVal = state.rate + delta;
+		if (newVal >= 0.5 && newVal <= 2.0) { state.rate = newVal; $('rateDisplay').innerText = state.rate.toFixed(1); saveState(); }
+	}
+
+	function applySettings() {
+		let appliedTheme = state.theme;
+		if (appliedTheme === 'system') {
+			appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+		}
+		document.documentElement.setAttribute('data-theme', appliedTheme);
+		document.querySelector('meta[name="theme-color"]').setAttribute('content', appliedTheme === 'dark' ? '#1c1c1e' : '#f8f8f8');
+		document.documentElement.style.setProperty('--reader-font-family', state.fontFamily);
+		document.documentElement.style.setProperty('--reader-font-size', state.fontSize + 'px');
+		document.body.classList.toggle('panic-active', state.panicEnabled);
+	}
+
+	// System theme listener
+	window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+		if (state.theme === 'system') applySettings();
+	});
+
+	function populateVoices() {
+		if (!synth) return;
+		voices = synth.getVoices();
+		const select = $('setVoice'); select.innerHTML = '';
+		
+		createEl('option', { value: '', innerText: 'System Default' }, select);
+
+		voices.forEach(v => {
+			createEl('option', { value: v.voiceURI, innerText: `${v.name} (${v.lang})` }, select);
+		});
+		
+		if (state.voiceURI && select.querySelector(`option[value="${state.voiceURI}"]`)) select.value = state.voiceURI; else select.value = '';
+		syncSelectDisplay(select, $('voiceDisplay'));
+	}
+
+	if (synth && synth.onvoiceschanged !== undefined) synth.onvoiceschanged = populateVoices;
+
+	/* =========================================
+		ADVANCED & ABOUT LOGIC
+	========================================= */
+	function exportBookmarks() {
+		if (state.bookmarks.length === 0) {
+			showToast("No bookmarks to export.");
+			return;
+		}
+		const blob = new Blob([JSON.stringify(state.bookmarks, null, 2)], { type: 'application/json' });
+		const url = URL.createObjectURL(blob);
+		const title = "vult_bookmarks_" + new Date().toISOString().slice(0, 10) + ".json";
+		
+		const dlAnchorElem = createEl('a', { href: url, download: title });
+		dlAnchorElem.click();
+		
+		showToast("Exported: " + title);
+		setTimeout(() => URL.revokeObjectURL(url), 1000);
+	}
+
+	function importBookmarks(event) {
+		const file = event.target.files[0];
+		if (!file) return;
+
+		const reader = new FileReader();
+		reader.onload = (e) => {
+			try {
+				const imported = JSON.parse(e.target.result);
+				if (Array.isArray(imported)) {
+					let added = 0;
+					// Merge bookmarks, ignoring duplicates based on location and translation
+					imported.forEach(bm => {
+						if (bm.ref && bm.trans && bm.book && bm.chapter && bm.verse) {
+							const exists = state.bookmarks.some(existing => 
+								existing.book === bm.book && existing.chapter === bm.chapter && 
+								existing.verse === bm.verse && existing.trans === bm.trans
+							);
+							if (!exists) {
+								state.bookmarks.push(bm);
+								added++;
+							}
+						}
+					});
+					saveState();
+					// Re-render bookmarks if we are currently on the home view
+					if ($('view-home').classList.contains('active')) renderBookmarksList(); 
+					showToast(`Imported ${added} new bookmarks.`);
+				} else {
+					showToast("Invalid bookmarks format.");
+				}
+			} catch (err) {
+				showToast("Error reading file.");
+			}
+			// Reset the input so the same file can be uploaded again if needed
+			event.target.value = "";
+		};
+		reader.readAsText(file);
+	}
+
+	function resetApp() {
+		if (confirm("Are you sure you want to completely reset the app? This will wipe your bookmarks, history, and settings.")) {
+			localStorage.removeItem('vult_state');
+			localStorage.removeItem('vult_hideHelp');
+			window.location.reload();
+		}
+	}
+
+	function shareApp() {
+		if (navigator.share) {
+			navigator.share({
+				title: 'Vult',
+				url: window.location.href
+			}).catch(err => { console.log("Share canceled or failed", err); });
+		} else {
+			navigator.clipboard.writeText(window.location.href);
+			showToast("App URL copied to clipboard");
+		}
+	}
+
+	/* =========================================
+		PANIC LOGIC
+	========================================= */
+	function triggerPanic() {
+		document.querySelectorAll('dialog').forEach(d => { if (d.open) d.close(); });
+		cancelSpeech(); playingIndex = -1; clearSelection();
+		if (state.panicEnabled) { 
+			state.secretUnlocked = false; 
+			if (historyDepth > 0) {
+				history.go(-historyDepth);
+				historyDepth = 0;
+			}
+			showCalculator(); 
+		}
+	}
+
+	window.onload = init;
+
+	</script>
+	</body>
+	</html>
