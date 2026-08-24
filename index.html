@@ -113,7 +113,7 @@
 			.ios-select-overlay, .translation-select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; appearance: none; -webkit-appearance: none; z-index: var(--z-floating); }
 			.resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
 
-			header, .bottom-components, .view, dialog, .verses-container, .ios-toggle, .loading-bar, summary, details, .details-wrapper, .fab, .fab-resume, .play-btn, .bottom-components, .toast {
+			header, .bottom-components, .view, dialog, .verses-container, .ios-toggle, .loading-bar, .loading-bar::before, summary, details, .details-wrapper, .fab, .fab-resume, .bb-btn, .bottom-components, .toast {
 				will-change: transform, opacity;
 				backface-visibility: hidden;
 				transform-origin: top center;
@@ -121,7 +121,7 @@
 
 			/* Fade Up Animation for Views */
 			@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
-			@keyframes fadeIn { from { opacity: 0; } to { } }
+			@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
 			/* Chapter Transition Animation */
 			.chapter-transition .verses-container { animation: fadeUp var(--dur) var(--ease-out) forwards; animation-fill-mode: none; }
@@ -212,13 +212,14 @@
 			header.minified { height: 1.85rem; }
 			header.minified h1 { font-size: 0.95rem; }
 			header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
-			header.minified ~ #bottomComponents:has(.play-btn[style^="--progress-angle: 0deg"]), header.minified ~ #bottomComponents:has(.play-btn[style^="display: none"]) { transform: translateY(var(--bottom-bar-height)); }
+			header.minified ~ #bottomComponents:has(.play-btn[style*="--progress-angle: 0deg"]), header.minified ~ #bottomComponents:has(.play-btn[style*="display: none"]) { transform: translateY(var(--bottom-bar-height)); }
 
 			/* Loading Bar */
-			.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--surface-color-active); overflow: hidden; z-index: var(--z-floating); }
+			.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--surface-color-active); overflow: hidden; z-index: var(--z-floating); transition: opacity var(--dur) var(--ease-out), visibility 0s var(--dur) ease-in-out; }
 			.loading-bar::before { content: ''; position: absolute; top: 0; left: 0; width: 50%; height: 100%; background-color: var(--primary-color); transform-origin: left center; animation: loadingBarAnim 1s infinite ease-in-out; will-change: transform; }
 			@keyframes loadingBarAnim { 0% { transform: translateX(-100%) scaleX(1); } 50% { transform: translateX(50%) scaleX(1.6); } 100% { transform: translateX(200%) scaleX(1); } }
-			body:not(.is-loading) .loading-bar { display: none; }
+			body:not(.is-loading) .loading-bar { opacity: 0; visibility: hidden; }
+			body:not(.is-loading) .loading-bar::before { animation-play-state: paused; }
 			body.is-loading .view { opacity: 0.3 !important; pointer-events: none !important; filter: grayscale(100%) !important; }
 
 			/* Grids & Details */
@@ -378,7 +379,7 @@
 			<p>Let the reader understand. How many times should I forgive my brother?</p>
 			<div class="ios-list">
 				<label class="ios-row">
-					<div class="ios-row-label">Show Help Icon</div>
+					<div class="ios-row-label">Show help icon</div>
 					<div class="ios-row-control">
 						<input type="checkbox" id="showHelpCheck" class="ios-toggle" checked>
 					</div>
@@ -1128,20 +1129,28 @@
 	function setupDetailsAnimation() {
 		document.querySelectorAll('details').forEach(el => {
 			const summary = el.querySelector('summary');
-			if (!summary) return;
-			
+			const wrapper = el.querySelector('.details-wrapper');
+			if (!summary || !wrapper) return;
+
+			// Tie closure explicitly to the browser's animation pipeline completion
+			wrapper.addEventListener('transitionend', (e) => {
+				if (e.propertyName === 'grid-template-rows' && !el.classList.contains('is-open')) {
+					el.open = false;
+				}
+			});
+
 			summary.addEventListener('click', (e) => {
 				e.preventDefault();
+				
 				if (el.classList.contains('is-open')) {
-					el.classList.remove('is-open');
-					setTimeout(() => {
-						if (!el.classList.contains('is-open')) el.open = false;
-					}, 350);
+					el.classList.remove('is-open'); // Triggers the CSS shrink animation
 				} else {
-					el.open = true;
-					requestAnimationFrame(() => {
-						requestAnimationFrame(() => { el.classList.add('is-open'); });
-					});
+					el.open = true; // Exposes the native element to the DOM immediately
+					
+					// Force the browser to register the open layout before applying the 1fr class
+					requestAnimationFrame(() => requestAnimationFrame(() => {
+						el.classList.add('is-open');
+					}));
 				}
 			});
 		});
