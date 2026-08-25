@@ -16,8 +16,7 @@ function setupFrameGestures(frame, onSwipeLeft, onSwipeRight, animTargetID = fra
 		if (!animTarget) return;
 
 		// Use a smooth transition only when snapping back, otherwise track 1-to-1
-		animTarget.style.transition = animate ? "transform 0.35s ease-out, opacity 0.35s ease-out" : "none";
-		animTarget.style.transition = animate ? "transform var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out)" : "none";
+		animTarget.style.transition = animate ? "transform var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out)" : "none"; // transform 0.35s ease-out, opacity 0.35s ease-out
 		animTarget.style.transform = `translateX(${x / 5}px)`;
 		animTarget.style.opacity = `${1.5 * (activationThreshold - Math.abs(x)) / activationThreshold}`;
 	}
