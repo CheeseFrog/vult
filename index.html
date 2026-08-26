@@ -746,6 +746,14 @@ const setupLongPress = (element, onLongPress, onClick) => {
 	}
 };
 
+function cleanText(text) {
+	return text
+		.replace(/<br\b[^>]*\/?>|¶/gi, " ")
+		.replace(/<[^>]+>/g, "")
+		.replace(/\s+/g, " ")
+		.trim();
+}
+
 /* =========================================
 	FETCH HELPER: Cache API Integration
 ========================================= */
@@ -1549,8 +1557,9 @@ async function loadBibleData() {
 				if (!book.chapters[cNum]) book.chapters[cNum] = [];
 				if (!book.breaks[cNum]) book.breaks[cNum] = new Set();
 				
-				// Bolls inline paragraph breaks sometimes use `<br` or explicit pilcrows
-				if (rawText.includes('¶') || rawText.includes('<br')) {
+				// Bolls inline paragraph breaks sometimes use `<br>` or explicit pilcrows
+				const endsWithBr = /<br\b[^>]*\/?>\s*$/i;
+				if (rawText.endsWith('¶') || endsWithBr.test(rawText)) {
 					book.breaks[cNum].add(vNum);
 				}
 				
@@ -1923,7 +1932,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 		
 		setupLongPress(p, 
 			() => {
-				copySingleVerse(book.name, chapterNum, vNum, text); 
+				copySingleVerse(book.name, chapterNum, vNum, cleanText(text)); 
 				if ('vibrate' in navigator) navigator.vibrate(50);
 				p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
 			},
@@ -1985,7 +1994,7 @@ function updateSelectionFabs() {
 
 function getSelectedTextData() {
 	const book = getCurrentBook(), sortedVerses = Array.from(selectedVerses).sort((a,b) => a-b);
-	let textOut = ""; sortedVerses.forEach(vNum => { textOut += `[${vNum}] ${book.chapters[currentChapter][vNum]} `; });
+	let textOut = ""; sortedVerses.forEach(vNum => { textOut += `[${vNum}] ${cleanText(book.chapters[currentChapter][vNum])} `; });
 	let ref = `${book.name} ${currentChapter}:`;
 	if(sortedVerses.length === 1) ref += sortedVerses[0]; else ref += `${sortedVerses[0]}-${sortedVerses[sortedVerses.length-1]}`;
 	return { text: textOut.trim(), ref: ref, firstV: sortedVerses[0], lastV: sortedVerses[sortedVerses.length-1], isRange: sortedVerses.length > 1 };
@@ -2034,7 +2043,7 @@ function toggleBookmarks() {
 			if (!isVerseBookmarked(vNum)) {
 				state.bookmarks.push({
 					ref: `${bookName} ${currentChapter}:${vNum}`, book: bookName, chapter: currentChapter, verse: vNum,
-					text: book.chapters[currentChapter][vNum].substring(0, 50) + '...', trans: state.translation
+					text: cleanText(book.chapters[currentChapter][vNum]).substring(0, 50) + '...', trans: state.translation
 				});
 				const el = $(`v${vNum}`); if(el) el.classList.add('bookmarked');
 			}
@@ -2127,8 +2136,7 @@ function playVerse(vNum) {
 
 	playingIndex = vNum; highlightPlayingVerse();
 	updateAudioProgress(vNum);
-
-	currentUtterance = new SpeechSynthesisUtterance(verses[vNum]);
+	currentUtterance = new SpeechSynthesisUtterance(cleanText(verses[vNum]));
 	if (state.voiceURI) { let voice = voices.find(v => v.voiceURI === state.voiceURI); if (voice) currentUtterance.voice = voice; }
 	currentUtterance.rate = state.rate; 
 	
