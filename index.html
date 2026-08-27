@@ -247,9 +247,10 @@
 		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
 		.verse { margin-bottom: min(0.33em, 10px); cursor: pointer; border-radius: 4px; padding: 3px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); contain: content; /* Isolates layout & paint recalculations */ }
 		
-		.verse.break { margin-bottom: 20px; contain: none; }
-		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); }     */
-		.verse.break:after { content: "·    ·    ·"; font-size: 0.9em; white-space: pre; position: absolute; display: block; margin-top: 5px; width: 100%; left: 0; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
+		.verse + .break { margin-bottom: 0; }
+		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); } */
+		hr.break { border: none; }
+		hr.break::after { content: "·    ·    ·"; font-size: 0.9em; white-space: pre; display: block; width: 100%; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
 
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color var(--dur) var(--ease-out); }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
@@ -266,6 +267,12 @@
 		.verse.playing.selected { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--highlight) 50%); }
 		.verse.playing.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--bookmarked-bg) 50%); }
 		.verse.playing.selected.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 33%, color-mix(in srgb, var(--highlight) 50%, var(--bookmarked-bg) 50%) 67%); }
+		.verse:has(.comment).selected { contain: none; position: relative; }
+		.verse:has(.comment) > .verse-num { text-decoration: underline dotted var(--text-muted); text-underline-offset: 4px; }
+		.comment { display: none; position: absolute; width: max-content; max-width: 80%; right: 0; margin: 0 auto; background: var(--surface-color); padding: 3px 7px; border-radius: 0 0 var(--radius-sm) var(--radius-sm); box-shadow: 0 1px 2px -1px rgba(0,0,0,.4), 0 0 0 1px hsla(0,0%,100%,0.08) inset; z-index: var(--z-floating); font-size: 0.8em; line-height: 1.5; color: var(--text-color); pointer-events: none; border-top: 3px solid var(--primary-color); }
+		.comment a { all: unset; }
+		.verse.selected .comment { display: block; animation: fadeIn var(--dur) var(--ease-out) forwards; }
+		.verse.selected:has(+ .verse.selected) .comment { display: none; }
 		
 		/* Verse Flash Animation using Opacity */
 		@keyframes verseFlash { 0% { opacity: 1; } 40% { opacity: 0.3; } 100% { opacity: 1; } }
@@ -747,7 +754,8 @@ const setupLongPress = (element, onLongPress, onClick) => {
 };
 
 function cleanText(text) {
-	return text
+	let mainText = text.split('<span class="comment">')[0];
+	return mainText
 		.replace(/<br\b[^>]*\/?>|¶/gi, " ")
 		.replace(/<[^>]+>/g, "")
 		.replace(/\s+/g, " ")
@@ -1564,6 +1572,12 @@ async function loadBibleData() {
 				}
 				
 				let vText = rawText.replace(/¶/g, '').trim();
+				
+				// Handle Bolls Commentary parsing injection
+				if (v.comment) {
+					vText += `<span class="comment">${v.comment}</span>`;
+				}
+				
 				book.chapters[cNum][vNum] = vText;
 			});
 		} else {
@@ -1924,10 +1938,10 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 
 	verses.forEach((text, vNum) => {
 		if (!text) return;
-		let className = 'verse';
-		if (breakSet.has(vNum)) className += ' break';
-		let p = createEl('p', { className: className, id: `v${vNum}`, innerHTML: `<span class="verse-num">${vNum}</span>${text}` }, versesContainer);
 		
+		let p = createEl('p', { className: 'verse', id: `v${vNum}`, innerHTML: `<span class="verse-num">${vNum}</span>${text}` }, versesContainer);
+		if (breakSet.has(vNum)) createEl('hr', { className: 'break' }, versesContainer);
+
 		if (isVerseBookmarked(vNum)) p.classList.add('bookmarked');
 		
 		setupLongPress(p, 
