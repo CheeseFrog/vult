@@ -122,6 +122,8 @@
 		/* Fade Up Animation for Views */
 		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
 		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+		@keyframes fadeInStretch { from { transform: scaleY(.8); opacity: 0; transform-origin: top center; } to { opacity: 1; transform-origin: top center; } }
+
 
 		/* Chapter Transition Animation */
 		.chapter-transition .verses-container { animation: fadeUp var(--dur) var(--ease-out) forwards; animation-fill-mode: none; }
@@ -271,7 +273,7 @@
 		.verse:has(.comment) > .verse-num { text-decoration: underline dotted var(--text-muted); text-underline-offset: 4px; }
 		.comment { display: none; position: absolute; width: max-content; max-width: 80%; right: 0; margin: 0 auto; background: var(--surface-color); padding: 3px 7px; border-radius: 0 0 var(--radius-sm) var(--radius-sm); box-shadow: 0 1px 2px -1px rgba(0,0,0,.4), 0 0 0 1px hsla(0,0%,100%,0.08) inset; z-index: var(--z-floating); font-size: 0.8em; line-height: 1.5; color: var(--text-color); pointer-events: none; border-top: 3px solid var(--primary-color); }
 		.comment a { all: unset; }
-		.verse.selected .comment { display: block; animation: fadeIn var(--dur) var(--ease-out) forwards; }
+		.verse.selected .comment { display: block; animation: fadeInStretch var(--dur) var(--ease-out) forwards; }
 		.verse.selected:has(+ .verse.selected) .comment { display: none; }
 		
 		/* Verse Flash Animation using Opacity */
