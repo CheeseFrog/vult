@@ -111,7 +111,7 @@
 		.grid-item, .bookmark-item, dialog { background: var(--surface-color); }
 		.grid-item, .bookmark-item { border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: background var(--dur) var(--ease-out); }
 		.ios-select-overlay, .translation-select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; appearance: none; -webkit-appearance: none; z-index: var(--z-floating); }
-		#transSelectWrapper:has(> #transSelectDisplay:empty), .resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
+		.resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
 
 		header, .bottom-components, .view, dialog, .verses-container, .ios-toggle, .loading-bar, .loading-bar::before, summary, details, .details-wrapper, .fab, .fab-resume, .bb-btn, .bottom-components, .toast {
 			will-change: transform, opacity;
@@ -246,15 +246,18 @@
 		/* Reader View */
 		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
 		#readerContent { margin: -2px; }
+		@media (orientation: landscape) and (min-width: 802px) {
+			details, #readerContent { max-width: min(100%, 800px); width: 100%; margin: 0 auto; }
+		}
 		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
 		.verse { margin-bottom: min(0.33em, 10px); cursor: pointer; border-radius: 4px; padding: 3px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); contain: content; /* Isolates layout & paint recalculations */ }
 		
 		.verse + .break { margin-bottom: 0; }
 		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); } */
 		hr.break { border: none; }
-		hr.break::after { content: "·    ·    ·"; font-size: 0.9em; white-space: pre; display: block; width: 100%; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
+		hr.break::after { content: "·	·	·"; font-size: 0.9em; white-space: pre; display: block; width: 100%; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
 
-		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 4px; transition: color var(--dur) var(--ease-out); }
+		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 5px; transition: color var(--dur) var(--ease-out); }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
 		
 		/* Verse States */
@@ -270,11 +273,11 @@
 		.verse.playing.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--bookmarked-bg) 50%); }
 		.verse.playing.selected.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 33%, color-mix(in srgb, var(--highlight) 50%, var(--bookmarked-bg) 50%) 67%); }
 		.verse:has(.comment).selected { contain: none; position: relative; }
-		.verse:has(.comment) > .verse-num { text-decoration: underline dotted var(--text-muted); text-underline-offset: 4px; }
-		.comment { display: none; position: absolute; width: max-content; max-width: 80%; right: 0; margin: 0 auto; background: var(--surface-color); padding: 3px 7px; border-radius: 0 0 var(--radius-sm) var(--radius-sm); box-shadow: 0 1px 2px -1px rgba(0,0,0,.4), 0 0 0 1px hsla(0,0%,100%,0.08) inset; z-index: var(--z-floating); font-size: 0.8em; line-height: 1.5; color: var(--text-color); pointer-events: none; border-top: 3px solid var(--primary-color); }
+		.verse:has(.comment) > .verse-num { text-decoration: 2px underline var(--text-muted); text-underline-offset: 4px; }
+		.verse:has(.comment).selected:not(:has(+ .verse.selected)) > .verse-num { text-decoration-color: var(--primary-color); }
+		.verse:has(.comment).selected:not(:has(+ .verse.selected)) > .comment { display: block; animation: fadeInStretch var(--dur) var(--ease-out) forwards; transform-origin: top right;  }
+		.comment { display: none; position: absolute; width: max-content; max-width: 80%; right: 0; margin: 0 auto; background: var(--surface-color); padding: 3px 7px; border-radius: 0 0 var(--radius-sm) var(--radius-sm); box-shadow: 0 1px 2px -1px rgba(0,0,0,.4), 0 0 0 1px hsla(0,0%,100%,0.08) inset; z-index: var(--z-floating); font-size: 0.85em; line-height: 1.5; color: var(--text-color); pointer-events: none; border-top: 3px solid var(--primary-color); }
 		.comment a { all: unset; }
-		.verse.selected .comment { display: block; animation: fadeInStretch var(--dur) var(--ease-out) forwards; transform-origin: top right;  }
-		.verse.selected:has(+ .verse.selected) .comment { display: none; }
 		
 		/* Verse Flash Animation using Opacity */
 		@keyframes verseFlash { 0% { opacity: 1; } 40% { opacity: 0.3; } 100% { opacity: 1; } }
@@ -587,8 +590,8 @@
 					<span class="material-symbols-rounded">arrow_back_ios</span>
 				</button>
 				<div class="translation-select-wrapper header-btn" id="transSelectWrapper">
-					<span id="transSelectDisplay"></span>
-					<span class="material-symbols-rounded">expand_more</span>
+					<span id="transSelectDisplay"><span class="material-symbols-rounded">globe_book</span></span>
+					<!-- <span class="material-symbols-rounded">expand_more</span> -->
 					<select class="translation-select" id="transSelect"></select>
 				</div>
 			</div>
@@ -715,6 +718,12 @@ const createEl = (tag, props, parent) => {
 	}
 	if (parent) parent.appendChild(el);
 	return el;
+};
+
+// Centralized translation filter helper
+const isHiddenTranslation = (code) => {
+	const hiddenOptions = ['msg', 'mens', 'thnr', 'cjb', 'ntjud', 'jps'];
+	return code && hiddenOptions.includes(code.toLowerCase());
 };
 
 const setTranslationState = (trans, newSource = state.source) => {
@@ -1350,6 +1359,7 @@ async function populateTranslations() {
 			// Map and group translations logically by language or predefined custom groups
 			transArray.forEach(t => {
 				let abbrev = (t.abbreviation || "").toLowerCase();
+				if (isHiddenTranslation(abbrev)) return;
 				
 				if (TRANS_GROUP_OVERRIDES[abbrev]) {
 					let gLabel = TRANS_GROUP_OVERRIDES[abbrev];
@@ -1414,31 +1424,20 @@ async function populateTranslations() {
 			let bollsGroups = {};
 			translationMeta = {}; 
 			
-			// Defensively parse Bolls API language grouping structure and build translation meta
 			if (Array.isArray(data)) {
-				data.forEach(item => {
-					if (item.translations && Array.isArray(item.translations)) {
-						// Filter out excluded translations (MSG, MENS)
-						let validTrans = item.translations.filter(t => t.short_name && !['msg', 'mens'].includes(t.short_name.toLowerCase()));
-						
-						if (validTrans.length > 0) {
-							let langName = item.language || item.name || "Other";
-							if (!bollsGroups[langName]) bollsGroups[langName] = [];
-							bollsGroups[langName].push(...validTrans);
-							
-							validTrans.forEach(t => {
-								translationMeta[t.short_name.toLowerCase()] = { direction: t.dir || 'ltr' };
-							});
-						}
-					} else {
-						// Flat translation structure fallback
-						if (item.short_name && !['msg', 'mens'].includes(item.short_name.toLowerCase())) {
-							let langName = item.language || "Other";
-							if (!bollsGroups[langName]) bollsGroups[langName] = [];
-							bollsGroups[langName].push(item);
-							translationMeta[item.short_name.toLowerCase()] = { direction: item.dir || 'ltr' };
-						}
-					}
+				// Flatten data to gracefully handle either nested translation groups or flat lists
+				const allTranslations = data.flatMap(item => 
+					item.translations ? item.translations.map(t => ({ ...t, language: item.language || item.name || t.language })) : item
+				);
+
+				allTranslations.forEach(t => {
+					if (!t.short_name || isHiddenTranslation(t.short_name)) return;
+
+					let langName = t.language || "Other";
+					if (!bollsGroups[langName]) bollsGroups[langName] = [];
+					bollsGroups[langName].push(t);
+
+					translationMeta[t.short_name.toLowerCase()] = { direction: t.dir || 'ltr' };
 				});
 			}
 			
@@ -1453,6 +1452,7 @@ async function populateTranslations() {
 	} else {
 		// OpenBible serves a flat list without optgroups (no API available to fetch list)
 		OPENBIBLE_TRANS.sort((a, b) => a.label.localeCompare(b.label)).forEach(t => {
+			if (isHiddenTranslation(t.value)) return;
 			createEl('option', { value: t.value, innerText: `${t.label.toUpperCase()} - ${t.full}`, dataset: { acronym: t.label.toUpperCase() } }, select);
 		});
 	}
