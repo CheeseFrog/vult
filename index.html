@@ -22,7 +22,7 @@
 	<style>
 		:root {
 			/* Animation & Transition Variables */
-			--dur: 0.35s;
+			--dur: 0.4s;
 			--ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 
 			/* Border Radius Variables */
@@ -202,13 +202,16 @@
 		
 		/* Header Transitions for Minified State */
 		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: absolute; inset: 0; z-index: var(--z-sticky); height: var(--header-height); transition: height var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out); }
-		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size var(--dur) var(--ease-out); }
+		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size var(--dur) var(--ease-out); padding: 10px 0; }
 		.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; transition: opacity var(--dur) var(--ease-out); }
 		.header-right { justify-content: flex-end; }
 		.header-btn { background: none; color: var(--primary-color); font-size: 1.1rem; height: 100%; padding: 0 20px; }
 		body:has(#view-home.active) header h1 { font-variant: unicase; letter-spacing: 0.05em; }
 		.translation-select-wrapper { position: relative; display: flex; align-items: center; color: var(--primary-color); font-weight: 600; font-size: 1.2rem; }
 		#transSelectDisplay { max-width: 30vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+		#transSelectDisplay { background: var(--bg-color); padding: 5px 10px; border-radius: var(--radius-lg); font-size: 1rem; border: 2px solid currentColor; }
+		body.is-loading #transSelectDisplay { animation: fadeIn var(--dur) var(--ease-out) forwards; }
+		#transSelectWrapper:has(select:empty) { display: none; }
 
 		/* Minified State Classes */
 		header.minified { height: 1.85rem; }
@@ -250,7 +253,7 @@
 			details, #readerContent { max-width: min(100%, 800px); width: 100%; margin: 0 auto; }
 		}
 		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
-		.verse { margin-bottom: min(0.33em, 10px); cursor: pointer; border-radius: 4px; padding: 3px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); contain: content; /* Isolates layout & paint recalculations */ }
+		.verse { margin-bottom: min(0.33em, 10px); cursor: pointer; border-radius: var(--radius-sm); padding: 4px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); contain: content; /* Isolates layout & paint recalculations */ }
 		
 		.verse + .break { margin-bottom: 0; }
 		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); } */
@@ -275,8 +278,10 @@
 		.verse:has(.comment).selected { contain: none; position: relative; }
 		.verse:has(.comment) > .verse-num { text-decoration: 2px underline var(--text-muted); text-underline-offset: 4px; }
 		.verse:has(.comment).selected:not(:has(+ .verse.selected)) > .verse-num { text-decoration-color: var(--primary-color); }
-		.verse:has(.comment).selected:not(:has(+ .verse.selected)) > .comment { display: block; animation: fadeInStretch var(--dur) var(--ease-out) forwards; transform-origin: top right;  }
-		.comment { display: none; position: absolute; width: max-content; max-width: 80%; right: 0; margin: 0 auto; background: var(--surface-color); padding: 3px 7px; border-radius: 0 0 var(--radius-sm) var(--radius-sm); box-shadow: 0 1px 2px -1px rgba(0,0,0,.4), 0 0 0 1px hsla(0,0%,100%,0.08) inset; z-index: var(--z-floating); font-size: 0.85em; line-height: 1.5; color: var(--text-color); pointer-events: none; border-top: 3px solid var(--primary-color); }
+		.verse:has(.comment).selected:not(:has(+ .verse.selected)) { border-radius: var(--radius-sm) var(--radius-sm) 0 var(--radius-sm); }
+		.verse:has(.comment).selected:not(:has(+ .verse.selected)) > .comment { display: block; animation: fadeInStretch var(--dur) var(--ease-out) forwards; transform-origin: top right; }
+		.comment { display: none; position: absolute; width: max-content; max-width: 80%; right: 0; margin: 1px auto; background: var(--surface-color); padding: 6px 7px 3px; border-radius: 0 0 var(--radius-sm) var(--radius-sm); box-shadow: 0 3px 0 var(--primary-color) inset, 0 1px 2px -1px rgba(0,0,0,.4), 0 0 0 1px hsla(0,0%,100%,0.08) inset; z-index: var(--z-floating); font-size: 0.85em; line-height: 1.5; color: var(--text-color); pointer-events: none; }
+		[dir="rtl"] .comment { left: 0; right: auto; }
 		.comment a { all: unset; }
 		
 		/* Verse Flash Animation using Opacity */
@@ -587,7 +592,7 @@
 		<header>
 			<div class="header-left">
 				<button class="header-btn" id="navBack" style="display: none;">
-					<span class="material-symbols-rounded">arrow_back_ios</span>
+					<span class="material-symbols-rounded">arrow_back_ios_new</span>
 				</button>
 				<div class="translation-select-wrapper header-btn" id="transSelectWrapper">
 					<span id="transSelectDisplay"><span class="material-symbols-rounded">globe_book</span></span>
@@ -596,11 +601,11 @@
 				</div>
 			</div>
 			
-			<h1 id="headerTitle">Vult</h1>
+			<h1 id="headerTitle" onclick='( ()=>{ document.querySelector(".view.active").scrollTo({ top: 0, left: 0, behavior: "smooth" }); })()'>Vult</h1>
 			
 			<div class="header-right">
 				<button class="header-btn" onclick="openSettings()">
-					<span class="material-symbols-rounded">settings</span>
+					<span class="material-symbols-rounded">more_vert</span>
 				</button>
 			</div>
 			<div class="loading-bar"></div>
@@ -2057,9 +2062,10 @@ function toggleBookmarks() {
 		const book = getCurrentBook();
 		selectedVerses.forEach(vNum => {
 			if (!isVerseBookmarked(vNum)) {
-				state.bookmarks.push({
+				const text = cleanText(book.chapters[currentChapter][vNum]);
+				state.bookmarks.unshift({
 					ref: `${bookName} ${currentChapter}:${vNum}`, book: bookName, chapter: currentChapter, verse: vNum,
-					text: cleanText(book.chapters[currentChapter][vNum]).substring(0, 50) + '...', trans: state.translation
+					text: text.substring(0, 80) + ( text.length > 80 ? '…' : '' ), trans: state.translation
 				});
 				const el = $(`v${vNum}`); if(el) el.classList.add('bookmarked');
 			}
