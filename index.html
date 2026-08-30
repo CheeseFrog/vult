@@ -101,7 +101,7 @@
 		/* =========================================
 			SHARED CSS UTILITY & LAYOUT GROUPS
 		========================================= */
-		#app-calculator, #app-calculator-wrapper, #app-bible { width: 100vw; height: 100vh; height: 100dvh; position: absolute; top: 0; left: 0; }
+		#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible { width: 100vw; height: 100vh; height: 100dvh; position: absolute; top: 0; left: 0; }
 		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .ios-stepper span, .fab, .fab-resume { display: flex; align-items: center; justify-content: center; }
 		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .fab, .fab-resume { border: none; cursor: pointer; }
 		.ios-select-display, .grid-item, .bookmark-text, .resume-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -123,9 +123,21 @@
 		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 		@keyframes fadeInStretch { from { transform: scale(.9); opacity: 0; } to { opacity: 1; } }
 
-
 		/* Chapter Transition Animation */
 		.chapter-transition .verses-container { animation: fadeUp var(--dur) var(--ease-out) forwards; animation-fill-mode: none; }
+
+		/* --- Welcome Screen View --- */
+		#app-welcome { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: var(--z-modal); padding: 25px; }
+		.welcome-content { max-width: 500px; text-align: center; display: flex; flex-direction: column; gap: 40px; animation: fadeUp 2s var(--ease-out) forwards; }
+		.welcome-icon { font-size: 4.5rem; color: var(--text-muted); font-weight: 300; line-height: 1; margin-bottom: -15px; }
+		.welcome-quote { font-family: var(--base-serif); font-size: 1.2rem; line-height: 1.6; color: var(--text-color); font-style: italic; font-weight: 300; }
+		.welcome-quote em { color: var(--primary-color); font-weight: 600; font-style: normal; }
+		.welcome-actions { display: flex; flex-direction: column; gap: 15px; width: 100%; margin-top: 15px; }
+		.welcome-actions .modal-btn { margin: 0; padding: 16px; font-size: 1.05rem; }
+		@media (orientation: landscape) {
+			.welcome-actions { flex-direction: row; margin-top: 0; }
+			.welcome-quote { font-size: 1rem; line-height: 1.5; }
+		}
 
 		/* --- Calculator View (Centered) --- */
 		#app-bible { background-color: var(--bg-color); display: none; flex-direction: column; z-index: var(--z-sticky); }
@@ -254,13 +266,13 @@
 		@media (orientation: landscape) and (min-width: 802px) {
 			details, #readerContent { max-width: min(100%, 800px); width: 100%; margin: 0 auto; }
 		}
-		.reader-subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
+		.subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
 		.verse { margin-bottom: min(0.33em, 10px); cursor: pointer; border-radius: var(--radius-sm); padding: 4px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); contain: content; /* Isolates layout & paint recalculations */ }
 		
 		.verse + .break { margin-bottom: 0; }
 		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); } */
 		hr.break { border: none; }
-		hr.break::after { content: "·	·	·"; font-size: 0.9em; white-space: pre; display: block; width: 100%; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
+		hr.break::after { content: "·   ·   ·"; font-size: 0.9em; white-space: pre; display: block; width: 100%; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
 
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 5px; transition: color var(--dur) var(--ease-out); }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
@@ -351,6 +363,21 @@
 	</style>
 </head>
 <body>
+
+	<!-- ONCE-OFF WELCOME SCREEN -->
+	<div id="app-welcome" style="display: none;">
+		<div class="welcome-content">
+			<div class="welcome-icon">±</div>
+			<p class="welcome-quote">
+				Then Peter came to Him and said, "Lord, how often shall my brother sin against me, and I forgive him? Up to seven times?"<br>Jesus said to him, "I do not say to you, up to seven times, but up to <em>seventy times seven</em>."
+				<span class="subtitle"><br><br>— Matt. 18:21-22 (NKJV)</span>
+			</p>
+			<div class="welcome-actions">
+				<button class="modal-btn primary" onclick="dismissWelcome(false)">Enter <span style="font-variant: unicase;">Vult</span> Bible App</button>
+				<button class="modal-btn" onclick="dismissWelcome(true)">Panic Calculator Mode</button>
+			</div>
+		</div>
+	</div>
 
 	<!-- CALCULATOR VIEW (Centered) -->
 	<div id="app-calculator-wrapper" style="display: none;">
@@ -847,7 +874,7 @@ const OPENBIBLE_TRANS = [
 	{ value: 'dbt', label: 'DBT', full: 'Darby Bible Translation' },
 	{ value: 'drb', label: 'DRB', full: 'Douay-Rheims Bible' },
 	{ value: 'erv', label: 'ERV', full: 'English Revised Version' },
-	{ value: 'jps', label: 'JPS', full: 'Jewish Publication Society' },
+	// { value: 'jps', label: 'JPS', full: 'Jewish Publication Society' },
 	{ value: 'kjv', label: 'KJV', full: 'King James Version' },
 	{ value: 'slt', label: 'SLT', full: 'Smith\'s Literal Translation' },
 	{ value: 'wbt', label: 'WBT', full: 'Webster\'s Bible Translation' },
@@ -1113,7 +1140,9 @@ function init() {
 	
 	history.replaceState({ view: 'base' }, '');
 	
-	if (!state.panicEnabled) {
+	if (!localStorage.getItem('vult_welcomed')) {
+		showWelcomeScreen();
+	} else if (!state.panicEnabled) {
 		state.secretUnlocked = true; openBibleApp(); 
 	} else {
 		showCalculator();
@@ -1123,6 +1152,27 @@ function init() {
 		localStorage.setItem('vult_hideHelp', (!e.target.checked).toString());
 	});
 	$('calcHelpBtn').addEventListener('click', () => openModal('helpModal', 'modal-help'));
+}
+
+function showWelcomeScreen() {
+	$('app-welcome').style.display = 'flex';
+	$('app-calculator-wrapper').style.display = 'none';
+	$('app-bible').style.display = 'none';
+}
+
+function dismissWelcome(usePanic) {
+	localStorage.setItem('vult_welcomed', 'true');
+	state.panicEnabled = usePanic;
+	saveState();
+	document.body.classList.toggle('panic-active', state.panicEnabled);
+	$('app-welcome').style.display = 'none';
+	
+	if (usePanic) {
+		showCalculator();
+	} else {
+		state.secretUnlocked = true;
+		openBibleApp();
+	}
 }
 
 // Global Keyboard Listener for Calculator
@@ -1462,21 +1512,23 @@ async function populateTranslations() {
 		});
 	}
 	
-	// Attempt to reinstate saved selection, otherwise fall back to KJV
+	// Attempt to reinstate saved selection, otherwise fall back to KJV variants
 	let exists = Array.from(select.options).some(o => o.value === state.translation);
-	if (exists) { 
+	if (exists) {
 		state.translation = state.translation; 
-	} else { 
-		state.translation = 'kjv'; 
+	} else {
+		if (state.source === 'bolls') state.translation = 'nkjv';
+		else if (state.source === 'getbible') state.translation = 'akjv'; 
+		else state.translation = 'akjv'; 
 		saveState(); 
 	}
 
 	const sourceOpt = document.createElement("option");
 	sourceOpt.disabled = true;
 	sourceOpt.textContent = "Change Data Source in Settings for more translations.";
-	select.appendChild(sourceOpt)
+	select.appendChild(sourceOpt);
 	
-	select.value = state.translation; 
+	select.value = state.translation;
 	updateTransDisplay();
 }
 
@@ -1945,7 +1997,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 		const parts = transOpt.innerText.split(' - ');
 		if (parts.length > 1) fullTransName = parts[1];
 	}
-	createEl('div', { className: 'reader-subtitle', innerHTML: `${fullTransName}` }, container);
+	createEl('div', { className: 'subtitle', innerHTML: `${fullTransName}` }, container);
 	let versesContainer = createEl('div', { id: 'versesContainer', className: 'verses-container', innerHTML: `` }, container);
 
 	verses.forEach((text, vNum) => {
@@ -2430,6 +2482,7 @@ function resetApp() {
 	if (confirm("Are you sure you want to completely reset the app? This will wipe your bookmarks, history, and settings.")) {
 		localStorage.removeItem('vult_state');
 		localStorage.removeItem('vult_hideHelp');
+		localStorage.removeItem('vult_welcomed');
 		window.location.reload();
 	}
 }
