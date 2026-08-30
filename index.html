@@ -208,7 +208,7 @@
 		body:has(#view-home.active) header h1 { font-variant: unicase; letter-spacing: 0.05em; }
 		.translation-select-wrapper { position: relative; display: flex; align-items: center; color: var(--primary-color); font-weight: 600; font-size: 1.2rem; }
 		#transSelectDisplay { max-width: 30vw; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-		#transSelectDisplay { background: var(--bg-color); padding: 5px 10px; border-radius: var(--radius-lg); font-size: 1rem; border: 2px solid currentColor; }
+		#transSelectDisplay { background: var(--bg-color); padding: 5px 10px; border-radius: var(--radius-lg); font-size: .9rem; border: 2px solid currentColor; }
 		body.is-loading #transSelectDisplay { animation: fadeIn var(--dur) var(--ease-out) forwards; }
 		#transSelectWrapper:has(select:empty) { display: none; }
 
@@ -241,9 +241,12 @@
 		/* Bookmarks */
 		.bookmark-list { display: flex; flex-direction: column; gap: 10px; }
 		.bookmark-list p { color: var(--text-muted); font-size: 0.9em; padding: 0 10px; }
-		.bookmark-item { padding: 15px; }
+		.bookmark-item { padding: 15px; min-width: 0; }
 		.bookmark-ref { font-weight: 600; color: var(--primary-color); margin-bottom: 5px; }
 		.bookmark-text { font-size: 0.85em; color: var(--text-muted); }
+		@media (orientation: landscape) {
+			.bookmark-list { display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+		}
 
 		/* Reader View */
 		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
@@ -345,13 +348,12 @@
 		.toast { position: fixed; top: var(--header-height); left: 50%; transform: translateX(-50%) translateY(-100px); background: rgba(0,0,0,0.75); color: white; backdrop-filter: blur(5px) saturate(180%); padding: 12px 24px; border-radius: var(--radius-lg); z-index: var(--z-toast); font-weight: 500; font-size: 0.95rem; box-shadow: var(--shadow); white-space: nowrap; opacity: 0; pointer-events: none; }
 		@keyframes toastAnim { 0%, 100% { transform: translateX(-50%) translateY(-100px); opacity: 0; pointer-events: none; } 15%, 85% { transform: translateX(-50%) translateY(-50%); opacity: 1; pointer-events: auto; } }
 		.toast.animate { animation: toastAnim 2s ease forwards; }
-
 	</style>
 </head>
 <body>
 
 	<!-- CALCULATOR VIEW (Centered) -->
-	<div id="app-calculator-wrapper">
+	<div id="app-calculator-wrapper" style="display: none;">
 		<div id="app-calculator">
 			<div class="calc-help material-symbols-rounded" id="calcHelpBtn">help</div>
 			<div class="calc-display-container">
@@ -443,7 +445,7 @@
 						</div>
 					</div>
 					<select id="setTheme" class="ios-select-overlay">
-						<option value="system">System</option>
+						<option value="default">Default</option>
 						<option value="dark">Dark</option>
 						<option value="light">Light</option>
 					</select>
@@ -492,7 +494,7 @@
 					<div class="ios-row-label">Voice</div>
 					<div class="ios-row-control">
 						<div class="ios-select-wrapper">
-							<span id="voiceDisplay" class="ios-select-display">System Default</span>
+							<span id="voiceDisplay" class="ios-select-display">Default</span>
 							<span class="material-symbols-rounded">chevron_right</span>
 						</div>
 					</div>
@@ -821,7 +823,7 @@ async function fetchWithCache(url) {
 	STATE MANAGEMENT & CONSTANTS
 ========================================= */
 let state = {
-	theme: 'system', fontFamily: "var(--base-serif)", fontSize: 16,
+	theme: 'default', fontFamily: "var(--base-serif)", fontSize: 16,
 	panicEnabled: true, shakeToPanicEnabled: false, voiceURI: '', rate: 1, translation: 'nkjv',
 	bookmarks: [], recentLocations: [], secretUnlocked: false,
 	source: 'bolls'
@@ -1468,6 +1470,11 @@ async function populateTranslations() {
 		state.translation = 'kjv'; 
 		saveState(); 
 	}
+
+	const sourceOpt = document.createElement("option");
+	sourceOpt.disabled = true;
+	sourceOpt.textContent = "Change Data Source in Settings for more translations.";
+	select.appendChild(sourceOpt)
 	
 	select.value = state.translation; 
 	updateTransDisplay();
@@ -2329,7 +2336,7 @@ function changeSpeechRate(delta) {
 
 function applySettings() {
 	let appliedTheme = state.theme;
-	if (appliedTheme === 'system') {
+	if (appliedTheme === 'default') {
 		appliedTheme = window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
 	}
 	document.documentElement.setAttribute('data-theme', appliedTheme);
@@ -2341,7 +2348,7 @@ function applySettings() {
 
 // System theme listener
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
-	if (state.theme === 'system') applySettings();
+	if (state.theme === 'default') applySettings();
 });
 
 function populateVoices() {
@@ -2349,7 +2356,7 @@ function populateVoices() {
 	voices = synth.getVoices();
 	const select = $('setVoice'); select.innerHTML = '';
 	
-	createEl('option', { value: '', innerText: 'System Default' }, select);
+	createEl('option', { value: '', innerText: 'Default' }, select);
 
 	voices.forEach(v => {
 		createEl('option', { value: v.voiceURI, innerText: `${v.name} (${v.lang})` }, select);
