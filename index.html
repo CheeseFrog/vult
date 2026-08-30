@@ -1405,9 +1405,7 @@ async function populateTranslations() {
 			});
 
 		} catch (e) {
-			let group = createEl('optgroup', { label: 'English' });
-			createEl('option', { value: 'kjv', innerText: 'KJV - King James Version', dataset: { acronym: 'KJV' } }, group);
-			select.appendChild(group);
+			createEl('option', { value: 'kjv', innerText: 'KJV - King James Version', dataset: { acronym: 'KJV' } }, select);
 		}
 	} else if (state.source === 'bolls') {
 		const createOptGroup = (label, items) => {
@@ -1419,7 +1417,6 @@ async function populateTranslations() {
 					dataset: { acronym: (t.short_name || "").toUpperCase() }
 				}, group);
 			});
-			select.appendChild(document.createElement('hr'));
 			return group;
 		};
 
@@ -1450,11 +1447,10 @@ async function populateTranslations() {
 			
 			Object.keys(bollsGroups).sort().forEach(label => {
 				select.appendChild(createOptGroup(label, bollsGroups[label]));
+				select.appendChild(document.createElement('hr'));
 			});
 		} catch (e) {
-			let group = createEl('optgroup', { label: 'English' });
-			createEl('option', { value: 'kjv', innerText: 'KJV - King James Version', dataset: { acronym: 'KJV' } }, group);
-			select.appendChild(group);
+			createEl('option', { value: 'kjv', innerText: 'KJV - King James Version', dataset: { acronym: 'KJV' } }, select);
 		}
 	} else {
 		// OpenBible serves a flat list without optgroups (no API available to fetch list)
