@@ -127,16 +127,16 @@
 		.chapter-transition .verses-container { animation: fadeUp var(--dur) var(--ease-out) forwards; animation-fill-mode: none; }
 
 		/* --- Welcome Screen View --- */
-		#app-welcome { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: var(--z-modal); padding: 25px; }
-		.welcome-content { max-width: 500px; text-align: center; display: flex; flex-direction: column; gap: 40px; animation: fadeUp 2s var(--ease-out) forwards; }
-		.welcome-icon { font-size: 4.5rem; color: var(--text-muted); font-weight: 300; line-height: 1; margin-bottom: -15px; }
-		.welcome-quote { font-family: var(--base-serif); font-size: 1.2rem; line-height: 1.6; color: var(--text-color); font-style: italic; font-weight: 300; }
-		.welcome-quote em { color: var(--primary-color); font-weight: 600; font-style: normal; }
+		#app-welcome { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: var(--z-modal); padding: 25px; overflow: hidden; }
+		.welcome-content { max-width: 500px; text-align: center; display: flex; flex-direction: column; gap: 5dvh; animation: fadeUp 2s var(--ease-out) forwards; }
+		.welcome-icon { font-size: 4.5rem; font-weight: 600; line-height: 1; }
+		.welcome-quote { font-family: var(--base-serif); font-size: 1.2rem; line-height: 1.6; color: var(--text-color); font-weight: 300; }
+		.welcome-quote em { color: color-mix(var(--primary-color), var(--text-color) 33%); font-weight: 600; }
 		.welcome-actions { display: flex; flex-direction: column; gap: 15px; width: 100%; margin-top: 15px; }
 		.welcome-actions .modal-btn { margin: 0; padding: 16px; font-size: 1.05rem; }
 		@media (orientation: landscape) {
 			.welcome-actions { flex-direction: row; margin-top: 0; }
-			.welcome-quote { font-size: 1rem; line-height: 1.5; }
+			.welcome-quote { font-size: calc(1dvh + .8rem); line-height: 1.5; }
 		}
 
 		/* --- Calculator View (Centered) --- */
@@ -368,10 +368,10 @@
 	<div id="app-welcome" style="display: none;">
 		<div class="welcome-content">
 			<div class="welcome-icon">±</div>
-			<p class="welcome-quote">
-				Then Peter came to Him and said, "Lord, how often shall my brother sin against me, and I forgive him? Up to seven times?"<br>Jesus said to him, "I do not say to you, up to seven times, but up to <em>seventy times seven</em>."
-				<span class="subtitle"><br><br>— Matt. 18:21-22 (NKJV)</span>
-			</p>
+			<div class="welcome-quote">
+				<i>Then Peter came to Him and said, "Lord, how often shall my brother sin against me, and I forgive him? Up to seven times?"<br>Jesus said to him, "I do not say to you, up to seven times, but up to <em>seventy times seven</em>."
+				<div class="subtitle"><br>— Matt. 18:21-22 (NKJV)</div></i>
+			</div>
 			<div class="welcome-actions">
 				<button class="modal-btn primary" onclick="dismissWelcome(false)">Enter <span style="font-variant: unicase;">Vult</span> Bible App</button>
 				<button class="modal-btn" onclick="dismissWelcome(true)">Panic Calculator Mode</button>
@@ -1172,6 +1172,7 @@ function dismissWelcome(usePanic) {
 	} else {
 		state.secretUnlocked = true;
 		openBibleApp();
+		setTimeout(() => { showToast("Panic mode can be enabled in Settings.") }, 1000);
 	}
 }
 
