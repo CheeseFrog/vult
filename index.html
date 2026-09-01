@@ -92,7 +92,7 @@
 		button, input, select, textarea { font-family: inherit; font-size: inherit; }
 		
 		/* Base App Font is fixed to iOS standards, isolating the reader settings */
-		html, body { font-family: var(--base-sans-serif); background-color: var(--bg-color); overflow: hidden; font-size: 16px; color: var(--text-color); touch-action: manipulation; overflow-anchor: none; overscroll-behavior: contain; height: 100dvh; width: 100dvw; }
+		html, body { font-family: var(--base-sans-serif); background-color: var(--bg-color); font-size: 16px; color: var(--text-color); touch-action: manipulation; }
 		
 		/* Utility Classes */
 		.text-muted { color: var(--text-muted); }
@@ -101,7 +101,10 @@
 		/* =========================================
 			SHARED CSS UTILITY & LAYOUT GROUPS
 		========================================= */
-		#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible { width: 100vw; height: 100vh; height: 100dvh; position: absolute; top: 0; left: 0; scrollbar-width: none; }
+		#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible { position: absolute; top: 0; left: 0; }
+		#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible, html, body { width: 100dvw; height: 100dvh; scrollbar-width: none; overflow: hidden; overflow-anchor: none; overscroll-behavior: contain; }
+		:is(#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible, html, body, .resume-scroll)::-webkit-scrollbar,
+		body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
 		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .ios-stepper span, .fab, .fab-resume { display: flex; align-items: center; justify-content: center; }
 		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .fab, .fab-resume { border: none; cursor: pointer; }
 		.ios-select-display, .grid-item, .bookmark-text, .resume-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -110,7 +113,6 @@
 		.grid-item, .bookmark-item, dialog { background: var(--surface-color); }
 		.grid-item, .bookmark-item { border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: background var(--dur) var(--ease-out); }
 		.ios-select-overlay, .translation-select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; appearance: none; -webkit-appearance: none; z-index: var(--z-floating); }
-		.welcome-content::-webkit-scrollbar, .resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
 
 		header, .bottom-components, .view, dialog, .verses-container, .ios-toggle, .loading-bar, .loading-bar::before, summary, details, .details-wrapper, .fab, .fab-resume, .bb-btn, .bottom-components, .toast {
 			will-change: transform, opacity;
@@ -857,7 +859,7 @@ async function fetchWithCache(url) {
 ========================================= */
 let state = {
 	theme: 'default', fontFamily: "var(--base-serif)", fontSize: 16,
-	panicEnabled: true, shakeToPanicEnabled: false, voiceURI: '', rate: 1, translation: 'nkjv',
+	panicEnabled: false, shakeToPanicEnabled: false, voiceURI: '', rate: 1, translation: 'nkjv',
 	bookmarks: [], recentLocations: [], secretUnlocked: false,
 	source: 'bolls'
 };
