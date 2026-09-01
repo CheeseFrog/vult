@@ -119,7 +119,7 @@
 		}
 
 		/* Fade Up Animation for Views */
-		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1); } }
+		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1);} }
 		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 		@keyframes fadeInStretch { from { transform: scale(.9); opacity: 0; } to { opacity: 1; } }
 
@@ -128,7 +128,8 @@
 
 		/* --- Welcome Screen View --- */
 		#app-welcome { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: var(--z-modal); padding: 25px; overflow: hidden; }
-		.welcome-content { max-width: 500px; text-align: center; display: flex; flex-direction: column; gap: 5dvh; animation: fadeUp 2s var(--ease-out) forwards; }
+		.welcome-content { max-width: 500px; text-align: center; display: flex; flex-direction: column; gap: 3dvh; opacity: 0; animation: fadeUp 2s .25s var(--ease-out) forwards; }
+		.welcome-actions, .welcome-content > .subtitle { opacity: 0; transform: translateY(50dvh); animation: fadeUp .5s 2.25s var(--ease-out) forwards;  }
 		.welcome-icon { font-size: 4.5rem; font-weight: 600; line-height: 1; }
 		.welcome-quote { font-family: var(--base-serif); font-size: 1.2rem; line-height: 1.6; color: var(--text-color); font-weight: 300; }
 		.welcome-quote em { color: color-mix(var(--primary-color), var(--text-color) 33%); font-weight: 600; }
@@ -247,12 +248,12 @@
 		.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.95, .75); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); will-change: transform, grid-template-rows, opacity; }
 		.details-wrapper > div { overflow: hidden; }
 		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; transform: translateY(0) scale(1); }
-		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
+		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding-bottom: 10px; }
 		.grid-item { text-align: center; font-size: 0.9em; padding: 0 8px; line-height: 3rem; height: 3rem; }
 		
 		/* Bookmarks */
 		.bookmark-list { display: flex; flex-direction: column; gap: 10px; }
-		.bookmark-list p { color: var(--text-muted); font-size: 0.9em; padding: 0 10px; }
+		.bookmark-list .subtitle { text-align: left; }
 		.bookmark-item { padding: 15px; min-width: 0; }
 		.bookmark-ref { font-weight: 600; color: var(--primary-color); margin-bottom: 5px; }
 		.bookmark-text { font-size: 0.85em; color: var(--text-muted); }
@@ -272,7 +273,7 @@
 		.verse + .break { margin-bottom: 0; }
 		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); } */
 		hr.break { border: none; }
-		hr.break::after { content: "·   ·   ·"; font-size: 0.9em; white-space: pre; display: block; width: 100%; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
+		hr.break::after { content: "·	·	·"; font-size: 0.9em; white-space: pre; display: block; width: 100%; line-height: 20px;  height: 20px; text-align: center; color: var(--text-muted); pointer-events: none; }
 
 		.verse-num { font-weight: 600; color: var(--text-muted); font-size: 0.75em; vertical-align: top; margin-inline-end: 5px; transition: color var(--dur) var(--ease-out); }
 		.verse.playing:not(.paused) .verse-num { color: var(--primary-color); }
@@ -376,6 +377,7 @@
 				<button class="modal-btn primary" onclick="dismissWelcome(false)">Enter <span style="font-variant: unicase;">Vult</span> Bible App</button>
 				<button class="modal-btn" onclick="dismissWelcome(true)">Panic Calculator Mode</button>
 			</div>
+			<span class="subtitle" style="font-size: 0.6em;">This screen will not appear again, manage mode in Settings.</span>
 		</div>
 	</div>
 
@@ -1172,7 +1174,6 @@ function dismissWelcome(usePanic) {
 	} else {
 		state.secretUnlocked = true;
 		openBibleApp();
-		setTimeout(() => { showToast("Panic Mode can be enabled in settings.") }, 1000);
 	}
 }
 
@@ -1223,7 +1224,7 @@ function setupDetailsAnimation() {
 		const wrapper = el.querySelector('.details-wrapper');
 		if (!summary || !wrapper) return;
 
-		// Tie closure explicitly to the browser's animation pipeline completion
+		// Cleanup structural DOM state only after closing animation fully completes
 		wrapper.addEventListener('transitionend', (e) => {
 			if (e.propertyName === 'grid-template-rows' && !el.classList.contains('is-open')) {
 				el.open = false;
@@ -1238,10 +1239,12 @@ function setupDetailsAnimation() {
 			} else {
 				el.open = true; // Exposes the native element to the DOM immediately
 				
-				// Force the browser to register the open layout before applying the 1fr class
-				requestAnimationFrame(() => requestAnimationFrame(() => {
-					el.classList.add('is-open');
-				}));
+				// Synchronous layout flush forces the browser to calculate the native 'open' 
+				// display state instantly before we attach the transition class.
+				// This replaces requestAnimationFrame and totally prevents rapid-click race conditions.
+				void el.offsetWidth;
+				
+				el.classList.add('is-open'); // Triggers the CSS expand animation
 			}
 		});
 	});
@@ -1915,7 +1918,7 @@ function renderHome() {
 
 function renderBookmarksList() {
 	const list = $('bookmarksList'); list.innerHTML = '';
-	if (state.bookmarks.length === 0) { list.innerHTML = '<p>No bookmarks yet.</p>'; return; }
+	if (state.bookmarks.length === 0) { list.innerHTML = '<p class="subtitle">No bookmarks yet.</p>'; return; }
 	state.bookmarks.forEach(bm => list.appendChild(createBookmarkElement(bm)));
 }
 
@@ -1941,7 +1944,7 @@ function openBook(index, isNT) {
 	const bkBookmarks = state.bookmarks.filter(bm => bm.book === book.name);
 	bkmDetails.style.display = 'block';
 	if (bkBookmarks.length > 0) { bkBookmarks.forEach(bm => bkmList.appendChild(createBookmarkElement(bm))); } 
-	else { bkmList.innerHTML = '<p>No bookmarks yet.</p>'; }
+	else { bkmList.innerHTML = '<p class="subtitle">No bookmarks yet.</p>'; }
 	
 	pushNavState('chapters');
 }
