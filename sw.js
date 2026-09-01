@@ -2,7 +2,10 @@ const CACHE_NAME = 'vult-app-v1';
 const ASSETS = [
 	'./',
 	'./index.html',
-	'https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0'
+	'./src/fabigation-mod.js',
+	'./src/shake.js',
+	'./src/MSR.css',
+	'./src/MSR.woff2'
 ];
 
 self.addEventListener('install', (e) => {
