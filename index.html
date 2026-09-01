@@ -130,7 +130,7 @@
 
 		/* --- Welcome Screen View --- */
 		#app-welcome { background-color: var(--bg-color); display: flex; justify-content: center; align-items: center; z-index: var(--z-modal); padding: 25px; overflow: hidden; }
-		.welcome-content { max-width: 500px; text-align: center; display: flex; flex-direction: column; gap: 3dvh; opacity: 0; animation: fadeUp 2s .25s var(--ease-out) forwards; }
+		.welcome-content { max-width: 500px; max-height: 98vh; text-align: center; display: flex; flex-direction: column; gap: 3dvh; opacity: 0; animation: fadeUp 2s .25s var(--ease-out) forwards; }
 		.welcome-actions, .welcome-content > .subtitle { opacity: 0; transform: translateY(50dvh); animation: fadeUp .5s 2.25s var(--ease-out) forwards;  }
 		.welcome-icon { font-size: 4.5rem; font-weight: 600; line-height: 1; }
 		.welcome-quote { font-family: var(--base-serif); font-size: 1.2rem; line-height: 1.6; color: var(--text-color); font-weight: 300; }
