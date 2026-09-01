@@ -92,7 +92,7 @@
 		button, input, select, textarea { font-family: inherit; font-size: inherit; }
 		
 		/* Base App Font is fixed to iOS standards, isolating the reader settings */
-		html, body { font-family: var(--base-sans-serif); background-color: var(--bg-color); overflow: hidden; font-size: 16px; color: var(--text-color); touch-action: manipulation; overflow-anchor: none; overscroll-behavior: contain; }
+		html, body { font-family: var(--base-sans-serif); background-color: var(--bg-color); overflow: hidden; font-size: 16px; color: var(--text-color); touch-action: manipulation; overflow-anchor: none; overscroll-behavior: contain; height: 100dvh; width: 100dvw; }
 		
 		/* Utility Classes */
 		.text-muted { color: var(--text-muted); }
@@ -101,7 +101,7 @@
 		/* =========================================
 			SHARED CSS UTILITY & LAYOUT GROUPS
 		========================================= */
-		#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible { width: 100vw; height: 100vh; height: 100dvh; position: absolute; top: 0; left: 0; }
+		#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible { width: 100vw; height: 100vh; height: 100dvh; position: absolute; top: 0; left: 0; scrollbar-width: none; }
 		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .ios-stepper span, .fab, .fab-resume { display: flex; align-items: center; justify-content: center; }
 		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .fab, .fab-resume { border: none; cursor: pointer; }
 		.ios-select-display, .grid-item, .bookmark-text, .resume-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -110,7 +110,7 @@
 		.grid-item, .bookmark-item, dialog { background: var(--surface-color); }
 		.grid-item, .bookmark-item { border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: background var(--dur) var(--ease-out); }
 		.ios-select-overlay, .translation-select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; appearance: none; -webkit-appearance: none; z-index: var(--z-floating); }
-		.resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
+		.welcome-content::-webkit-scrollbar, .resume-scroll::-webkit-scrollbar, body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
 
 		header, .bottom-components, .view, dialog, .verses-container, .ios-toggle, .loading-bar, .loading-bar::before, summary, details, .details-wrapper, .fab, .fab-resume, .bb-btn, .bottom-components, .toast {
 			will-change: transform, opacity;
@@ -162,7 +162,7 @@
 		/* Dialog Overlays */
 		dialog { margin: auto; padding: 25px; border-radius: var(--radius-md); border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible;}
 		dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); }
-		dialog[open]::backdrop { animation: fadeIn var(--dur) var(--ease-out) forwards; }
+		dialog[open]:not(#advancedModal)::backdrop { animation: fadeIn var(--dur) var(--ease-out) forwards; }
 		dialog[open] { animation: fadeUp var(--dur) var(--ease-out) forwards; }
 		dialog:focus-visible { outline: none; }
 		dialog h3 { margin-bottom: 20px; margin-top: -5px; font-weight: 600; text-align: center; }
@@ -229,7 +229,8 @@
 		header.minified { height: 1.85rem; }
 		header.minified h1 { font-size: 0.95rem; }
 		header.minified .header-left, header.minified .header-right { opacity: 0; pointer-events: none; }
-		header.minified ~ #bottomComponents:has(.play-btn[style*="--progress-angle: 0deg"], .play-btn[style*="display: none"]):not(:has(.selection-fabs.visible)) { transform: translateY(var(--bottom-bar-height)); }
+		header.minified ~ #bottomComponents:has(.play-btn[style*="display: none"]),
+		header.minified ~ #bottomComponents:has(.play-btn[style*="--progress-angle: 0deg"]):not(:has(.selection-fabs.visible)) { transform: translateY(var(--bottom-bar-height)); }
 
 		/* Loading Bar */
 		.loading-bar { position: absolute; bottom: -1px; left: 0; width: 100%; height: 3px; background-color: var(--surface-color-active); overflow: hidden; z-index: var(--z-floating); transition: opacity var(--dur) var(--ease-out), visibility 0s var(--dur) ease-in-out; }
@@ -614,7 +615,10 @@
 				</div>
 			</div>
 		</div>
-		<button class="modal-btn primary" onclick="closeModal('advancedModal')">Done</button>
+		<div class="modal-actions">
+			<!-- <button class="modal-btn" onclick="closeModal('advancedModal'); openModal('settingsModal', 'modal-settings')">Back</button> -->
+			<button class="modal-btn primary" onclick="closeModal('advancedModal')">Done</button>
+		</div>
 	</dialog>
 
 	<!-- BIBLE APP (VULT) -->
