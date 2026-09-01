@@ -245,10 +245,10 @@
 		summary { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 15px; cursor: pointer; color: var(--text-color); list-style: none; position: relative; padding-right: 30px; outline: none; }
 		summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform var(--dur) var(--ease-out), top var(--dur) var(--ease-out); will-change: transform; }
 		details.is-open summary::after { transform: rotate(45deg); top: calc(50% - 8px); }
-		.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.95, .75); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); will-change: transform, grid-template-rows, opacity; }
+		.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.95, .75); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out), padding-bottom var(--dur) var(--ease-out); will-change: transform, grid-template-rows, opacity, padding-bottom; }
 		.details-wrapper > div { overflow: hidden; }
-		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; transform: translateY(0) scale(1); }
-		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; padding-bottom: 10px; }
+		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; transform: translateY(0) scale(1); padding-bottom: 10px; }
+		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
 		.grid-item { text-align: center; font-size: 0.9em; padding: 0 8px; line-height: 3rem; height: 3rem; }
 		
 		/* Bookmarks */
