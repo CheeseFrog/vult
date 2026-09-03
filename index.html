@@ -103,8 +103,8 @@
 		========================================= */
 		#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible { position: absolute; top: 0; left: 0; }
 		#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible, html, body { width: 100dvw; height: 100dvh; scrollbar-width: none; overflow: hidden; overflow-anchor: none; overscroll-behavior: contain; }
-		:is(#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible, html, body, .resume-scroll)::-webkit-scrollbar,
-		body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, summary::-webkit-details-marker { display: none; }
+		:is(#app-welcome, #app-calculator, #app-calculator-wrapper, #app-bible, .welcome-content, html, body, .resume-scroll)::-webkit-scrollbar,
+		body:has(#showHelpCheck:not(:checked)) #calcHelpBtn, .details-checkbox { display: none; }
 		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .ios-stepper span, .fab, .fab-resume { display: flex; align-items: center; justify-content: center; }
 		.calc-btn, .header-btn, .bb-btn, .ios-stepper button, .fab, .fab-resume { border: none; cursor: pointer; }
 		.ios-select-display, .grid-item, .bookmark-text, .resume-text { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
@@ -114,7 +114,7 @@
 		.grid-item, .bookmark-item { border: 1px solid var(--border-color); border-radius: var(--radius-sm); cursor: pointer; transition: background var(--dur) var(--ease-out); }
 		.ios-select-overlay, .translation-select { position: absolute; top: 0; left: 0; width: 100%; height: 100%; opacity: 0; cursor: pointer; appearance: none; -webkit-appearance: none; z-index: var(--z-floating); }
 
-		header, .bottom-components, .view, dialog, .verses-container, .ios-toggle, .loading-bar, .loading-bar::before, summary, details, .details-wrapper, .fab, .fab-resume, .bb-btn, .bottom-components, .toast {
+		header, .bottom-components, .view, dialog, .verses-container, .ios-toggle, .loading-bar, .loading-bar::before, .details-summary, .custom-details, .details-wrapper, .fab, .fab-resume, .bb-btn, .bottom-components, .toast {
 			will-change: transform, opacity;
 			backface-visibility: hidden;
 			transform-origin: top center;
@@ -163,8 +163,10 @@
 
 		/* Dialog Overlays */
 		dialog { margin: auto; padding: 25px; border-radius: var(--radius-md); border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible;}
-		dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); }
-		dialog[open]:not(#advancedModal)::backdrop { animation: fadeIn var(--dur) var(--ease-out) forwards; }
+		/* dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); } dialog[open]:not(#advancedModal)::backdrop { animation: fadeIn var(--dur) var(--ease-out) forwards; } */
+		dialog::backdrop { background: transparent; }
+		#customBackdrop { pointer-events: none; visibility: hidden; opacity: 0; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); transition: opacity var(--dur) var(--ease-out), visibility var(--dur) var(--ease-out); z-index: var(--z-modal); }
+		dialog[open] ~ #customBackdrop { visibility: visible; opacity: 1; transition: opacity var(--dur) var(--ease-out);}
 		dialog[open] { animation: fadeUp var(--dur) var(--ease-out) forwards; }
 		dialog:focus-visible { outline: none; }
 		dialog h3 { margin-bottom: 20px; margin-top: -5px; font-weight: 600; text-align: center; }
@@ -243,14 +245,16 @@
 		body.is-loading .view { opacity: 0.3 !important; pointer-events: none !important; filter: grayscale(100%) !important; }
 
 		/* Grids & Details */
-		details { padding: 5px 0 15px 0; }
-		details:has(div:empty) { opacity: 0; }
-		summary { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 15px; cursor: pointer; color: var(--text-color); list-style: none; position: relative; padding-right: 30px; outline: none; }
-		summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform var(--dur) var(--ease-out), top var(--dur) var(--ease-out); will-change: transform; }
-		details.is-open summary::after { transform: rotate(45deg); top: calc(50% - 8px); }
-		.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.95, .75); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out), padding-bottom var(--dur) var(--ease-out); will-change: transform, grid-template-rows, opacity, padding-bottom; }
+		.custom-details { padding: 5px 0 15px 0; }
+		.custom-details:has(.details-wrapper > div:empty) { opacity: 0; pointer-events: none; }
+
+		.details-summary { font-size: 0.95rem; font-weight: 600; letter-spacing: 0.05em; margin-bottom: 15px; cursor: pointer; color: var(--text-color); display: block; position: relative; padding-right: 30px; outline: none; -webkit-tap-highlight-color: transparent; }
+		.details-summary::after { content: ''; position: absolute; right: 5px; top: calc(50% - 6px); width: 10px; height: 10px; border-right: 2px solid var(--text-muted); border-bottom: 2px solid var(--text-muted); transform: rotate(-45deg); transition: transform var(--dur) var(--ease-out), top var(--dur) var(--ease-out); will-change: transform; }
+		.details-checkbox:checked + .details-summary::after { transform: rotate(45deg); top: calc(50% - 8px); }
+		
+		.details-wrapper { display: grid; grid-template-rows: 0fr; transform: translateY(-12px) scale(.95, .75); opacity: 0; transition: transform var(--dur) var(--ease-out), grid-template-rows var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); will-change: transform, grid-template-rows, opacity; padding-bottom: 10px; }
 		.details-wrapper > div { overflow: hidden; }
-		details.is-open .details-wrapper { grid-template-rows: 1fr; opacity: 1; transform: translateY(0) scale(1); padding-bottom: 10px; }
+		.details-checkbox:checked ~ .details-wrapper { grid-template-rows: 1fr; opacity: 1; transform: translateY(0) scale(1); }
 		.book-grid, .chapter-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(80px, 1fr)); gap: 10px; }
 		.grid-item { text-align: center; font-size: 0.9em; padding: 0 8px; line-height: 3rem; height: 3rem; }
 		
@@ -268,7 +272,7 @@
 		#view-reader { line-height: 1.6; font-family: var(--reader-font-family); font-size: var(--reader-font-size); }
 		#readerContent { margin: -2px; }
 		@media (orientation: landscape) and (min-width: 802px) {
-			details, #readerContent { max-width: min(100%, 800px); width: 100%; margin: 0 auto; }
+			.custom-details, #readerContent { max-width: min(100%, 800px); width: 100%; margin: 0 auto; }
 		}
 		.subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
 		.verse { margin-bottom: min(0.33em, 10px); cursor: pointer; border-radius: var(--radius-sm); padding: 4px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); contain: content; /* Isolates layout & paint recalculations */ }
@@ -618,10 +622,12 @@
 			</div>
 		</div>
 		<div class="modal-actions">
-			<!-- <button class="modal-btn" onclick="closeModal('advancedModal'); openModal('settingsModal', 'modal-settings')">Back</button> -->
+			<button class="modal-btn" onclick="closeModal('advancedModal'); openModal('settingsModal', 'modal-settings')">Back</button>
 			<button class="modal-btn primary" onclick="closeModal('advancedModal')">Done</button>
 		</div>
 	</dialog>
+
+	<div id="customBackdrop"></div>
 
 	<!-- BIBLE APP (VULT) -->
 	<div id="app-bible">
@@ -647,48 +653,54 @@
 			<div class="loading-bar"></div>
 		</header>
 
-		<!-- HOME VIEW (Book Picker) -->
+<!-- HOME VIEW (Book Picker) -->
 		<div class="view active" id="view-home">
-			<details open id="ntDetails" class="is-open">
-				<summary id="ntSummary">NEW TESTAMENT</summary>
+			<div id="ntDetails" class="custom-details">
+				<input type="checkbox" id="ntToggle" class="details-checkbox" checked>
+				<label for="ntToggle" id="ntSummary" class="details-summary">NEW TESTAMENT</label>
 				<div class="details-wrapper">
 					<div class="book-grid" id="ntGrid"></div>
 				</div>
-			</details>
-			<details open id="otDetails" class="is-open">
-				<summary id="otSummary">OLD TESTAMENT</summary>
+			</div>
+			<div id="otDetails" class="custom-details">
+				<input type="checkbox" id="otToggle" class="details-checkbox" checked>
+				<label for="otToggle" id="otSummary" class="details-summary">OLD TESTAMENT</label>
 				<div class="details-wrapper">
 					<div class="book-grid" id="otGrid"></div>
 				</div>
-			</details>
-			<details open id="addDetails" class="is-open" style="display: none;">
-				<summary id="addSummary">ADDITIONAL</summary>
+			</div>
+			<div id="addDetails" class="custom-details" style="display: none;">
+				<input type="checkbox" id="addToggle" class="details-checkbox" checked>
+				<label for="addToggle" id="addSummary" class="details-summary">ADDITIONAL</label>
 				<div class="details-wrapper">
 					<div class="book-grid" id="addGrid"></div>
 				</div>
-			</details>
-			<details open class="is-open">
-				<summary>BOOKMARKS</summary>
+			</div>
+			<div class="custom-details">
+				<input type="checkbox" id="bmToggle" class="details-checkbox" checked>
+				<label for="bmToggle" class="details-summary">BOOKMARKS</label>
 				<div class="details-wrapper">
 					<div class="bookmark-list" id="bookmarksList"></div>
 				</div>
-			</details>
+			</div>
 		</div>
 
 		<!-- CHAPTERS VIEW -->
 		<div class="view" id="view-chapters">
-			<details open class="is-open">
-				<summary>CHAPTERS</summary>
+			<div class="custom-details">
+				<input type="checkbox" id="chapToggle" class="details-checkbox" checked>
+				<label for="chapToggle" class="details-summary">CHAPTERS</label>
 				<div class="details-wrapper">
 					<div class="chapter-grid" id="chapterGrid"></div>
 				</div>
-			</details>
-			<details open id="bookBookmarksDetails" class="is-open">
-				<summary>BOOKMARKS</summary>
+			</div>
+			<div id="bookBookmarksDetails" class="custom-details">
+				<input type="checkbox" id="bookBmToggle" class="details-checkbox" checked>
+				<label for="bookBmToggle" class="details-summary">BOOKMARKS</label>
 				<div class="details-wrapper">
 					<div class="bookmark-list" id="bookBookmarksList"></div>
 				</div>
-			</details>
+			</div>
 		</div>
 
 		<!-- READER VIEW -->
@@ -1117,7 +1129,7 @@ function init() {
 		state.secretUnlocked = false;
 	}
 
-	applySettings(); checkSpeechSupport(); setupPlayButton(); setupDialogDismiss(); setupDetailsAnimation();
+	applySettings(); checkSpeechSupport(); setupPlayButton(); setupDialogDismiss();
 	setTimeout(updateDynamicManifest, 100); 
 	
 	// Setup Shake Listener
@@ -1221,38 +1233,6 @@ function handleShakeEvent() {
 function setupDialogDismiss() {
 	document.querySelectorAll('dialog').forEach(dialog => {
 		dialog.addEventListener('click', function(e) { if (e.target === this) this.close(); });
-	});
-}
-
-function setupDetailsAnimation() {
-	document.querySelectorAll('details').forEach(el => {
-		const summary = el.querySelector('summary');
-		const wrapper = el.querySelector('.details-wrapper');
-		if (!summary || !wrapper) return;
-
-		// Cleanup structural DOM state only after closing animation fully completes
-		wrapper.addEventListener('transitionend', (e) => {
-			if (e.propertyName === 'grid-template-rows' && !el.classList.contains('is-open')) {
-				el.open = false;
-			}
-		});
-
-		summary.addEventListener('click', (e) => {
-			e.preventDefault();
-			
-			if (el.classList.contains('is-open')) {
-				el.classList.remove('is-open'); // Triggers the CSS shrink animation
-			} else {
-				el.open = true; // Exposes the native element to the DOM immediately
-				
-				// Synchronous layout flush forces the browser to calculate the native 'open' 
-				// display state instantly before we attach the transition class.
-				// This replaces requestAnimationFrame and totally prevents rapid-click race conditions.
-				void el.offsetWidth;
-				
-				el.classList.add('is-open'); // Triggers the CSS expand animation
-			}
-		});
 	});
 }
 
@@ -2417,14 +2397,26 @@ function populateVoices() {
 	if (!synth) return;
 	voices = synth.getVoices();
 	const select = $('setVoice'); select.innerHTML = '';
-	
+
 	createEl('option', { value: '', innerText: 'Default' }, select);
 
+	const groups = {};
+
 	voices.forEach(v => {
-		createEl('option', { value: v.voiceURI, innerText: `${v.name} (${v.lang})` }, select);
+		if (!groups[v.lang]) {
+			select.appendChild(document.createElement('hr'));
+			groups[v.lang] = createEl('optgroup', { label: v.lang }, select);
+		}
+
+		createEl('option', { value: v.voiceURI,	innerText: `${v.name}` }, groups[v.lang]);
 	});
-	
-	if (state.voiceURI && select.querySelector(`option[value="${state.voiceURI}"]`)) select.value = state.voiceURI; else select.value = '';
+
+	if (state.voiceURI && voices.some(v => v.voiceURI === state.voiceURI)) {
+		select.value = state.voiceURI;
+	} else {
+		select.value = '';
+	}
+
 	syncSelectDisplay(select, $('voiceDisplay'));
 }
 
