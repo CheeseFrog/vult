@@ -184,7 +184,7 @@
 		.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; min-height: 50px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background var(--dur) var(--ease-out); position: relative; }
 		.ios-row:active { background: var(--surface-color-active); }
 		.ios-row:last-child { border-bottom-color: transparent; }
-		.ios-row-label { font-size: 1rem; color: var(--text-color); flex: 1; }
+		.ios-row-label { font-size: .9rem; color: var(--text-color); flex: 1; }
 		.ios-row-control { display: flex; align-items: center; gap: 10px; }
 		.ios-row.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
 
@@ -196,29 +196,29 @@
 		
 		/* Select Dropdowns */
 		.ios-select-row { position: relative; overflow: hidden; }
-		.ios-select-display { color: var(--text-muted); font-size: 1rem; pointer-events: none; max-width: 150px; display: inline-block; text-align: right; }
+		.ios-select-display { color: var(--text-muted); font-size: .95rem; pointer-events: none; max-width: 150px; display: inline-block; text-align: right; }
 		.ios-select-wrapper { display: flex; align-items: center; color: var(--text-muted); }
-		.ios-select-wrapper .material-symbols-rounded { font-size: 20px; margin-left: 4px; pointer-events: none; }
+		.ios-select-wrapper .material-symbols-rounded { font-size: 1em; margin-left: 4px; }
 		
 		/* Steppers */
-		.ios-stepper { display: flex; align-items: stretch; height: 2em; border-radius: 0.5em; overflow: hidden; border: 1px solid var(--border-color); z-index: 20; position: relative; font-size: 1rem; }
+		.ios-stepper { display: flex; align-items: stretch; height: 2em; border-radius: 0.5em; overflow: hidden; border: 1px solid var(--border-color); z-index: 20; position: relative; font-size: .95rem; }
 		.ios-stepper button { background: var(--surface-color); color: var(--primary-color); font-size: 1.2em; width: 1.875em; }
 		.ios-stepper button:active { background: var(--surface-color-active); }
-		.ios-stepper span { width: 2.63em; font-size: 0.95em; color: var(--text-color); background: var(--bg-color); pointer-events: none; border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
+		.ios-stepper span { width: 2.63em; font-size: 0.9em; color: var(--text-color); background: var(--bg-color); border-left: 1px solid var(--border-color); border-right: 1px solid var(--border-color); }
 
 		/* Toggle Switch */
-		.ios-toggle { position: relative; width: 3em; height: 1.75em; font-size: 1rem; appearance: none; -webkit-appearance: none; background: var(--border-color); outline: none; border-radius: 1em; cursor: pointer; transition: background var(--dur) var(--ease-out); margin: 0; pointer-events: none; }
+		.ios-toggle { position: relative; width: 3em; height: 1.75em; font-size: .95rem; appearance: none; -webkit-appearance: none; background: var(--border-color); outline: none; border-radius: 1em; transition: background var(--dur) var(--ease-out); margin: 0; pointer-events: none; }
 		.ios-toggle::after { content: ''; position: absolute; top: 0.125em; left: 0.125em; width: 1.5em; height: 1.5em; background: #fff; box-shadow: 0 2px 4px rgba(0,0,0,0.2); transition: transform var(--dur) var(--ease-out); will-change: transform; }
 		.ios-toggle:checked { background: color-mix(in srgb, var(--primary-color), var(--bg-color) 15%); } /*34c759*/
 		.ios-toggle:checked::after { transform: translateX(1.25em); }
 
 		/* --- Bible App Views --- */
-		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 20px) 20px 180px; transition: filter var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); }
+		.view { display: none; flex: 1; overflow-y: auto; overflow-x: hidden; flex-direction: column; padding: calc(var(--header-height) + 20px) 20px 180px; transition: filter var(--dur) var(--ease-out), opacity var(--dur) var(--ease-out); scrollbar-color: var(--text-muted) var(--bg-color); }
 		.view.active { display: flex; animation: fadeUp var(--dur) var(--ease-out) forwards; }
 		
 		/* Header Transitions for Minified State */
 		header { display: flex; align-items: center; padding: 0; background-color: var(--header-bg); border-bottom: 1px solid var(--border-color); position: absolute; inset: 0; z-index: var(--z-sticky); height: var(--header-height); transition: height var(--dur) var(--ease-out), background-color var(--dur) var(--ease-out); }
-		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size var(--dur) var(--ease-out); padding: 10px 0; }
+		header h1 { flex: 2; font-size: 1.2rem; font-weight: 600; text-align: center; margin: 0; white-space: nowrap; overflow: visible; transition: font-size var(--dur) var(--ease-out); padding: 10px 0; cursor: pointer; }
 		.header-left, .header-right { height: 100%; flex: 1; display: flex; align-items: center; min-width: 0; transition: opacity var(--dur) var(--ease-out); }
 		.header-right { justify-content: flex-end; }
 		.header-btn { background: none; color: var(--primary-color); font-size: 1.1rem; height: 100%; padding: 0 20px; }
@@ -381,7 +381,7 @@
 				<div class="subtitle"><br>— Matt. 18:21-22 (NKJV)</div></i>
 			</div>
 			<div class="welcome-actions">
-				<button class="modal-btn primary" onclick="dismissWelcome(false)">Enter <span style="font-variant: unicase;">Vult</span> Bible App</button>
+				<button class="modal-btn primary" onclick="dismissWelcome(false)">Enter <span style="font-variant: unicase;">vult</span> Bible App</button>
 				<button class="modal-btn" onclick="dismissWelcome(true)">Panic Calculator Mode</button>
 			</div>
 			<span class="subtitle" style="font-size: 0.6em;">This screen will not appear again, manage mode in Settings.</span>
@@ -525,6 +525,16 @@
 						</div>
 					</div>
 				</div>
+				<!-- <div class="ios-row" id="speechPitchRow">
+					<div class="ios-row-label">Speech Pitch</div>
+					<div class="ios-row-control">
+						<div class="ios-stepper">
+							<button onclick="changeSpeechPitch(-0.1)">-</button>
+							<span id="pitchDisplay">1.0</span>
+							<button onclick="changeSpeechPitch(0.1)">+</button>
+						</div>
+					</div>
+				</div> -->
 
 				<div class="ios-row ios-select-row" id="speechVoiceRow">
 					<div class="ios-row-label">Voice</div>
@@ -608,7 +618,7 @@
 					<div class="ios-row-label">Contact Developer</div>
 					<span class="material-symbols-rounded text-muted">mail</span>
 				</div>
-				<div class="ios-row" onclick="window.open('https://paypal.me/auyousef', '_blank')">
+				<div class="ios-row" onclick="window.open('https://www.paypal.com/donate/?business=54P3N8ACLJKT4&no_recurring=0&item_name=help+build+and+maintain+quality+services+with+%E2%9D%A4%EF%B8%8F&currency_code=USD', '_blank')">
 					<div class="ios-row-label">Donate</div>
 					<span class="material-symbols-rounded text-muted">open_in_new</span>
 				</div>
@@ -643,7 +653,7 @@
 				</div>
 			</div>
 			
-			<h1 id="headerTitle" onclick='( ()=>{ document.querySelector(".view.active").scrollTo({ top: 0, left: 0, behavior: "smooth" }); })()'>Vult</h1>
+			<h1 id="headerTitle" onclick='( ()=>{ document.querySelector(".view.active").scrollTo({ top: 0, left: 0, behavior: "smooth" }); })()'>vult</h1>
 			
 			<div class="header-right">
 				<button class="header-btn" onclick="openSettings()">
@@ -1818,7 +1828,7 @@ function updateResumeFabVisibility() {
 function renderHome() {
 	cancelSpeech();
 	hideAllViews(); $('view-home').classList.add('active');
-	$('headerTitle').innerText = 'Vult';
+	$('headerTitle').innerText = 'vult';
 	$('navBack').style.display = 'none';
 	$('transSelectWrapper').style.display = 'flex';
 	$('bottomBar').classList.remove('visible');
@@ -2405,10 +2415,10 @@ function populateVoices() {
 	voices.forEach(v => {
 		if (!groups[v.lang]) {
 			select.appendChild(document.createElement('hr'));
-			groups[v.lang] = createEl('optgroup', { label: v.lang }, select);
+			groups[v.lang] = true; // createEl('optgroup', { label: v.lang }, select);
 		}
 
-		createEl('option', { value: v.voiceURI,	innerText: `${v.name}` }, groups[v.lang]);
+		createEl('option', { value: v.voiceURI,	innerText: `${v.name} ${v.lang}` }, select);
 	});
 
 	if (state.voiceURI && voices.some(v => v.voiceURI === state.voiceURI)) {
