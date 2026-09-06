@@ -1,11 +1,10 @@
 {
-	"name": "Calculator",
-	"short_name": "Calculator",
+	"name": "Vult",
+	"short_name": "Vult",
 	"start_url": "./index.html",
 	"display": "standalone",
 	"background_color": "#000000",
 	"theme_color": "#000000",
-	"description": "Standard calculator.",
 	"icons": [
 		{
 			"src": "src/icon-192.png",
