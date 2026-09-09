@@ -17,6 +17,7 @@
 	<link href="src/MSR.css" onerror="this.onerror=null; this.href='https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0'" rel="stylesheet" />
 	<!-- Shake.js Support (Loads local first from src/, falls back to CDN) -->
 	<script src="src/shake.js" onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/alexgibson/shake.js/shake.js';"></script>
+	<script src="src/ios-select.js" onerror="this.onerror=null;"></script>
 	<script src="src/fabigation-mod.js"></script>
 	<style>
 		:root {
@@ -122,6 +123,7 @@
 
 		/* Fade Up Animation for Views */
 		@keyframes fadeUp { from { opacity: 0; transform: translateY(12px) scale(.98); } to { opacity: 1; transform: translateY(0) scale(1);} }
+		@keyframes fadeDown { from { opacity: 0; transform: translateY(-50%); } to { opacity: 1; transform: translateY(0);} }
 		@keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 		@keyframes fadeInStretch { from { transform: scale(.9); opacity: 0; } to { opacity: 1; } }
 
@@ -162,15 +164,15 @@
 		.btn-func { background-color: var(--calc-btn-func); }
 
 		/* Dialog Overlays */
-		dialog { margin: auto; padding: 25px; border-radius: var(--radius-md); border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible;}
+		dialog { margin: auto; padding: 20px; border-radius: var(--radius-md); border: none; color: var(--text-color); box-shadow: var(--shadow); max-width: 90%; width: 400px; max-height: 90dvh; overflow: visible;}
 		/* dialog::backdrop { background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); } dialog[open]:not(#advancedModal)::backdrop { animation: fadeIn var(--dur) var(--ease-out) forwards; } */
 		dialog::backdrop { background: transparent; }
 		#customBackdrop { pointer-events: none; visibility: hidden; opacity: 0; position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: grayscale(.6); transition: opacity var(--dur) var(--ease-out), visibility var(--dur) var(--ease-out); z-index: var(--z-modal); }
 		dialog[open] ~ #customBackdrop { visibility: visible; opacity: 1; transition: opacity var(--dur) var(--ease-out);}
 		dialog[open] { animation: fadeUp var(--dur) var(--ease-out) forwards; }
 		dialog:focus-visible { outline: none; }
-		dialog h3 { margin-bottom: 20px; margin-top: -5px; font-weight: 600; text-align: center; }
-		dialog p { margin-bottom: 20px; text-align: center; color: var(--text-muted); font-size: 0.9rem; }
+		dialog h3 { margin-bottom: 20px; margin-top: 0px; font-weight: 600; text-align: center; }
+		dialog p { margin-bottom: 20px; text-align: center; color: var(--text-muted); font-size: 0.95rem; }
 		.modal-btn { margin-top: 20px; width: 100%; padding: 12px; background: var(--surface-color-active); color: var(--text-color); border: 1px solid var(--border-color); border-radius: var(--radius-sm); font-size: 1em; cursor: pointer; font-weight: 600; transition: background var(--dur) var(--ease-out); }
 		.modal-btn.primary { background: var(--primary-color); color: white; border: none; }
 		.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
@@ -184,7 +186,7 @@
 		.ios-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 15px; min-height: 50px; border-bottom: 1px solid var(--border-color); background: var(--surface-color); cursor: pointer; transition: background var(--dur) var(--ease-out); position: relative; }
 		.ios-row:active { background: var(--surface-color-active); }
 		.ios-row:last-child { border-bottom-color: transparent; }
-		.ios-row-label { font-size: .9rem; color: var(--text-color); flex: 1; }
+		.ios-row-label { font-size: .95rem; color: var(--text-color); flex: 1; }
 		.ios-row-control { display: flex; align-items: center; gap: 10px; }
 		.ios-row.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
 
@@ -198,7 +200,7 @@
 		.ios-select-row { position: relative; overflow: hidden; }
 		.ios-select-display { color: var(--text-muted); font-size: .95rem; pointer-events: none; max-width: 150px; display: inline-block; text-align: right; }
 		.ios-select-wrapper { display: flex; align-items: center; color: var(--text-muted); }
-		.ios-select-wrapper .material-symbols-rounded { font-size: 1em; margin-left: 4px; }
+		.ios-select-wrapper .material-symbols-rounded { font-size: 1.25em; margin-left: 4px; }
 		
 		/* Steppers */
 		.ios-stepper { display: flex; align-items: stretch; height: 2em; border-radius: 0.5em; overflow: hidden; border: 1px solid var(--border-color); z-index: 20; position: relative; font-size: .95rem; }
@@ -275,7 +277,7 @@
 			.custom-details, #readerContent { max-width: min(100%, 800px); width: 100%; margin: 0 auto; }
 		}
 		.subtitle { text-align: center; color: var(--text-muted); font-size: 0.8em; margin-bottom: 20px; padding: 0 7px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; letter-spacing: 0.05em; }
-		.verse { margin-bottom: min(0.33em, 10px); cursor: pointer; border-radius: var(--radius-sm); padding: 4px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); contain: content; /* Isolates layout & paint recalculations */ }
+		.verse { margin-bottom: min(0.33em, 10px); cursor: pointer; border-radius: var(--radius-sm); padding: 4px 7px; box-shadow: -4px 0 0 0 transparent; transition: background var(--dur) var(--ease-out), box-shadow var(--dur) var(--ease-out); position: relative; contain: layout; /* Isolates layout & paint recalculations */ }
 		
 		.verse + .break { margin-bottom: 0; }
 		/* .verse.break:after {content:""; position: absolute; display: block; margin-top: 15px; width: 30%; left: 35%; border-top: 1px dotted var(--text-muted); } */
@@ -289,15 +291,21 @@
 		[dir="rtl"] .verse { box-shadow: 4px 0 0 0 transparent; }
 		.verse.selected { background-color: var(--highlight); }
 		.verse.bookmarked { background-color: var(--bookmarked-bg); }
-		.verse.playing { box-shadow: -4px 0 0 0 var(--primary-color); background-color: var(--playing-bg); }
-		.verse.playing.paused { box-shadow: -4px 0 0 0 var(--text-muted); background-color: var(--playing-bg); }
-		[dir="rtl"] .verse.playing { box-shadow: 4px 0 0 0 var(--primary-color); }
-		[dir="rtl"] .verse.playing.paused { box-shadow: 4px 0 0 0 var(--text-muted); }
+		.verse.playing { background-color: var(--playing-bg); } /*box-shadow: -4px 0 0 0 var(--primary-color);*/
+		/* .verse.playing { contain: none; } */
+		.verse::before { content: ''; position: absolute; top: 0; left: -6px; width: 4px; height: 100%; border-radius: var(--radius-sm); pointer-events: none; transition: background-color var(--dur) var(--ease-out); }
+		.verse.playing::before { background-color: var(--primary-color); }
+		.verse + .verse.playing::before { animation: fadeDown var(--dur) var(--ease-out) forwards; }
+		[dir="rtl"] .verse.playing ::before { left: auto; right: -6px; }
+		.verse.playing.paused::before { background-color: var(--text-muted); }
+		/* .verse.playing.paused { background-color: var(--playing-bg); } box-shadow: -4px 0 0 0 var(--text-muted); */
+		/* [dir="rtl"] .verse.playing { box-shadow: 4px 0 0 0 var(--primary-color); } */
+		/* [dir="rtl"] .verse.playing.paused { box-shadow: 4px 0 0 0 var(--text-muted); } */
 		.verse.selected.bookmarked { background-color: color-mix(in srgb, var(--highlight) 50%, var(--bookmarked-bg) 50%); }
 		.verse.playing.selected { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--highlight) 50%); }
 		.verse.playing.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 50%, var(--bookmarked-bg) 50%); }
 		.verse.playing.selected.bookmarked { background-color: color-mix(in srgb, var(--playing-bg) 33%, color-mix(in srgb, var(--highlight) 50%, var(--bookmarked-bg) 50%) 67%); }
-		.verse:has(.comment).selected { contain: none; position: relative; }
+		.verse:has(.comment).selected { contain: none; }
 		.verse:has(.comment) > .verse-num { text-decoration: 2px underline var(--text-muted); text-underline-offset: 4px; }
 		.verse:has(.comment).selected:not(:has(+ .verse.selected)) > .verse-num { text-decoration-color: var(--primary-color); }
 		.verse:has(.comment).selected:not(:has(+ .verse.selected)) { border-radius: var(--radius-sm) var(--radius-sm) 0 var(--radius-sm); }
