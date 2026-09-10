@@ -13,14 +13,16 @@
 			-x-primary-color: #007aff;
 			-x-border-color: #94949880;
 			--highlight: color-mix(in srgb, var(--primary-color) 18%, transparent);
-			-x-shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.22), 0 0 0 1px hsla(0,0%,100%,0.08) inset;
-			-x-radius-sm: 8px;
-			-x-radius-md: 12px;
-			-x-radius-lg: 28px;
-			-x-radius-full: 50%;
+			--shadow: 0 4px 12px rgba(0,0,0,0.15), 0 1px 2px rgba(0,0,0,.22), 0 0 0 1px hsla(0,0%,100%,0.08) inset;
+			--radius-sm: 8px;
+			--radius-md: 12px;
+			--radius-lg: 28px;
+			--radius-full: 50%;
 		}
 
 		.ios-select-dialog {
+			display: flex;
+			flex-direction: column;
 			width: 400px;
 			max-width: 90%;
 			max-height: 80vh;
@@ -32,7 +34,6 @@
 			box-shadow: var(--shadow);
 			font-family: var(--base-sans-serif);
 			overflow: hidden;
-			transition: height 200ms ease-out;
 		}
 
 		.ios-select-dialog::backdrop {
@@ -120,15 +121,22 @@
 		}
 
 		.ios-select-dialog__options {
-			max-height: calc(80vh - 55px);
+			display: flex;
+			flex-direction: column;
+			flex: 1 1 auto;
+			min-height: 0;
 			overflow-y: auto;
 			padding: 8px;
 			-webkit-overflow-scrolling: touch;
 		}
 
-		.ios-select-dialog__options:not(:has(.ios-select-dialog__option:not([hidden])))::before{
+		.ios-select-dialog__options:not(:has(.ios-select-dialog__option:not([hidden])))::before {
 			content: "No options available";
-			display: block;
+			display: flex;
+			align-items: center;
+			justify-content: center;
+			flex-grow: 1;
+			min-height: 120px;
 			padding: 12px;
 			color: var(--text-muted);
 			font-size: 14px;
@@ -243,7 +251,6 @@
 			.ios-select-dialog,
 			.ios-select-dialog::backdrop {
 				animation: none;
-				transition: none;
 			}
 		}
 	`;
@@ -251,7 +258,6 @@
 	const IOSSelect = {
 		dialog: null,
 		activeSelect: null,
-		resizeObserver: null,
 
 		init() {
 			this.injectStyles();
@@ -346,7 +352,6 @@
 			const searchInput = dialog.querySelector(".ios-select-dialog__search-input");
 			const clearBtn = dialog.querySelector(".ios-select-dialog__clear-btn");
 			const closeButton = dialog.querySelector(".ios-select-dialog__close");
-			const optionsContainer = dialog.querySelector(".ios-select-dialog__options");
 
 			searchInput.addEventListener("input", (e) => {
 				this.filterOptions(e.target.value);
@@ -375,30 +380,9 @@
 				this.dialog.style.height = "";
 			});
 
-			if ("ResizeObserver" in window) {
-				this.resizeObserver = new ResizeObserver(() => {
-					if (this.dialog && this.dialog.open) {
-						this.updateDialogHeight();
-					}
-				});
-				this.resizeObserver.observe(optionsContainer);
-			}
-
 			document.body.prepend(dialog);
 
 			this.dialog = dialog;
-		},
-
-		updateDialogHeight() {
-			if (!this.dialog || !this.dialog.open) return;
-
-			const header = this.dialog.querySelector(".ios-select-dialog__header");
-			const options = this.dialog.querySelector(".ios-select-dialog__options");
-
-			const maxHeight = window.innerHeight * 0.8;
-			const targetHeight = header.offsetHeight + options.scrollHeight;
-
-			this.dialog.style.height = `${Math.min(targetHeight, maxHeight)}px`;
 		},
 
 		filterOptions(query) {
@@ -444,8 +428,6 @@
 					option.setAttribute("hidden", "");
 				}
 			});
-
-			this.updateDialogHeight();
 		},
 
 		clearDialog() {
@@ -571,9 +553,9 @@
 			});
 
 			this.dialog.showModal();
-			requestAnimationFrame(() => {
-				this.updateDialogHeight();
-			});
+
+			// Lock dialog height to initial render height so searches don't collapse or jump size
+			this.dialog.style.height = `${this.dialog.offsetHeight}px`;
 
 			const selectedOption = optionsContainer.querySelector(
 				'[aria-selected="true"]'
