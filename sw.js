@@ -4,6 +4,7 @@ const ASSETS = [
 	'./index.html',
 	'./src/fabigation-mod.js',
 	'./src/shake.js',
+	'./src/ios-select.js',
 	'./src/MSR.css',
 	'./src/MSR.woff2'
 ];
