@@ -490,6 +490,7 @@
 					</div>
 					<select id="setTheme" class="ios-select-overlay">
 						<option value="default">Default</option>
+						<hr>
 						<option value="dark">Dark</option>
 						<option value="light">Light</option>
 					</select>
@@ -2005,7 +2006,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 		const parts = transOpt.innerText.split(' - ');
 		if (parts.length > 1) fullTransName = parts[1];
 	}
-	createEl('div', { className: 'subtitle', innerHTML: `${fullTransName}` }, container);
+	createEl('div', { className: 'subtitle', innerHTML: `${fullTransName}`, onclick: () => { if (typeof IOSSelect !== 'undefined') { IOSSelect.open($('transSelect')); } } }, container);
 	let versesContainer = createEl('div', { id: 'versesContainer', className: 'verses-container', innerHTML: `` }, container);
 
 	verses.forEach((text, vNum) => {
