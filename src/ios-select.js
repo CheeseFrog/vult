@@ -97,6 +97,7 @@
 			font-size: 14px;
 			line-height: 1;
 			cursor: pointer;
+			animation: fadeIn var(--dur) var(--ease-out) forwards;
 		}
 
 		.ios-select-dialog__search-input:not(:placeholder-shown) + .ios-select-dialog__clear-btn {
@@ -198,7 +199,12 @@
 			transition: background var(--dur) var(--ease-out);
 		}
 
-		.ios-select-dialog__option:not(:disabled):hover,
+		@media (hover: hover) {
+			.ios-select-dialog__option:not(:disabled):hover {
+				outline: none;
+				background: var(--highlight);
+			}
+		}
 		.ios-select-dialog__option:not(:disabled):focus-visible {
 			outline: none;
 			background: var(--highlight);
