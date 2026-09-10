@@ -178,7 +178,7 @@
 		.modal-btn.primary:active { background: color-mix(in srgb, var(--primary-color) 80%, black 20%); }
 		.modal-actions { display: flex; gap: 10px; margin-top: 20px; }
 		.modal-actions .modal-btn { margin-top: 0; flex: 1; }
-		.bookmark-item:active .bookmark-ref, .translation-select-wrapper:active, :is([onclick], button):active:not(.ios-row) :is(.material-symbols-rounded, .text-primary) { color: color-mix(in srgb, var(--primary-color), var(--text-color) 35%); }
+		.bookmark-item:active .bookmark-ref, .translation-select-wrapper:active, :is([onclick], button):active:not(.ios-row) :is(.material-symbols-rounded, .text-primary), #readerSubtitle:active { color: color-mix(in srgb, var(--primary-color), var(--text-color) 35%); }
 
 		/* iOS Settings Lists */
 		.ios-list { border-radius: var(--radius-md); overflow: hidden; margin-bottom: 20px; border: 1px solid var(--border-color); }
@@ -2006,7 +2006,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 		const parts = transOpt.innerText.split(' - ');
 		if (parts.length > 1) fullTransName = parts[1];
 	}
-	createEl('div', { className: 'subtitle', innerHTML: `${fullTransName}`, onclick: () => { if (typeof IOSSelect !== 'undefined') { IOSSelect.open($('transSelect')); } } }, container);
+	createEl('div', { className: 'subtitle', id: 'readerSubtitle', innerHTML: `${fullTransName}`, onclick: () => { if (typeof IOSSelect !== 'undefined') { IOSSelect.open($('transSelect')); } } }, container);
 	let versesContainer = createEl('div', { id: 'versesContainer', className: 'verses-container', innerHTML: `` }, container);
 
 	verses.forEach((text, vNum) => {
@@ -2350,7 +2350,28 @@ bindSetting('setSource', 'source', 'sourceDisplay', async () => {
 	}
 });
 
-$('transSelect').addEventListener('change', async (e) => { updateTransDisplay(); await switchTranslation(e.target.value); renderHome(); });
+$('transSelect').addEventListener('change', async (e) => {
+	updateTransDisplay();
+	
+	const wasInReader = $('view-reader').classList.contains('active');
+	const oldBookName = (wasInReader && currentBookIndex >= 0) ? getCurrentBook().name : null;
+	const oldChapter = currentChapter;
+	
+	await switchTranslation(e.target.value);
+	
+	if (wasInReader && oldBookName) {
+		let { exists, isNT } = checkBookExists(oldBookName);
+		if (exists) {
+			let book = isNT ? activeData.NT.find(b => b.name === oldBookName) : activeData.OT.find(b => b.name === oldBookName);
+			if (book && book.chapters && book.chapters[oldChapter]) {
+				openChapter(oldBookName, isNT, oldChapter, false);
+				return;
+			}
+		}
+	}
+	
+	renderHome();
+});
 
 function openSettings() {
 	const hydrate = (id, stateVal, dispId) => {
