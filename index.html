@@ -295,7 +295,8 @@
 		/* .verse.playing { contain: none; } */
 		.verse::before { content: ''; position: absolute; top: 0; left: -6px; width: 4px; height: 100%; border-radius: var(--radius-sm); pointer-events: none; transition: background-color var(--dur) var(--ease-out); }
 		.verse.playing::before { background-color: var(--primary-color); }
-		.verse + .verse.playing::before { animation: fadeDown var(--dur) var(--ease-out) forwards; }
+		.verse.played:not(.playing):not(.selected) { color: color-mix(var(--text-muted), var(--text-color)); }
+		.verse.played + .verse.playing::before { animation: fadeDown var(--dur) var(--ease-out) forwards; }
 		[dir="rtl"] .verse.playing ::before { left: auto; right: -6px; }
 		.verse.playing.paused::before { background-color: var(--text-muted); }
 		/* .verse.playing.paused { background-color: var(--playing-bg); } box-shadow: -4px 0 0 0 var(--text-muted); */
@@ -1082,8 +1083,8 @@ const checkBookExists = (bookName) => {
 	return { exists: isNT || activeData.OT.some(b => b.name === bookName), isNT };
 };
 
-const clearPlayingVerseStyles = () => {
-	document.querySelectorAll('.verse.playing').forEach(el => el.classList.remove('playing', 'paused'));
+const clearPlayingVerseStyles = (all) => {
+	document.querySelectorAll('.verse').forEach(el => el.classList.remove('playing', 'paused', 'flash', ...(all ? ['played'] : [])));
 };
 
 const registerInteraction = () => {
@@ -2252,10 +2253,10 @@ function resumeSpeech() {
 }
 
 function highlightPlayingVerse() {
-	clearPlayingVerseStyles();
+	clearPlayingVerseStyles(false);
 	let el = $(`v${playingIndex}`);
 	if (el) {
-		el.classList.add('playing');
+		el.classList.add('playing', 'played');
 		if (isPaused) el.classList.add('paused');
 		else scrollIntoVerse(playingIndex);
 	}
@@ -2268,7 +2269,7 @@ function cancelSpeech() {
 	if (playBtn) {
 		playBtn.style.setProperty('--progress-angle', '0deg');
 	}
-	clearPlayingVerseStyles();
+	clearPlayingVerseStyles(true);
 }
 
 function prevChapter() {
