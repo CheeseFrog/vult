@@ -370,7 +370,6 @@
 			const closeButton = dialog.querySelector(".ios-select-dialog__close");
 
 			searchInput.addEventListener("focus", () => {
-				console.log("Search input focused");
 				if (!dialog.style.height) {
 					const currentHeight = dialog.getBoundingClientRect().height;
 					dialog.style.height = `${currentHeight}px`;
