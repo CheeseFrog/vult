@@ -54,6 +54,7 @@
 			border-bottom: 1px solid var(--border-color);
 			gap: 12px;
 			flex-shrink: 0;
+			justify-content: flex-end;
 		}
 
 		.ios-select-dialog__search-wrapper {
@@ -61,6 +62,11 @@
 			display: flex;
 			align-items: center;
 			flex-grow: 1;
+		}
+
+		.ios-select-dialog--few-options
+			.ios-select-dialog__search-wrapper {
+			display: none;
 		}
 
 		.ios-select-dialog__search-input {
@@ -474,6 +480,10 @@
 
 			this.activeSelect = select;
 
+			this.dialog.classList.remove(
+				"ios-select-dialog--few-options"
+			);
+
 			const optionsContainer = this.dialog.querySelector(
 				".ios-select-dialog__options"
 			);
@@ -574,6 +584,12 @@
 					addChild(child, optionsContainer);
 				}
 			});
+
+			if (optionIndex <= 4) {
+				this.dialog.classList.add(
+					"ios-select-dialog--few-options"
+				);
+			}
 
 			this.dialog.showModal();
 
