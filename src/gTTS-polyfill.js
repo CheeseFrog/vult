@@ -1,18 +1,38 @@
 (function() {
 	const nativeSynth = window.speechSynthesis;
 	
-	const customLocales = ['en', 'en-US', 'en-GB', 'ar', 'de', 'es', 'fr', 'hi', 'ja', 'ru', 'zh'];
-	const Languages = ['English', 'English', 'English', 'Arabic', 'German', 'Spanish', 'French', 'Hindi', 'Japanese', 'Russian', 'Chinese'];
+	const customLocales = ['en', 'en-US', 'en-GB', 'ar', 'de', 'es', 'fr', 'hi', 'ja', 'pt','ru', 'zh'];
+	const Languages = ['English', 'English', 'English', 'Arabic', 'German', 'Spanish', 'French', 'Hindi', 'Japanese', 'Portuguese', 'Russian', 'Chinese'];
 	const googleVoices = customLocales.map(lang => ({
-		default: false,
-		lang: lang,
+		default: lang === 'en', // Set English as the default polyfill voice
+		lang: "[web]",
 		localService: false,
-		name: `Google - ${Languages[customLocales.indexOf(lang)]}`,
+		name: `Google TTS - ${Languages[customLocales.indexOf(lang)]} (${lang})`,
 		voiceURI: `Google Translate TTS (${lang})`,
+		_lang: lang,
 		_isGoogleTTS: true // Hidden flag for internal routing
 	}));
 
-	if (window.SpeechSynthesisUtterance) {
+	// Polyfill Utterance if missing completely, otherwise patch the native one
+	if (!window.SpeechSynthesisUtterance) {
+		window.SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
+			constructor(text = "") {
+				this.text = text;
+				this.lang = "en";
+				this.volume = 1;
+				this.rate = 1;
+				this.pitch = 1;
+				this.voice = null;
+				this.onstart = null;
+				this.onend = null;
+				this.onerror = null;
+				this.onpause = null;
+				this.onresume = null;
+				this.onmark = null;
+				this.onboundary = null;
+			}
+		};
+	} else {
 		const originalVoiceDescriptor = Object.getOwnPropertyDescriptor(window.SpeechSynthesisUtterance.prototype, 'voice');
 		
 		if (originalVoiceDescriptor) {
@@ -51,7 +71,6 @@
 			this.currentUtterance = null;
 			this.activeAudios = new Set();
 			
-			// Allow developers to inject a custom proxy routing function
 			this.proxyFn = null;
 			
 			this.onvoiceschanged = null;
@@ -64,7 +83,6 @@
 			}
 		}
 
-		// New method to set a proxy callback
 		setProxy(fn) {
 			if (typeof fn === 'function') {
 				this.proxyFn = fn;
@@ -95,7 +113,10 @@
 		}
 
 		speak(utterance) {
-			if (utterance.voice && utterance.voice._isGoogleTTS) {
+			const isCustomVoice = utterance.voice && utterance.voice._isGoogleTTS;
+			
+			// Force route to custom engine if requested OR if there is no native engine
+			if (isCustomVoice || !nativeSynth) {
 				this.googleQueue.push(utterance);
 				if (!this.googleSpeaking && !this.googlePaused) {
 					this._processGoogleQueue();
@@ -183,7 +204,7 @@
 
 			let lang = "en";
 			if (this.currentUtterance.voice && this.currentUtterance.voice._isGoogleTTS) {
-				lang = this.currentUtterance.voice.lang;
+				lang = this.currentUtterance.voice._lang;
 			} else if (this.currentUtterance.lang) {
 				lang = this.currentUtterance.lang;
 			}
@@ -191,7 +212,6 @@
 			const encodedText = encodeURIComponent(this.currentUtterance.text);
 			const baseUrl = `https://translate.google.com/translate_tts?client=tw-ob&tl=${lang}&q=${encodedText}`;
 
-			// Pass the URL through the proxy function if one is configured
 			const finalUrl = this.proxyFn ? this.proxyFn(baseUrl) : baseUrl;
 
 			const audio = new Audio(finalUrl);
@@ -274,6 +294,7 @@
 	const customSynth = new HybridSpeechSynthesis();
 	
 	try {
+		// Deleting works if the environment defines it but allows overrides
 		delete window.speechSynthesis;
 		Object.defineProperty(window, 'speechSynthesis', {
 			value: customSynth,
@@ -285,4 +306,3 @@
 		window.speechSynthesis = customSynth;
 	}
 })();
-
