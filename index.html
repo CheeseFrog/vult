@@ -8,6 +8,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 	<meta name="apple-mobile-web-app-title" content="Calculator">
+	<meta http-equiv="Access-Control-Allow-Origin" content="*" />
 	<link rel="apple-touch-icon" href="src/icon-512.png">
 	<title>Calculator</title>
 	<link rel="icon" href="src/icon-512.png" />
@@ -19,6 +20,7 @@
 	<script src="src/shake.js" onerror="this.onerror=null; this.src='https://cdn.jsdelivr.net/gh/alexgibson/shake.js/shake.js';"></script>
 	<script src="src/ios-select.js" onerror="this.onerror=null;"></script>
 	<script src="src/fabigation-mod.js"></script>
+	<script src="src/gTTS-polyfill.js"></script>
 	<style>
 		:root {
 			/* Animation & Transition Variables */
@@ -2463,9 +2465,9 @@ function populateVoices() {
 	const groups = {};
 
 	voices.forEach(v => {
-		if (!groups[v.lang]) {
+		if (!groups[v.lang.split("-")[0]]) {
 			select.appendChild(document.createElement('hr'));
-			groups[v.lang] = true; // createEl('optgroup', { label: v.lang }, select);
+			groups[v.lang.split("-")[0]] = true; // createEl('optgroup', { label: v.lang }, select);
 		}
 
 		createEl('option', { value: v.voiceURI,	innerText: `${v.name} ${v.lang}` }, select);
