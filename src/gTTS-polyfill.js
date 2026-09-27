@@ -1,8 +1,6 @@
 (function() {
-	// Keep a reference to the native engine
 	const nativeSynth = window.speechSynthesis;
 	
-	// Define our custom voices array based on requested locales
 	const customLocales = ['en', 'en-US', 'en-GB', 'ar', 'de', 'es', 'fr', 'hi', 'ja', 'ru', 'zh'];
 	const Languages = ['English', 'English', 'English', 'Arabic', 'German', 'Spanish', 'French', 'Hindi', 'Japanese', 'Russian', 'Chinese'];
 	const googleVoices = customLocales.map(lang => ({
@@ -14,14 +12,12 @@
 		_isGoogleTTS: true // Hidden flag for internal routing
 	}));
 
-	// Intercept the native utterance voice setter to bypass strict type checking
 	if (window.SpeechSynthesisUtterance) {
 		const originalVoiceDescriptor = Object.getOwnPropertyDescriptor(window.SpeechSynthesisUtterance.prototype, 'voice');
 		
 		if (originalVoiceDescriptor) {
 			Object.defineProperty(window.SpeechSynthesisUtterance.prototype, 'voice', {
 				set: function(val) {
-					// Use the hidden flag to identify our custom voices
 					if (val && val._isGoogleTTS) {
 						this.__customVoice = val;
 					} else {
@@ -32,7 +28,6 @@
 					}
 				},
 				get: function() {
-					// Return custom voice if present, otherwise fallback to native getter
 					if (this.__customVoice) {
 						return this.__customVoice;
 					}
@@ -56,7 +51,9 @@
 			this.currentUtterance = null;
 			this.activeAudios = new Set();
 			
-			// Forward voiceschanged events from the native engine
+			// Allow developers to inject a custom proxy routing function
+			this.proxyFn = null;
+			
 			this.onvoiceschanged = null;
 			if (nativeSynth) {
 				nativeSynth.onvoiceschanged = (e) => {
@@ -64,6 +61,13 @@
 						this.onvoiceschanged(e);
 					}
 				};
+			}
+		}
+
+		// New method to set a proxy callback
+		setProxy(fn) {
+			if (typeof fn === 'function') {
+				this.proxyFn = fn;
 			}
 		}
 
@@ -84,7 +88,6 @@
 
 		getVoices() {
 			const nativeVoices = nativeSynth ? nativeSynth.getVoices() : [];
-			// Prevent appending duplicates if called multiple times
 			if (!nativeVoices.find(v => v._isGoogleTTS)) {
 				return [...nativeVoices, ...googleVoices];
 			}
@@ -92,14 +95,12 @@
 		}
 
 		speak(utterance) {
-			// Route to custom engine if one of the Google voices is specifically selected
 			if (utterance.voice && utterance.voice._isGoogleTTS) {
 				this.googleQueue.push(utterance);
 				if (!this.googleSpeaking && !this.googlePaused) {
 					this._processGoogleQueue();
 				}
 			} else if (nativeSynth) {
-				// Otherwise, fallback to native behavior
 				nativeSynth.speak(utterance);
 			}
 		}
@@ -109,7 +110,6 @@
 				nativeSynth.cancel();
 			}
 
-			// Clean up Google TTS engine
 			this.activeAudios.forEach(audio => {
 				audio.onplay = null;
 				audio.onended = null;
@@ -181,7 +181,6 @@
 			this.googlePaused = false;
 			this.currentUtterance = this.googleQueue.shift();
 
-			// Prioritize the custom voice language, then the utterance language
 			let lang = "en";
 			if (this.currentUtterance.voice && this.currentUtterance.voice._isGoogleTTS) {
 				lang = this.currentUtterance.voice.lang;
@@ -190,13 +189,16 @@
 			}
 			
 			const encodedText = encodeURIComponent(this.currentUtterance.text);
-			const url = `https://translate.google.com/translate_tts?client=tw-ob&tl=${lang}&q=${encodedText}`;
+			const baseUrl = `https://translate.google.com/translate_tts?client=tw-ob&tl=${lang}&q=${encodedText}`;
 
-			const audio = new Audio(url);
+			// Pass the URL through the proxy function if one is configured
+			const finalUrl = this.proxyFn ? this.proxyFn(baseUrl) : baseUrl;
+
+			const audio = new Audio(finalUrl);
 			this.activeAudios.add(audio);
 			this.currentAudio = audio;
 			
-			audio.playbackRate = Math.max(0.5, Math.min(this.currentUtterance.rate, 4.0));
+			audio.playbackRate = Math.max(0.5, Math.min(this.currentUtterance.rate*1.2, 4.0));
 			audio.preservesPitch = true; 
 
 			const cleanup = () => {
@@ -283,3 +285,4 @@
 		window.speechSynthesis = customSynth;
 	}
 })();
+
