@@ -72,7 +72,7 @@
 		.ios-select-dialog__search-input {
 			width: 100%;
 			height: 36px;
-			padding: 0 32px 0 12px;
+			padding: 0 32px 0 14px;
 			border: 0;
 			border-radius: var(--radius-lg);
 			background: var(--surface-color-active);
@@ -97,8 +97,8 @@
 			padding: 0;
 			border: 0;
 			border-radius: var(--radius-full);
-			background: var(--text-muted);
-			color: var(--bg-color);
+			background: var(--surface-color);
+			color: var(--text-muted);
 			font: inherit;
 			font-size: 14px;
 			line-height: 1;
@@ -198,7 +198,7 @@
 			background: transparent;
 			color: var(--text-color);
 			font: inherit;
-			font-size: 17px;
+			font-size: 16px;
 			text-align: left;
 			cursor: pointer;
 			-webkit-tap-highlight-color: transparent;

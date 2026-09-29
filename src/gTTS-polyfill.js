@@ -1,19 +1,49 @@
 (function() {
 	const nativeSynth = window.speechSynthesis;
 	
+	async function detectLanguage(text) {
+		const url = "https://translate.googleapis.com/translate_a/single" +
+			"?client=gtx" +
+			"&sl=auto" +
+			"&tl=en" +
+			"&dt=t" +
+			`&q=${encodeURIComponent(text)}`;
+			
+		const response = await fetch(url);
+		if (!response.ok) {
+			throw new Error(`HTTP ${response.status}`);
+		}
+		const data = await response.json();
+		// Usually the detected source language is in data[2].
+		return {
+			language: data[2] || null,
+			raw: data
+		};
+	}
+	
 	const customLocales = ['en', 'en-US', 'en-GB', 'ar', 'de', 'es', 'fr', 'hi', 'ja', 'pt','ru', 'zh'];
 	const Languages = ['English', 'English', 'English', 'Arabic', 'German', 'Spanish', 'French', 'Hindi', 'Japanese', 'Portuguese', 'Russian', 'Chinese'];
 	const googleVoices = customLocales.map(lang => ({
-		default: lang === 'en', // Set English as the default polyfill voice
+		default: lang === 'en',
 		lang: "[web]",
 		localService: false,
 		name: `Google TTS - ${Languages[customLocales.indexOf(lang)]} (${lang})`,
 		voiceURI: `Google Translate TTS (${lang})`,
 		_lang: lang,
-		_isGoogleTTS: true // Hidden flag for internal routing
+		_isGoogleTTS: true
 	}));
+	
+	// Add the auto-detect option to the voices array
+	googleVoices.unshift({
+		default: false,
+		lang: "[web]",
+		localService: false,
+		name: "Google TTS - Auto Detect",
+		voiceURI: "Google Translate TTS (auto)",
+		_lang: "auto",
+		_isGoogleTTS: true
+	});
 
-	// Polyfill Utterance if missing completely, otherwise patch the native one
 	if (!window.SpeechSynthesisUtterance) {
 		window.SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
 			constructor(text = "") {
@@ -67,6 +97,7 @@
 			this.googleQueue = [];
 			this.googleSpeaking = false;
 			this.googlePaused = false;
+			this.isDetectingLang = false;
 			this.currentAudio = null;
 			this.currentUtterance = null;
 			this.activeAudios = new Set();
@@ -91,7 +122,7 @@
 
 		get speaking() {
 			const nativeSpeaking = nativeSynth ? nativeSynth.speaking : false;
-			return nativeSpeaking || this.googleSpeaking;
+			return nativeSpeaking || this.googleSpeaking || this.isDetectingLang;
 		}
 
 		get paused() {
@@ -115,10 +146,9 @@
 		speak(utterance) {
 			const isCustomVoice = utterance.voice && utterance.voice._isGoogleTTS;
 			
-			// Force route to custom engine if requested OR if there is no native engine
 			if (isCustomVoice || !nativeSynth) {
 				this.googleQueue.push(utterance);
-				if (!this.googleSpeaking && !this.googlePaused) {
+				if (!this.googleSpeaking && !this.googlePaused && !this.isDetectingLang) {
 					this._processGoogleQueue();
 				}
 			} else if (nativeSynth) {
@@ -144,6 +174,7 @@
 			this.googleQueue = [];
 			this.googleSpeaking = false;
 			this.googlePaused = false;
+			this.isDetectingLang = false;
 			this.currentAudio = null;
 			this.currentUtterance = null;
 		}
@@ -189,8 +220,8 @@
 			}
 		}
 
-		_processGoogleQueue() {
-			if (this.currentAudio) return; 
+		async _processGoogleQueue() {
+			if (this.currentAudio || this.isDetectingLang) return; 
 
 			if (this.googleQueue.length === 0) {
 				this.googleSpeaking = false;
@@ -200,16 +231,33 @@
 
 			this.googleSpeaking = true;
 			this.googlePaused = false;
-			this.currentUtterance = this.googleQueue.shift();
+			
+			const utterance = this.googleQueue.shift();
+			this.currentUtterance = utterance;
 
 			let lang = "en";
-			if (this.currentUtterance.voice && this.currentUtterance.voice._isGoogleTTS) {
-				lang = this.currentUtterance.voice._lang;
-			} else if (this.currentUtterance.lang) {
-				lang = this.currentUtterance.lang;
+			if (utterance.voice && utterance.voice._isGoogleTTS) {
+				lang = utterance.voice._lang;
+			} else if (utterance.lang) {
+				lang = utterance.lang;
 			}
 			
-			const encodedText = encodeURIComponent(this.currentUtterance.text);
+			if (lang === "auto") {
+				this.isDetectingLang = true;
+				try {
+					const detected = await detectLanguage(utterance.text);
+					lang = detected.language || "en";
+				} catch (e) {
+					console.warn("Language detection failed, falling back to 'en'", e);
+					lang = "en";
+				}
+				this.isDetectingLang = false;
+				
+				// Critical check: abort if engine was cancelled while waiting for language detection
+				if (this.currentUtterance !== utterance) return;
+			}
+			
+			const encodedText = encodeURIComponent(utterance.text);
 			const baseUrl = `https://translate.google.com/translate_tts?client=tw-ob&tl=${lang}&q=${encodedText}`;
 
 			const finalUrl = this.proxyFn ? this.proxyFn(baseUrl) : baseUrl;
@@ -218,7 +266,7 @@
 			this.activeAudios.add(audio);
 			this.currentAudio = audio;
 			
-			audio.playbackRate = Math.max(0.5, Math.min(this.currentUtterance.rate*1.2, 4.0));
+			audio.playbackRate = Math.max(0.5, Math.min(utterance.rate*1.2, 4.0));
 			audio.preservesPitch = true; 
 
 			const cleanup = () => {
@@ -239,12 +287,12 @@
 				if (this.currentAudio !== audio) return;
 				cleanup();
 				
-				const utterance = this.currentUtterance;
+				const currUtt = this.currentUtterance;
 				this.currentAudio = null;
 				this.currentUtterance = null;
 				
-				if (utterance && utterance.onend) {
-					utterance.onend(new Event('end'));
+				if (currUtt && currUtt.onend) {
+					currUtt.onend(new Event('end'));
 				}
 				
 				this._processGoogleQueue();
@@ -254,12 +302,12 @@
 				if (this.currentAudio !== audio) return;
 				cleanup();
 				
-				const utterance = this.currentUtterance;
+				const currUtt = this.currentUtterance;
 				this.currentAudio = null;
 				this.currentUtterance = null;
 				
-				if (utterance && utterance.onerror) {
-					utterance.onerror(e);
+				if (currUtt && currUtt.onerror) {
+					currUtt.onerror(e);
 				}
 				
 				this._processGoogleQueue();
@@ -277,12 +325,12 @@
 					
 					cleanup();
 					
-					const utterance = this.currentUtterance;
+					const currUtt = this.currentUtterance;
 					this.currentAudio = null;
 					this.currentUtterance = null;
 					
-					if (utterance && utterance.onerror) {
-						utterance.onerror(e);
+					if (currUtt && currUtt.onerror) {
+						currUtt.onerror(e);
 					}
 					
 					this._processGoogleQueue();
@@ -294,7 +342,6 @@
 	const customSynth = new HybridSpeechSynthesis();
 	
 	try {
-		// Deleting works if the environment defines it but allows overrides
 		delete window.speechSynthesis;
 		Object.defineProperty(window, 'speechSynthesis', {
 			value: customSynth,
