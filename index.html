@@ -1546,6 +1546,7 @@ async function populateTranslations() {
 	const sourceOpt = document.createElement("option");
 	sourceOpt.disabled = true;
 	sourceOpt.textContent = "Change Data Source in Settings for more translations.";
+	select.appendChild(document.createElement("hr"));
 	select.appendChild(sourceOpt);
 	
 	select.value = state.translation;
