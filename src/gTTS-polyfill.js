@@ -14,9 +14,9 @@
 			throw new Error(`HTTP ${response.status}`);
 		}
 		const data = await response.json();
-		// Usually the detected source language is in data[2].
 		return {
 			language: data[2] || null,
+			probability: data[6] !== undefined ? Number(data[6]) : 0,
 			raw: data
 		};
 	}
@@ -34,7 +34,6 @@
 		_isGoogleTTS: true
 	}));
 	
-	// Add the auto-detect option to the voices array as the default
 	googleVoices.unshift({
 		default: true,
 		lang: "[web]",
@@ -103,6 +102,10 @@
 			this.currentUtterance = null;
 			this.activeAudios = new Set();
 			
+			this.sequenceDominantLang = null;
+			this.sequenceDominantProb = 0;
+			this.lastSequenceEndTime = 0;
+			
 			this.proxyFn = null;
 			
 			this.onvoiceschanged = null;
@@ -145,6 +148,8 @@
 		}
 
 		speak(utterance) {
+			utterance._queuedAt = Date.now();
+			
 			const isCustomVoice = utterance.voice && utterance.voice._isGoogleTTS;
 			
 			if (isCustomVoice || !nativeSynth) {
@@ -162,6 +167,9 @@
 				nativeSynth.cancel();
 			}
 
+			// Check if the engine was actively doing something
+			const wasActive = this.activeAudios.size > 0 || this.googleSpeaking || this.isDetectingLang;
+
 			this.activeAudios.forEach(audio => {
 				audio.onplay = null;
 				audio.onended = null;
@@ -178,6 +186,12 @@
 			this.isDetectingLang = false;
 			this.currentAudio = null;
 			this.currentUtterance = null;
+			
+			// Only stamp the interruption time if it was actually active.
+			// If it was idle, leave lastSequenceEndTime alone so the gap reflects true silence time.
+			if (wasActive) {
+				this.lastSequenceEndTime = Date.now();
+			}
 		}
 
 		pause() {
@@ -229,12 +243,23 @@
 				this.googlePaused = false;
 				return;
 			}
-
-			this.googleSpeaking = true;
-			this.googlePaused = false;
 			
 			const utterance = this.googleQueue.shift();
 			this.currentUtterance = utterance;
+
+			let gap = Infinity;
+			if (this.lastSequenceEndTime > 0) {
+				const queuedGap = utterance._queuedAt - this.lastSequenceEndTime;
+				gap = queuedGap < 0 ? 0 : queuedGap; 
+			}
+
+			if (gap > 500) {
+				this.sequenceDominantLang = null;
+				this.sequenceDominantProb = 0;
+			}
+
+			this.googleSpeaking = true;
+			this.googlePaused = false;
 
 			let lang = "auto";
 			if (utterance.voice && utterance.voice._isGoogleTTS) {
@@ -247,7 +272,27 @@
 				this.isDetectingLang = true;
 				try {
 					const detected = await detectLanguage(utterance.text);
-					lang = detected.language || "en";
+					const detectedLang = detected.language || "en";
+					const detectedProb = detected.probability;
+
+					if (this.sequenceDominantLang === null) {
+						// Cold Start
+						lang = detectedLang;
+						this.sequenceDominantLang = detectedLang;
+						this.sequenceDominantProb = detectedProb;
+					} else {
+						// Ongoing Sequence Lock
+						if (detectedLang === this.sequenceDominantLang) {
+							this.sequenceDominantProb = Math.max(this.sequenceDominantProb, detectedProb);
+							lang = this.sequenceDominantLang;
+						} else if (detectedProb > this.sequenceDominantProb) {
+							lang = detectedLang;
+							this.sequenceDominantLang = detectedLang;
+							this.sequenceDominantProb = detectedProb;
+						} else {
+							lang = this.sequenceDominantLang;
+						}
+					}
 				} catch (e) {
 					console.warn("Language detection failed, falling back to 'en'", e);
 					lang = "en";
@@ -291,7 +336,7 @@
 				this.currentAudio = null;
 				this.currentUtterance = null;
 				
-				// Defuse re-entrancy by executing queue loop asynchronously
+				this.lastSequenceEndTime = Date.now();
 				setTimeout(() => this._processGoogleQueue(), 0);
 				
 				if (currUtt && currUtt.onend) {
@@ -307,6 +352,7 @@
 				this.currentAudio = null;
 				this.currentUtterance = null;
 				
+				this.lastSequenceEndTime = Date.now();
 				setTimeout(() => this._processGoogleQueue(), 0);
 				
 				if (currUtt && currUtt.onerror) {
@@ -330,6 +376,7 @@
 					this.currentAudio = null;
 					this.currentUtterance = null;
 					
+					this.lastSequenceEndTime = Date.now();
 					setTimeout(() => this._processGoogleQueue(), 0);
 					
 					if (currUtt && currUtt.onerror) {
