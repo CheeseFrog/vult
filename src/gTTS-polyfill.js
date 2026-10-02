@@ -23,8 +23,9 @@
 	
 	const customLocales = ['en', 'en-US', 'en-GB', 'ar', 'de', 'es', 'fr', 'hi', 'ja', 'pt','ru', 'zh'];
 	const Languages = ['English', 'English', 'English', 'Arabic', 'German', 'Spanish', 'French', 'Hindi', 'Japanese', 'Portuguese', 'Russian', 'Chinese'];
+	
 	const googleVoices = customLocales.map(lang => ({
-		default: lang === 'en',
+		default: false,
 		lang: "[web]",
 		localService: false,
 		name: `Google TTS - ${Languages[customLocales.indexOf(lang)]} (${lang})`,
@@ -33,9 +34,9 @@
 		_isGoogleTTS: true
 	}));
 	
-	// Add the auto-detect option to the voices array
+	// Add the auto-detect option to the voices array as the default
 	googleVoices.unshift({
-		default: false,
+		default: true,
 		lang: "[web]",
 		localService: false,
 		name: "Google TTS - Auto Detect",
@@ -48,7 +49,7 @@
 		window.SpeechSynthesisUtterance = class SpeechSynthesisUtterance {
 			constructor(text = "") {
 				this.text = text;
-				this.lang = "en";
+				this.lang = "auto";
 				this.volume = 1;
 				this.rate = 1;
 				this.pitch = 1;
@@ -138,7 +139,7 @@
 		getVoices() {
 			const nativeVoices = nativeSynth ? nativeSynth.getVoices() : [];
 			if (!nativeVoices.find(v => v._isGoogleTTS)) {
-				return [...nativeVoices, ...googleVoices];
+				return [...googleVoices, ...nativeVoices];
 			}
 			return nativeVoices;
 		}
@@ -235,7 +236,7 @@
 			const utterance = this.googleQueue.shift();
 			this.currentUtterance = utterance;
 
-			let lang = "en";
+			let lang = "auto";
 			if (utterance.voice && utterance.voice._isGoogleTTS) {
 				lang = utterance.voice._lang;
 			} else if (utterance.lang) {
@@ -253,7 +254,6 @@
 				}
 				this.isDetectingLang = false;
 				
-				// Critical check: abort if engine was cancelled while waiting for language detection
 				if (this.currentUtterance !== utterance) return;
 			}
 			
@@ -266,7 +266,7 @@
 			this.activeAudios.add(audio);
 			this.currentAudio = audio;
 			
-			audio.playbackRate = Math.max(0.5, Math.min(utterance.rate*1.2, 4.0));
+			audio.playbackRate = Math.max(0.5, Math.min(utterance.rate * 1.2, 4.0));
 			audio.preservesPitch = true; 
 
 			const cleanup = () => {
@@ -291,11 +291,12 @@
 				this.currentAudio = null;
 				this.currentUtterance = null;
 				
+				// Defuse re-entrancy by executing queue loop asynchronously
+				setTimeout(() => this._processGoogleQueue(), 0);
+				
 				if (currUtt && currUtt.onend) {
 					currUtt.onend(new Event('end'));
 				}
-				
-				this._processGoogleQueue();
 			};
 
 			audio.onerror = (e) => {
@@ -306,11 +307,11 @@
 				this.currentAudio = null;
 				this.currentUtterance = null;
 				
+				setTimeout(() => this._processGoogleQueue(), 0);
+				
 				if (currUtt && currUtt.onerror) {
 					currUtt.onerror(e);
 				}
-				
-				this._processGoogleQueue();
 			};
 
 			const playPromise = audio.play();
@@ -329,11 +330,11 @@
 					this.currentAudio = null;
 					this.currentUtterance = null;
 					
+					setTimeout(() => this._processGoogleQueue(), 0);
+					
 					if (currUtt && currUtt.onerror) {
 						currUtt.onerror(e);
 					}
-					
-					this._processGoogleQueue();
 				});
 			}
 		}
