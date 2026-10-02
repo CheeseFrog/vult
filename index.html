@@ -191,6 +191,7 @@
 		.ios-row:last-child { border-bottom-color: transparent; }
 		.ios-row-label { font-size: .95rem; color: var(--text-color); flex: 1; }
 		.ios-row-control { display: flex; align-items: center; gap: 10px; }
+		#speechVoiceRow:has(option[value*="Google"]:checked) ~ #speechPitchRow,
 		.ios-row.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
 
 		.settings-list { overflow-y: auto; max-height: 70vh; margin: -12px -8px; padding: 12px 8px; mask-image: linear-gradient(transparent, black 12px, black calc(100% - 12px), transparent);}
@@ -528,6 +529,16 @@
 			</div>
 
 			<div class="ios-list" id="speechSettingsGroup">
+				<div class="ios-row ios-select-row" id="speechVoiceRow">
+					<div class="ios-row-label">Voice</div>
+					<div class="ios-row-control">
+						<div class="ios-select-wrapper">
+							<span id="voiceDisplay" class="ios-select-display">Default</span>
+							<span class="material-symbols-rounded">chevron_right</span>
+						</div>
+					</div>
+					<select id="setVoice" class="ios-select-overlay"></select>
+				</div>
 				<div class="ios-row" id="speechRateRow">
 					<div class="ios-row-label">Speech Rate</div>
 					<div class="ios-row-control">
@@ -547,17 +558,6 @@
 							<button onclick="changeSpeechPitch(0.1)">+</button>
 						</div>
 					</div>
-				</div>
-
-				<div class="ios-row ios-select-row" id="speechVoiceRow">
-					<div class="ios-row-label">Voice</div>
-					<div class="ios-row-control">
-						<div class="ios-select-wrapper">
-							<span id="voiceDisplay" class="ios-select-display">Default</span>
-							<span class="material-symbols-rounded">chevron_right</span>
-						</div>
-					</div>
-					<select id="setVoice" class="ios-select-overlay"></select>
 				</div>
 			</div>
 
