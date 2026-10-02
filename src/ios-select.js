@@ -48,13 +48,12 @@
 		.ios-select-dialog__header {
 			display: flex;
 			align-items: center;
-			justify-content: space-between;
+			justify-content: flex-end;
 			min-height: 54px;
 			padding: 12px 16px;
 			border-bottom: 1px solid var(--border-color);
 			gap: 12px;
 			flex-shrink: 0;
-			justify-content: flex-end;
 		}
 
 		.ios-select-dialog__search-wrapper {
@@ -156,7 +155,6 @@
 			text-align: center;
 			animation: fadeUp var(--dur) var(--ease-out) forwards;
 		}
-
 
 		.ios-select-dialog__options:not(:has(.ios-select-dialog__option:not([hidden]))) hr {
 			display: none;
@@ -284,11 +282,18 @@
 			this.injectStyles();
 			this.createDialog();
 
+			// Ensure modal closes cleanly if host app navigates away
+			window.addEventListener("popstate", () => {
+				if (this.dialog && this.dialog.open) {
+					this.close();
+				}
+			});
+
 			// Event delegation supports selects added dynamically.
 			document.addEventListener("click", (event) => {
 				const select = event.target.closest("select");
 
-				if (!select || this.dialog.open) return;
+				if (!select || (this.dialog && this.dialog.open)) return;
 
 				event.preventDefault();
 				this.open(select);
@@ -297,7 +302,7 @@
 			document.addEventListener("mousedown", (event) => {
 				const select = event.target.closest("select");
 
-				if (!select || this.dialog.open) return;
+				if (!select || (this.dialog && this.dialog.open)) return;
 
 				event.preventDefault();
 				this.open(select);
@@ -306,7 +311,7 @@
 			document.addEventListener("keydown", (event) => {
 				const select = event.target.closest("select");
 
-				if (!select || this.dialog.open) return;
+				if (!select || (this.dialog && this.dialog.open)) return;
 
 				if (
 					event.key === "Enter" ||
@@ -375,14 +380,11 @@
 			const clearBtn = dialog.querySelector(".ios-select-dialog__clear-btn");
 			const closeButton = dialog.querySelector(".ios-select-dialog__close");
 
-			searchInput.addEventListener("focus", () => {
+			searchInput.addEventListener("input", (e) => {
 				if (!dialog.style.height) {
 					const currentHeight = dialog.getBoundingClientRect().height;
 					dialog.style.height = `${currentHeight}px`;
 				}
-			});
-
-			searchInput.addEventListener("input", (e) => {
 				this.filterOptions(e.target.value);
 			});
 
@@ -393,12 +395,13 @@
 			});
 
 			closeButton.addEventListener("click", () => {
-				dialog.close();
+				this.close();
 			});
 
+			// Automatically handles native hardware back button via CloseWatcher API
 			dialog.addEventListener("cancel", (event) => {
 				event.preventDefault();
-				dialog.close();
+				this.close();
 			});
 
 			dialog.addEventListener("close", () => {
@@ -473,7 +476,7 @@
 			}
 
 			if (this.dialog.open) {
-				this.dialog.close();
+				this.close();
 			}
 
 			this.clearDialog();
