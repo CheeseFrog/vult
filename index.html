@@ -1118,7 +1118,7 @@ window.onpopstate = function (event) {
 	isPopState = true;
 	if (historyDepth > 0) historyDepth--;
 	
-	const dialogs = ['settingsModal', 'advancedModal', 'helpModal', 'studyModal'];
+	const dialogs = ['ios-select-dialog', 'settingsModal', 'advancedModal', 'helpModal', 'studyModal'];
 	for(let id of dialogs) {
 		let el = $(id);
 		if (el && el.open) { el.close(); isPopState = false; return; }
