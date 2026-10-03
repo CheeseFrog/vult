@@ -191,7 +191,8 @@
 		.ios-row:last-child { border-bottom-color: transparent; }
 		.ios-row-label { font-size: .95rem; color: var(--text-color); flex: 1; }
 		.ios-row-control { display: flex; align-items: center; gap: 10px; }
-		#speechVoiceRow:has(option[value*="Google"]:checked) ~ #speechPitchRow,
+		#speechVoiceRow:has(option[value^="Google"]:checked) ~ #speechPitchRow,
+		#speechVoiceRow:has(option[value=""]:checked):not(:has(option:not([value=""]):not([value^="Google"]))) ~ #speechPitchRow,
 		.ios-row.disabled { opacity: 0.4; pointer-events: none; filter: grayscale(100%); }
 
 		.settings-list { overflow-y: auto; max-height: 70vh; margin: -12px -8px; padding: 12px 8px; mask-image: linear-gradient(transparent, black 12px, black calc(100% - 12px), transparent);}
