@@ -187,8 +187,7 @@
 			this.currentAudio = null;
 			this.currentUtterance = null;
 			
-			// Only stamp the interruption time if it was actually active.
-			// If it was idle, leave lastSequenceEndTime alone so the gap reflects true silence time.
+			// Only stamp the interruption time if it was actually active. // If it was idle, leave lastSequenceEndTime alone so the gap reflects true silence time.
 			if (wasActive) {
 				this.lastSequenceEndTime = Date.now();
 			}
@@ -269,37 +268,39 @@
 			}
 			
 			if (lang === "auto") {
-				this.isDetectingLang = true;
-				try {
-					const detected = await detectLanguage(utterance.text);
-					const detectedLang = detected.language || "en";
-					const detectedProb = detected.probability;
+				if (this.sequenceDominantLang !== null && this.sequenceDominantProb === 1) {
+					lang = this.sequenceDominantLang;
+				} else {
+					this.isDetectingLang = true;
+					try {
+						const detected = await detectLanguage(utterance.text);
+						const detectedLang = detected.language || "en";
+						const detectedProb = detected.probability;
 
-					if (this.sequenceDominantLang === null) {
-						// Cold Start
-						lang = detectedLang;
-						this.sequenceDominantLang = detectedLang;
-						this.sequenceDominantProb = detectedProb;
-					} else {
-						// Ongoing Sequence Lock
-						if (detectedLang === this.sequenceDominantLang) {
-							this.sequenceDominantProb = Math.max(this.sequenceDominantProb, detectedProb);
-							lang = this.sequenceDominantLang;
-						} else if (detectedProb > this.sequenceDominantProb) {
+						if (this.sequenceDominantLang === null) {
 							lang = detectedLang;
 							this.sequenceDominantLang = detectedLang;
 							this.sequenceDominantProb = detectedProb;
 						} else {
-							lang = this.sequenceDominantLang;
+							if (detectedLang === this.sequenceDominantLang) {
+								this.sequenceDominantProb = Math.max(this.sequenceDominantProb, detectedProb);
+								lang = this.sequenceDominantLang;
+							} else if (detectedProb > this.sequenceDominantProb) {
+								lang = detectedLang;
+								this.sequenceDominantLang = detectedLang;
+								this.sequenceDominantProb = detectedProb;
+							} else {
+								lang = this.sequenceDominantLang;
+							}
 						}
+					} catch (e) {
+						console.warn("Language detection failed, falling back to 'en'", e);
+						lang = "en";
 					}
-				} catch (e) {
-					console.warn("Language detection failed, falling back to 'en'", e);
-					lang = "en";
+					this.isDetectingLang = false;
+					
+					if (this.currentUtterance !== utterance) return;
 				}
-				this.isDetectingLang = false;
-				
-				if (this.currentUtterance !== utterance) return;
 			}
 			
 			const encodedText = encodeURIComponent(utterance.text);

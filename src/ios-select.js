@@ -286,6 +286,7 @@
 			window.addEventListener("popstate", () => {
 				if (this.dialog && this.dialog.open) {
 					this.close();
+					
 				}
 			});
 
@@ -341,7 +342,7 @@
 
 			const dialog = document.createElement("dialog");
 
-			dialog.className = "ios-select-dialog";
+			dialog.id = dialog.className = "ios-select-dialog";
 
 			dialog.innerHTML = `
 				<div class="ios-select-dialog__header">
@@ -594,6 +595,7 @@
 				);
 			}
 
+			history.pushState({ iosSelectOpen: true }, "");
 			this.dialog.showModal();
 
 			const selectedOption = optionsContainer.querySelector(
