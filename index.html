@@ -1277,19 +1277,23 @@ function checkSpeechSupport() {
 	} else { populateVoices(); }
 }
 
+function vib(t) {
+	if ('vibrate' in navigator) navigator.vibrate(t||40);
+}
+
 function setupAudioControls() {
 	setupLongPress($('playBtn'), 
-		() => { cancelSpeech(); playingIndex = -1; if ('vibrate' in navigator) navigator.vibrate(50); showToast("Playback stopped."); },
+		() => { cancelSpeech(); playingIndex = -1; vib(); showToast("Playback stopped."); },
 		() => togglePlay()
 	);
 
 	setupLongPress($('prevBtn'),
-		() => { seekAudio(-1); if ('vibrate' in navigator) navigator.vibrate(50); },
+		() => { seekAudio(-1); vib(); },
 		() => prevChapter()
 	);
 
 	setupLongPress($('nextBtn'),
-		() => { seekAudio(1); if ('vibrate' in navigator) navigator.vibrate(50); },
+		() => { seekAudio(1); vib(); },
 		() => nextChapter()
 	);
 }
@@ -2046,7 +2050,7 @@ function openChapter(bookName, isNT, chapterNum, scrollToVerse = false, targetVe
 		setupLongPress(p, 
 			() => {
 				copySingleVerse(book.name, chapterNum, vNum, cleanText(text)); 
-				if ('vibrate' in navigator) navigator.vibrate(50);
+				vib();
 				p.classList.remove('flash'); void p.offsetWidth; p.classList.add('flash');
 			},
 			() => toggleVerseSelection(p, vNum)
@@ -2125,7 +2129,7 @@ function copySingleVerse(book, chap, verseNum, text) {
 
 function copyInnerText(el) {
 	navigator.clipboard.writeText(el.innerText);
-	if ('vibrate' in navigator) navigator.vibrate(50);
+	vib();
 }
 
 async function shareSelected() {
