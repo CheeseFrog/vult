@@ -835,21 +835,54 @@ const syncSelectDisplay = (selectDom, displayDom) => {
 };
 
 // Reusable native event logic for buttons and verses that need both tap and long-press differentiation
-const setupLongPress = (element, onLongPress, onClick) => {
-	if (onLongPress) {
-		element.addEventListener('contextmenu', (e) => {
-			e.preventDefault(); // Stop native context menu from appearing
-			e.stopPropagation(); // Stop event bubbling
-			onLongPress(e);
-		});
-	}
+function setupLongPress(el, onLongPress, onTap, repeatInterval = null) {
+	let pressTimer = null;
+	let repeatTimer = null;
+	let hasFiredLongPress = false;
 
-	if (onClick) {
-		element.addEventListener('click', (e) => {
-			onClick(e);
-		});
-	}
-};
+	const stop = () => {
+		if (pressTimer) clearTimeout(pressTimer);
+		if (repeatTimer) clearInterval(repeatTimer);
+		pressTimer = null;
+		repeatTimer = null;
+	};
+
+	const handlePointerUp = (e) => {
+		stop();
+		// Clean up global listeners so they only exist while the element is held
+		window.removeEventListener('pointerup', handlePointerUp, { capture: true });
+		window.removeEventListener('pointercancel', handlePointerUp, { capture: true });
+		
+		if (!hasFiredLongPress && onTap) {
+			onTap(e);
+		}
+	};
+
+	el.addEventListener('pointerdown', (e) => {
+		// Ignore right-clicks
+		if (e.pointerType === 'mouse' && e.button !== 0) return; 
+		
+		hasFiredLongPress = false;
+		stop(); 
+
+		pressTimer = setTimeout(() => {
+			hasFiredLongPress = true;
+			onLongPress(e);
+			
+			if (repeatInterval) {
+				repeatTimer = setInterval(() => {
+					onLongPress(e);
+				}, repeatInterval);
+			}
+		}, 500); // 500ms threshold
+
+		window.addEventListener('pointerup', handlePointerUp, { capture: true });
+		window.addEventListener('pointercancel', handlePointerUp, { capture: true });
+	});
+	
+	// Prevent context menu from interrupting the hold gesture
+	el.addEventListener('contextmenu', e => e.preventDefault());
+}
 
 function cleanText(text) {
 	let mainText = text.split('<span class="comment">')[0];
@@ -1277,8 +1310,8 @@ function checkSpeechSupport() {
 	} else { populateVoices(); }
 }
 
-function vib(t) {
-	if ('vibrate' in navigator) navigator.vibrate(t||40);
+function vib(t = 40) {
+	if ('vibrate' in navigator) navigator.vibrate(t);
 }
 
 function setupAudioControls() {
@@ -1289,12 +1322,14 @@ function setupAudioControls() {
 
 	setupLongPress($('prevBtn'),
 		() => { seekAudio(-1); vib(); },
-		() => prevChapter()
+		() => prevChapter(),
+		500 // Loop interval
 	);
 
 	setupLongPress($('nextBtn'),
 		() => { seekAudio(1); vib(); },
-		() => nextChapter()
+		() => nextChapter(),
+		500
 	);
 }
 
@@ -2267,14 +2302,24 @@ function playVerse(vNum) {
 	synth.speak(currentUtterance);
 }
 
+
 function seekAudio(direction) {
 	let book = getCurrentBook();
 	if (!book || !book.chapters || !book.chapters[currentChapter]) return;
 	const verses = book.chapters[currentChapter];
 	
-	if (isPlaying && !isPaused) pauseSpeech();
+	// Capture the state before doing anything
+	const wasPlaying = isPlaying && !isPaused;
 	
-	if (!isPlaying && !isPaused && playingIndex === -1) {
+	// Neutralize the onend event before cancelling so auto-advance doesn't trigger
+	if (typeof currentUtterance !== 'undefined' && currentUtterance) {
+		currentUtterance.onend = null;
+	}
+	
+	// Stop current speech engine immediately
+	if (synth) synth.cancel();
+	
+	if (!wasPlaying && playingIndex === -1) {
 		playingIndex = 1;
 	} else {
 		playingIndex += direction;
@@ -2285,7 +2330,7 @@ function seekAudio(direction) {
 		playingIndex += direction;
 	}
 	
-	// Clamp securely within chapter boundaries
+	// Clamp securely within chapter boundaries (Safety net for missing first/last verses)
 	if (playingIndex < 1) {
 		playingIndex = 1;
 		while (!verses[playingIndex] && playingIndex < verses.length) playingIndex++;
@@ -2294,17 +2339,19 @@ function seekAudio(direction) {
 		while (!verses[playingIndex] && playingIndex > 0) playingIndex--;
 	}
 	
-	// Artificially enter a paused active state so the UI reflects it
-	isPlaying = true; 
-	isPaused = true;
-	if (synth) synth.cancel();
-	setAudioUI('play_arrow', true);
-	highlightPlayingVerse();
-	updateAudioProgress(playingIndex);
+	if (wasPlaying) {
+		// Automatically resume playback immediately at the newly found verse
+		playVerse(playingIndex);
+	} else {
+		// Artificially enter a paused active state so the UI reflects it
+		isPlaying = true; 
+		pauseSpeech();
+		updateAudioProgress(playingIndex);
+	}
 }
 
 function pauseSpeech() {
-	if (!synth || !isPlaying || isPaused) return;
+	if (!synth || !isPlaying) return;
 	isPaused = true; 
 	synth.cancel(); // Completely cancel to avoid browser hanging bugs
 	releaseWakeLock();
