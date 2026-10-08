@@ -839,6 +839,9 @@ function setupLongPress(el, onLongPress, onTap, repeatInterval = null) {
 	let pressTimer = null;
 	let repeatTimer = null;
 	let hasFiredLongPress = false;
+	let hasMoved = false;
+	let startX = 0;
+	let startY = 0;
 
 	const stop = () => {
 		if (pressTimer) clearTimeout(pressTimer);
@@ -847,25 +850,49 @@ function setupLongPress(el, onLongPress, onTap, repeatInterval = null) {
 		repeatTimer = null;
 	};
 
+	const handlePointerMove = (e) => {
+		if (hasMoved) return; // Stop calculating once threshold is broken
+		
+		const dx = Math.abs(e.clientX - startX);
+		const dy = Math.abs(e.clientY - startY);
+		
+		// 5px square deadzone
+		if (dx > 5 || dy > 5) {
+			hasMoved = true;
+			stop(); // Cancel the long press timers
+		}
+	};
+
 	const handlePointerUp = (e) => {
 		stop();
-		// Clean up global listeners so they only exist while the element is held
+		
+		// Clean up global listeners
 		window.removeEventListener('pointerup', handlePointerUp, { capture: true });
 		window.removeEventListener('pointercancel', handlePointerUp, { capture: true });
+		window.removeEventListener('pointermove', handlePointerMove, { capture: true });
 		
-		if (!hasFiredLongPress && onTap) {
+		// Only fire tap if the user didn't trigger long press AND didn't scroll away
+		if (!hasFiredLongPress && !hasMoved && onTap) {
 			onTap(e);
 		}
 	};
 
 	el.addEventListener('pointerdown', (e) => {
-		// Ignore right-clicks
-		if (e.pointerType === 'mouse' && e.button !== 0) return; 
+		// Handle right-clicks
+		if (e.pointerType === 'mouse' && e.button !== 0 && !hasFiredLongPress) {
+			onLongPress(e);
+			return;
+		}
 		
 		hasFiredLongPress = false;
+		hasMoved = false;
+		startX = e.clientX;
+		startY = e.clientY;
 		stop(); 
 
 		pressTimer = setTimeout(() => {
+			if (hasMoved) return; // Extra safety check
+			
 			hasFiredLongPress = true;
 			onLongPress(e);
 			
@@ -878,6 +905,7 @@ function setupLongPress(el, onLongPress, onTap, repeatInterval = null) {
 
 		window.addEventListener('pointerup', handlePointerUp, { capture: true });
 		window.addEventListener('pointercancel', handlePointerUp, { capture: true });
+		window.addEventListener('pointermove', handlePointerMove, { capture: true });
 	});
 	
 	// Prevent context menu from interrupting the hold gesture
