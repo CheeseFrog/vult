@@ -1267,6 +1267,14 @@ function init() {
 		localStorage.setItem('vult_hideHelp', (!e.target.checked).toString());
 	});
 	$('calcHelpBtn').addEventListener('click', () => openModal('helpModal', 'modal-help'));
+
+	window.addEventListener('focus', () => {
+		// If the app thinks it is playing, but the browser's speech engine has abruptly stopped
+		if (isPlaying && !isPaused && synth && !synth.speaking) {
+			pauseSpeech();
+			showToast("System unable to play audio in background."); // Optional, but helpful for UX
+		}
+	});
 }
 
 function showWelcomeScreen() {
