@@ -98,15 +98,46 @@
 			this.googleSpeaking = false;
 			this.googlePaused = false;
 			this.isDetectingLang = false;
-			this.currentAudio = null;
 			this.currentUtterance = null;
-			this.activeAudios = new Set();
 			
 			this.sequenceDominantLang = null;
 			this.sequenceDominantProb = 0;
 			this.lastSequenceEndTime = 0;
 			
 			this.proxyFn = null;
+			
+			// Single persistent audio element to bypass strict autoplay policies
+			this.audioElement = new Audio();
+			
+			this.audioElement.onplay = () => {
+				if (this.currentUtterance && this.currentUtterance.onstart) {
+					this.currentUtterance.onstart(new Event('start'));
+				}
+			};
+
+			this.audioElement.onended = () => {
+				const currUtt = this.currentUtterance;
+				this.currentUtterance = null;
+				
+				this.lastSequenceEndTime = Date.now();
+				setTimeout(() => this._processGoogleQueue(), 0);
+				
+				if (currUtt && currUtt.onend) {
+					currUtt.onend(new Event('end'));
+				}
+			};
+
+			this.audioElement.onerror = (e) => {
+				const currUtt = this.currentUtterance;
+				this.currentUtterance = null;
+				
+				this.lastSequenceEndTime = Date.now();
+				setTimeout(() => this._processGoogleQueue(), 0);
+				
+				if (currUtt && currUtt.onerror) {
+					currUtt.onerror(e);
+				}
+			};
 			
 			this.onvoiceschanged = null;
 			if (nativeSynth) {
@@ -167,27 +198,18 @@
 				nativeSynth.cancel();
 			}
 
-			// Check if the engine was actively doing something
-			const wasActive = this.activeAudios.size > 0 || this.googleSpeaking || this.isDetectingLang;
+			const wasActive = this.googleSpeaking || this.isDetectingLang || this.currentUtterance !== null;
 
-			this.activeAudios.forEach(audio => {
-				audio.onplay = null;
-				audio.onended = null;
-				audio.onerror = null;
-				audio.pause();
-				audio.removeAttribute('src');
-				audio.load();
-			});
-			this.activeAudios.clear();
+			this.audioElement.pause();
+			this.audioElement.removeAttribute('src');
+			this.audioElement.load();
 			
 			this.googleQueue = [];
 			this.googleSpeaking = false;
 			this.googlePaused = false;
 			this.isDetectingLang = false;
-			this.currentAudio = null;
 			this.currentUtterance = null;
 			
-			// Only stamp the interruption time if it was actually active. // If it was idle, leave lastSequenceEndTime alone so the gap reflects true silence time.
 			if (wasActive) {
 				this.lastSequenceEndTime = Date.now();
 			}
@@ -198,10 +220,10 @@
 				nativeSynth.pause();
 			}
 
-			if (this.currentAudio && !this.googlePaused) {
-				this.currentAudio.pause();
+			if (this.currentUtterance && !this.googlePaused) {
+				this.audioElement.pause();
 				this.googlePaused = true;
-				if (this.currentUtterance && this.currentUtterance.onpause) {
+				if (this.currentUtterance.onpause) {
 					this.currentUtterance.onpause(new Event('pause'));
 				}
 			}
@@ -212,20 +234,18 @@
 				nativeSynth.resume();
 			}
 
-			if (this.currentAudio && this.googlePaused) {
-				const audio = this.currentAudio;
-				const playPromise = audio.play();
+			if (this.currentUtterance && this.googlePaused) {
+				const playPromise = this.audioElement.play();
 				
 				if (playPromise !== undefined) {
 					playPromise.catch(e => {
-						if (this.currentAudio !== audio) return;
 						if (e.name !== 'AbortError' && this.currentUtterance && this.currentUtterance.onerror) {
 							this.currentUtterance.onerror(e);
 						}
 					});
 				}
 				this.googlePaused = false;
-				if (this.currentUtterance && this.currentUtterance.onresume) {
+				if (this.currentUtterance.onresume) {
 					this.currentUtterance.onresume(new Event('resume'));
 				}
 			} else if (this.googlePaused && this.googleQueue.length > 0) {
@@ -235,7 +255,7 @@
 		}
 
 		async _processGoogleQueue() {
-			if (this.currentAudio || this.isDetectingLang) return; 
+			if (this.currentUtterance || this.isDetectingLang) return; 
 
 			if (this.googleQueue.length === 0) {
 				this.googleSpeaking = false;
@@ -308,73 +328,19 @@
 
 			const finalUrl = this.proxyFn ? this.proxyFn(baseUrl) : baseUrl;
 
-			const audio = new Audio(finalUrl);
-			this.activeAudios.add(audio);
-			this.currentAudio = audio;
-			
-			audio.playbackRate = Math.max(0.5, Math.min(utterance.rate * 1.2, 4.0));
-			audio.preservesPitch = true; 
+			this.audioElement.src = finalUrl;
+			this.audioElement.playbackRate = Math.max(0.5, Math.min(utterance.rate * 1.2, 4.0));
+			this.audioElement.preservesPitch = true; 
 
-			const cleanup = () => {
-				audio.onplay = null;
-				audio.onended = null;
-				audio.onerror = null;
-				this.activeAudios.delete(audio);
-			};
-
-			audio.onplay = () => {
-				if (this.currentAudio !== audio) return;
-				if (this.currentUtterance && this.currentUtterance.onstart) {
-					this.currentUtterance.onstart(new Event('start'));
-				}
-			};
-
-			audio.onended = () => {
-				if (this.currentAudio !== audio) return;
-				cleanup();
-				
-				const currUtt = this.currentUtterance;
-				this.currentAudio = null;
-				this.currentUtterance = null;
-				
-				this.lastSequenceEndTime = Date.now();
-				setTimeout(() => this._processGoogleQueue(), 0);
-				
-				if (currUtt && currUtt.onend) {
-					currUtt.onend(new Event('end'));
-				}
-			};
-
-			audio.onerror = (e) => {
-				if (this.currentAudio !== audio) return;
-				cleanup();
-				
-				const currUtt = this.currentUtterance;
-				this.currentAudio = null;
-				this.currentUtterance = null;
-				
-				this.lastSequenceEndTime = Date.now();
-				setTimeout(() => this._processGoogleQueue(), 0);
-				
-				if (currUtt && currUtt.onerror) {
-					currUtt.onerror(e);
-				}
-			};
-
-			const playPromise = audio.play();
+			const playPromise = this.audioElement.play();
 			
 			if (playPromise !== undefined) {
 				playPromise.catch(e => {
-					if (this.currentAudio !== audio) return;
-					
 					if (e.name === 'AbortError') {
 						return; 
 					}
 					
-					cleanup();
-					
 					const currUtt = this.currentUtterance;
-					this.currentAudio = null;
 					this.currentUtterance = null;
 					
 					this.lastSequenceEndTime = Date.now();
