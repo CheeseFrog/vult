@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "com.cheesefog.vult",
+        "sha256_cert_fingerprints": ["7E:67:94:F3:9C:D0:14:BA:D0:70:0A:7C:F2:B6:6F:49:D2:83:20:1C:4C:96:26:53:E1:E8:39:99:2A:4E:0B:59"]
+      }
+    }]
