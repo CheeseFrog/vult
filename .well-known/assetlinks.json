@@ -3,6 +3,6 @@
       "target": {
         "namespace": "android_app",
         "package_name": "com.cheesefrog.vult",
-        "sha256_cert_fingerprints": ["7E:67:94:F3:9C:D0:14:BA:D0:70:0A:7C:F2:B6:6F:49:D2:83:20:1C:4C:96:26:53:E1:E8:39:99:2A:4E:0B:59"]
+        "sha256_cert_fingerprints": ["43:A5:77:BB:6F:2D:26:17:4E:75:28:1C:C9:9F:D0:DC:EE:7D:B6:8E:7F:BB:48:E8:E2:E1:FC:38:36:23:E7:3C"]
       }
     }]
